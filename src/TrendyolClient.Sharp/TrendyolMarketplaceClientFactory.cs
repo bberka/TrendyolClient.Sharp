@@ -9,30 +9,31 @@ namespace TrendyolClient.Sharp
 {
   public class TrendyolMarketplaceClientFactory
   {
+    public TrendyolClientConfig Config { get; }
     private readonly IHttpClientFactory _httpClientFactory;
 
     // Store API clients along with credentials for validation
     private readonly ConcurrentDictionary<long, (ITrendyolMarketplaceApi client, string apiKey, string apiSecret)> _clients = new();
 
-    public TrendyolMarketplaceClientFactory(IHttpClientFactory httpClientFactory) {
+    public TrendyolMarketplaceClientFactory(IHttpClientFactory httpClientFactory,TrendyolClientConfig config) {
+      Config = config;
       _httpClientFactory = httpClientFactory;
     }
 
     public ITrendyolMarketplaceApi GetOrCreateClient(long sellerId,
                                                      string apiKey,
                                                      string apiSecret,
-                                                     bool useStageApi = false,
-                                                     string integrationCompanyNameForHeader = "SelfIntegration") {
+                                                     bool useStageApi = false) {
       if (_clients.TryGetValue(sellerId, out var existingClient)) {
         if (existingClient.apiKey == apiKey && existingClient.apiSecret == apiSecret) {
-          return existingClient.client; 
+          return existingClient.client;
         }
 
         InvalidateClient(sellerId);
       }
 
       return _clients.GetOrAdd(sellerId, _ => {
-        var newClient = CreateClient(sellerId, apiKey, apiSecret, useStageApi, integrationCompanyNameForHeader);
+        var newClient = CreateClient(sellerId, apiKey, apiSecret, useStageApi);
         return (newClient, apiKey, apiSecret); // Store client with credentials
       }).client;
     }
@@ -44,8 +45,7 @@ namespace TrendyolClient.Sharp
     protected ITrendyolMarketplaceApi CreateClient(long sellerId,
                                                    string apiKey,
                                                    string apiSecret,
-                                                   bool useStageApi = false,
-                                                   string integrationCompanyNameForHeader = "SelfIntegration") {
+                                                   bool useStageApi = false) {
       var baseUrl = useStageApi
                       ? "https://stageapigw.trendyol.com"
                       : "https://apigw.trendyol.com";
@@ -59,15 +59,11 @@ namespace TrendyolClient.Sharp
       httpClient.DefaultRequestHeaders.AcceptEncoding.Add(new StringWithQualityHeaderValue("gzip"));
       httpClient.DefaultRequestHeaders.AcceptEncoding.Add(new StringWithQualityHeaderValue("deflate"));
       httpClient.DefaultRequestHeaders.AcceptLanguage.Add(new StringWithQualityHeaderValue("tr-TR"));
-      httpClient.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue($"{sellerId} - {integrationCompanyNameForHeader}"));
+      httpClient.DefaultRequestHeaders.Add("User-Agent", $"{sellerId} - {Config.IntegrationName}");
 
       httpClient.DefaultRequestHeaders.Add("X-Internal-Seller-Id", sellerId.ToString());
 
-      return RestService.For<ITrendyolMarketplaceApi>(httpClient, new RefitSettings
-      {
-        HttpMessageHandlerFactory = () => new SellerIdInjectingHandler()
-      });
-      
+      return RestService.For<ITrendyolMarketplaceApi>(httpClient);
     }
   }
 }
