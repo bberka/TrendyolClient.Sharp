@@ -1,6 +1,5 @@
 ﻿using System.Threading.Tasks;
 using Refit;
-using TrendyolClient.Sharp.Models;
 using TrendyolClient.Sharp.Models.Marketplace;
 using TrendyolClient.Sharp.Models.Marketplace.Filter;
 using TrendyolClient.Sharp.Models.Marketplace.Request;
@@ -21,7 +20,7 @@ public interface ITrendyolMarketplaceApi
   /// <param name="request">Request body with label details</param>
   /// <returns>Trendyol API response</returns>
   [Post("/integration/sellers/SELLER_ID_PARAMETER/common-label/{cargoTrackingNumber}")]
-  Task<TrendyolApiResult> CreateCommonLabelAsync(
+  Task<IApiResponse> CreateCommonLabelAsync(
     [AliasAs("cargoTrackingNumber")] string cargoTrackingNumber,
     [Body] RequestCreateCommonLabel request
   );
@@ -33,7 +32,7 @@ public interface ITrendyolMarketplaceApi
   /// <param name="cargoTrackingNumber">Tracking number for the package</param>
   /// <returns>Trendyol API response</returns>
   [Get("/integration/sellers/SELLER_ID_PARAMETER/common-label/{cargoTrackingNumber}")]
-  Task<TrendyolApiResult> GetCommonLabelAsync(
+  Task<IApiResponse> GetCommonLabelAsync(
     [AliasAs("cargoTrackingNumber")] string cargoTrackingNumber
   );
 
@@ -44,7 +43,7 @@ public interface ITrendyolMarketplaceApi
   /// <param name="filter">Filter parameters for shipment package retrieval</param>
   /// <returns>Trendyol API response containing shipment packages</returns>
   [Get("/integration/order/sellers/SELLER_ID_PARAMETER/orders")]
-  Task<TrendyolApiResult<ResponseGetShipmentPackages>> GetShipmentPackagesAsync(
+  Task<IApiResponse<ResponseGetShipmentPackages>> GetShipmentPackagesAsync(
     [Query] FilterGetShipmentPackages filter
   );
 
@@ -56,7 +55,7 @@ public interface ITrendyolMarketplaceApi
   /// <param name="request">Request body containing the new tracking number</param>
   /// <returns>Trendyol API response</returns>
   [Put("/integration/order/sellers/SELLER_ID_PARAMETER/shipment-packages/{shipmentPackageId}/update-tracking-number")]
-  Task<TrendyolApiResult> UpdateTrackingNumberAsync(
+  Task<IApiResponse> UpdateTrackingNumberAsync(
     [AliasAs("shipmentPackageId")] string shipmentPackageId,
     [Body] RequestUpdateTrackingNumber request
   );
@@ -69,7 +68,7 @@ public interface ITrendyolMarketplaceApi
   /// <param name="request">Request body containing the new package status</param>
   /// <returns>Trendyol API response</returns>
   [Put("/integration/order/sellers/SELLER_ID_PARAMETER/shipment-packages/{packageId}")]
-  Task<TrendyolApiResult> UpdatePackageStatusAsync(
+  Task<IApiResponse> UpdatePackageStatusAsync(
     [AliasAs("packageId")] string packageId,
     [Body] RequestUpdatePackageStatus request
   );
@@ -82,7 +81,7 @@ public interface ITrendyolMarketplaceApi
   /// <param name="request">Request body containing details of unsupplied items</param>
   /// <returns>Trendyol API response</returns>
   [Put("/integration/order/sellers/SELLER_ID_PARAMETER/shipment-packages/{packageId}/items/unsupplied")]
-  Task<TrendyolApiResult> UpdatePackageUnsuppliedAsync(
+  Task<IApiResponse> UpdatePackageUnsuppliedAsync(
     [AliasAs("packageId")] string packageId,
     [Body] RequestUpdatePackageUnsupplied request
   );
@@ -94,7 +93,7 @@ public interface ITrendyolMarketplaceApi
   /// <param name="request">Request body containing invoice link details</param>
   /// <returns>Trendyol API response</returns>
   [Post("/integration/sellers/SELLER_ID_PARAMETER/seller-invoice-links")]
-  Task<TrendyolApiResult> SendInvoiceLinkAsync(
+  Task<IApiResponse> SendInvoiceLinkAsync(
     [Body] RequestSendInvoiceLink request
   );
 
@@ -107,7 +106,7 @@ public interface ITrendyolMarketplaceApi
   /// <param name="request">Request body containing details for invoice link deletion</param>
   /// <returns>Trendyol API response</returns>
   [Post("/integration/sellers/SELLER_ID_PARAMETER/seller-invoice-links/delete")]
-  Task<TrendyolApiResult> DeleteInvoiceLinkAsync(
+  Task<IApiResponse> DeleteInvoiceLinkAsync(
     [Body] RequestDeleteInvoiceLink request
   );
 
@@ -119,7 +118,7 @@ public interface ITrendyolMarketplaceApi
   /// <param name="request">Request body containing split details</param>
   /// <returns>Trendyol API response</returns>
   [Post("/integration/order/sellers/SELLER_ID_PARAMETER/shipment-packages/{packageId}/split-packages")]
-  Task<TrendyolApiResult> SplitMultiPackageByQuantityAsync(
+  Task<IApiResponse> SplitMultiPackageByQuantityAsync(
     [AliasAs("packageId")] string packageId,
     [Body] RequestSplitMultiPackageByQuantity request
   );
@@ -131,7 +130,7 @@ public interface ITrendyolMarketplaceApi
   /// <param name="packageId">Package ID</param>
   /// <returns>Trendyol API response</returns>
   [Post("/integration/order/sellers/SELLER_ID_PARAMETER/shipment-packages/{packageId}/split")]
-  Task<TrendyolApiResult> SplitShipmentPackageAsync(
+  Task<IApiResponse> SplitShipmentPackageAsync(
     [AliasAs("packageId")] string packageId
   );
 
@@ -142,7 +141,7 @@ public interface ITrendyolMarketplaceApi
   /// <param name="packageId">Package ID</param>
   /// <returns>Trendyol API response</returns>
   [Post("/integration/order/sellers/SELLER_ID_PARAMETER/shipment-packages/{packageId}/multi-split")]
-  Task<TrendyolApiResult> MultiSplitShipmentPackageAsync(
+  Task<IApiResponse> MultiSplitShipmentPackageAsync(
     [AliasAs("packageId")] string packageId
   );
 
@@ -153,7 +152,7 @@ public interface ITrendyolMarketplaceApi
   /// <param name="packageId">Package ID</param>
   /// <returns>Trendyol API response</returns>
   [Post("/integration/order/sellers/SELLER_ID_PARAMETER/shipment-packages/{packageId}/quantity-split")]
-  Task<TrendyolApiResult> SplitShipmentPackageByQuantityAsync(
+  Task<IApiResponse> SplitShipmentPackageByQuantityAsync(
     [AliasAs("packageId")] string packageId
   );
 
@@ -165,7 +164,7 @@ public interface ITrendyolMarketplaceApi
   /// <param name="request">Request body containing updated box info</param>
   /// <returns>Trendyol API response</returns>
   [Put("/integration/order/sellers/SELLER_ID_PARAMETER/shipment-packages/{packageId}/box-info")]
-  Task<TrendyolApiResult> UpdateBoxInfoAsync(
+  Task<IApiResponse> UpdateBoxInfoAsync(
     [AliasAs("packageId")] string packageId,
     [Body] RequestUpdateBoxInfo request
   );
@@ -178,7 +177,7 @@ public interface ITrendyolMarketplaceApi
   /// <param name="request">Request body containing alternative delivery details</param>
   /// <returns>Trendyol API response</returns>
   [Put("/integration/order/sellers/SELLER_ID_PARAMETER/shipment-packages/{packageId}/alternative-delivery")]
-  Task<TrendyolApiResult> ProcessAlternativeDeliveryAsync(
+  Task<IApiResponse> ProcessAlternativeDeliveryAsync(
     [AliasAs("packageId")] string packageId,
     [Body] RequestProcessAlternativeDelivery request
   );
@@ -190,7 +189,7 @@ public interface ITrendyolMarketplaceApi
   /// <param name="cargoTrackingNumber">Cargo tracking number</param>
   /// <returns>Trendyol API response</returns>
   [Put("/integration/order/sellers/SELLER_ID_PARAMETER/manual-deliver/{cargoTrackingNumber}")]
-  Task<TrendyolApiResult> ManualDeliverAsync(
+  Task<IApiResponse> ManualDeliverAsync(
     [AliasAs("cargoTrackingNumber")] string cargoTrackingNumber
   );
 
@@ -201,7 +200,7 @@ public interface ITrendyolMarketplaceApi
   /// <param name="cargoTrackingNumber">Cargo tracking number</param>
   /// <returns>Trendyol API response</returns>
   [Put("/integration/order/sellers/SELLER_ID_PARAMETER/manual-return/{cargoTrackingNumber}")]
-  Task<TrendyolApiResult> ManualReturnAsync(
+  Task<IApiResponse> ManualReturnAsync(
     [AliasAs("cargoTrackingNumber")] string cargoTrackingNumber
   );
 
@@ -212,7 +211,7 @@ public interface ITrendyolMarketplaceApi
   /// <param name="packageId">Package ID</param>
   /// <returns>Trendyol API response</returns>
   [Put("/integration/order/sellers/SELLER_ID_PARAMETER/shipment-packages/{packageId}/delivered-by-service")]
-  Task<TrendyolApiResult> DeliveredByServiceAsync(
+  Task<IApiResponse> DeliveredByServiceAsync(
     [AliasAs("packageId")] string packageId
   );
 
@@ -225,7 +224,7 @@ public interface ITrendyolMarketplaceApi
   /// <param name="request">Request body containing new cargo provider details</param>
   /// <returns>Trendyol API response</returns>
   [Put("/integration/order/sellers/SELLER_ID_PARAMETER/shipment-packages/{packageId}/cargo-providers")]
-  Task<TrendyolApiResult> ChangeCargoProviderAsync(
+  Task<IApiResponse> ChangeCargoProviderAsync(
     [AliasAs("packageId")] string packageId,
     [Body] RequestChangeCargoProvider request
   );
@@ -238,7 +237,7 @@ public interface ITrendyolMarketplaceApi
   /// <param name="request">Request body containing updated warehouse info</param>
   /// <returns>Trendyol API response</returns>
   [Put("/integration/order/sellers/SELLER_ID_PARAMETER/shipment-packages/{packageId}/warehouse")]
-  Task<TrendyolApiResult> UpdateWarehouseAsync(
+  Task<IApiResponse> UpdateWarehouseAsync(
     [AliasAs("packageId")] string packageId,
     [Body] RequestUpdateWarehouse request
   );
@@ -251,7 +250,7 @@ public interface ITrendyolMarketplaceApi
   /// <param name="request">Request body containing extended delivery date info</param>
   /// <returns>Trendyol API response</returns>
   [Put("/integration/order/sellers/SELLER_ID_PARAMETER/shipment-packages/{packageId}/extended-agreed-delivery-date")]
-  Task<TrendyolApiResult> AgreedDeliveryDateAsync(
+  Task<IApiResponse> AgreedDeliveryDateAsync(
     [AliasAs("packageId")] string packageId,
     [Body] RequestAgreedDeliveryDate request
   );
@@ -262,7 +261,7 @@ public interface ITrendyolMarketplaceApi
   /// </summary>
   /// <returns>Trendyol API response containing a list of countries</returns>
   [Get("/integration/member/countries")]
-  Task<TrendyolApiResult> GetCountriesAsync();
+  Task<IApiResponse> GetCountriesAsync();
 
   /// <summary>
   /// Retrieves a list of cities in the GULF region for a given country.
@@ -271,7 +270,7 @@ public interface ITrendyolMarketplaceApi
   /// <param name="countryCode">Country code (ISO Alpha-2 format)</param>
   /// <returns>Trendyol API response containing a list of cities</returns>
   [Get("/integration/member/countries/{countryCode}/cities")]
-  Task<TrendyolApiResult> GetCitiesGULFAsync(
+  Task<IApiResponse> GetCitiesGULFAsync(
     [AliasAs("countryCode")] string countryCode
   );
 
@@ -281,7 +280,7 @@ public interface ITrendyolMarketplaceApi
   /// </summary>
   /// <returns>Trendyol API response containing a list of cities in Azerbaijan</returns>
   [Get("/integration/member/countries/domestic/AZ/cities")]
-  Task<TrendyolApiResult> GetCitiesAzerbaijanAsync();
+  Task<IApiResponse> GetCitiesAzerbaijanAsync();
 
   /// <summary>
   /// Retrieves a list of districts in Azerbaijan for a given city.
@@ -290,7 +289,7 @@ public interface ITrendyolMarketplaceApi
   /// <param name="cityCode">City code</param>
   /// <returns>Trendyol API response containing a list of districts</returns>
   [Get("/integration/member/countries/domestic/AZ/cities/{cityCode}/districts")]
-  Task<TrendyolApiResult> GetDistrictsAzerbaijanAsync(
+  Task<IApiResponse> GetDistrictsAzerbaijanAsync(
     [AliasAs("cityCode")] string cityCode
   );
 
@@ -300,7 +299,7 @@ public interface ITrendyolMarketplaceApi
   /// </summary>
   /// <returns>Trendyol API response containing a list of cities</returns>
   [Get("/integration/member/countries/domestic/TR/cities")]
-  Task<TrendyolApiResult> GetCitiesTurkeyAsync();
+  Task<IApiResponse> GetCitiesTurkeyAsync();
 
   /// <summary>
   /// Retrieves a list of districts in Turkey for a given city.
@@ -309,7 +308,7 @@ public interface ITrendyolMarketplaceApi
   /// <param name="cityCode">City code</param>
   /// <returns>Trendyol API response containing a list of districts</returns>
   [Get("/integration/member/countries/domestic/TR/cities/{cityCode}/districts")]
-  Task<TrendyolApiResult> GetDistrictsTurkeyAsync(
+  Task<IApiResponse> GetDistrictsTurkeyAsync(
     [AliasAs("cityCode")] string cityCode
   );
 
@@ -321,7 +320,7 @@ public interface ITrendyolMarketplaceApi
   /// <param name="districtCode">District code</param>
   /// <returns>Trendyol API response containing a list of neighborhoods</returns>
   [Get("/integration/member/countries/domestic/TR/cities/{cityCode}/districts/{districtCode}/neighborhoods")]
-  Task<TrendyolApiResult> GetNeighborhoodsTurkeyAsync(
+  Task<IApiResponse> GetNeighborhoodsTurkeyAsync(
     [AliasAs("cityCode")] string cityCode,
     [AliasAs("districtCode")] string districtCode
   );
@@ -332,7 +331,7 @@ public interface ITrendyolMarketplaceApi
   /// </summary>
   /// <returns>Trendyol API response containing supplier addresses</returns>
   [Get("/integration/sellers/SELLER_ID_PARAMETER/addresses")]
-  Task<TrendyolApiResult<ResponseGetSuppliersAddresses>> GetSupplierAddressesAsync();
+  Task<IApiResponse<ResponseGetSuppliersAddresses>> GetSupplierAddressesAsync();
 
   /// <summary>
   /// Retrieves the list of brands available on Trendyol.
@@ -341,7 +340,7 @@ public interface ITrendyolMarketplaceApi
   /// <param name="filter">Filter parameters for brand listing</param>
   /// <returns>Trendyol API response containing a list of brands</returns>
   [Get("/integration/product/brands")]
-  Task<TrendyolApiResult<ResponseGetBrands>> GetBrandsAsync(
+  Task<IApiResponse<ResponseGetBrands>> GetBrandsAsync(
     [Query] FilterPage filter
   );
 
@@ -352,7 +351,7 @@ public interface ITrendyolMarketplaceApi
   /// <param name="brandName">Brand name to search for</param>
   /// <returns>Trendyol API response containing brand details</returns>
   [Get("/integration/product/brands/by-name")]
-  Task<TrendyolApiResult<ResponseGetBrandsByName>> GetBrandsByNameAsync(
+  Task<IApiResponse<ResponseGetBrandsByName>> GetBrandsByNameAsync(
     [Query] string brandName
   );
 
@@ -363,7 +362,7 @@ public interface ITrendyolMarketplaceApi
   /// <param name="filter">Filter parameters for category retrieval</param>
   /// <returns>Trendyol API response containing category tree</returns>
   [Get("/integration/product/product-categories")]
-  Task<TrendyolApiResult<ResponseGetCategoryTree>> GetCategoryTreeAsync(
+  Task<IApiResponse<ResponseGetCategoryTree>> GetCategoryTreeAsync(
     [Query] FilterGetCategoryTree filter
   );
 
@@ -375,7 +374,7 @@ public interface ITrendyolMarketplaceApi
   /// <param name="filter">Filter parameters for category attributes</param>
   /// <returns>Trendyol API response containing category attributes</returns>
   [Get("/integration/product/product-categories/{categoryId}/attributes")]
-  Task<TrendyolApiResult<ResponseGetCategoryAttributes>> GetCategoryAttributesAsync(
+  Task<IApiResponse<ResponseGetCategoryAttributes>> GetCategoryAttributesAsync(
     [AliasAs("categoryId")] int categoryId,
     [Query] FilterGetCategoryAttributes filter
   );
@@ -387,7 +386,7 @@ public interface ITrendyolMarketplaceApi
   /// <param name="request">Request body containing product details</param>
   /// <returns>Trendyol API response containing batch request ID</returns>
   [Post("/integration/product/sellers/SELLER_ID_PARAMETER/products")]
-  Task<TrendyolApiResult<ResponseBatchRequestId>> CreateProductsAsync(
+  Task<IApiResponse<ResponseBatchRequestId>> CreateProductsAsync(
     [Body] RequestCreateProducts request
   );
 
@@ -398,7 +397,7 @@ public interface ITrendyolMarketplaceApi
   /// <param name="request">Request body containing updated product details</param>
   /// <returns>Trendyol API response containing batch request ID</returns>
   [Put("/integration/product/sellers/SELLER_ID_PARAMETER/products")]
-  Task<TrendyolApiResult<ResponseBatchRequestId>> UpdateProductsAsync(
+  Task<IApiResponse<ResponseBatchRequestId>> UpdateProductsAsync(
     [Body] RequestUpdateProduct request
   );
 
@@ -409,7 +408,7 @@ public interface ITrendyolMarketplaceApi
   /// <param name="request">Request body containing price and inventory details</param>
   /// <returns>Trendyol API response containing batch request ID</returns>
   [Post("/integration/inventory/sellers/SELLER_ID_PARAMETER/products/price-and-inventory")]
-  Task<TrendyolApiResult<ResponseBatchRequestId>> UpdatePriceAndInventoryAsync(
+  Task<IApiResponse<ResponseBatchRequestId>> UpdatePriceAndInventoryAsync(
     [Body] RequestUpdatePriceAndInventory request
   );
 
@@ -420,7 +419,7 @@ public interface ITrendyolMarketplaceApi
   /// <param name="request">Request body containing product deletion details</param>
   /// <returns>Trendyol API response containing batch request ID</returns>
   [Delete("/integration/product/sellers/SELLER_ID_PARAMETER/products")]
-  Task<TrendyolApiResult<ResponseBatchRequestId>> DeleteProductAsync(
+  Task<IApiResponse<ResponseBatchRequestId>> DeleteProductAsync(
     [Body] RequestDeleteProducts request
   );
 
@@ -431,7 +430,7 @@ public interface ITrendyolMarketplaceApi
   /// <param name="batchRequestId">Batch request ID</param>
   /// <returns>Trendyol API response containing batch request details</returns>
   [Get("/integration/product/sellers/SELLER_ID_PARAMETER/products/batch-requests/{batchRequestId}")]
-  Task<TrendyolApiResult<ResponseGetBatchRequestResult>> GetBatchRequestResultAsync(
+  Task<IApiResponse<ResponseGetBatchRequestResult>> GetBatchRequestResultAsync(
     [AliasAs("batchRequestId")] string batchRequestId
   );
 
@@ -442,7 +441,7 @@ public interface ITrendyolMarketplaceApi
   /// <param name="filter">Filter parameters for product retrieval</param>
   /// <returns>Trendyol API response containing filtered product list</returns>
   [Get("/integration/product/sellers/SELLER_ID_PARAMETER/products")]
-  Task<ResponseGetProductsFiltered> GetProductsAsync(
+  Task<IApiResponse<ResponseGetProductsFiltered>> GetProductsAsync(
     [Query] FilterProducts filter
   );
 
@@ -453,7 +452,7 @@ public interface ITrendyolMarketplaceApi
   /// <param name="filter">Filter parameters for retrieving customer questions</param>
   /// <returns>Trendyol API response containing filtered customer questions</returns>
   [Get("/integration/qna/sellers/SELLER_ID_PARAMETER/questions/filter")]
-  Task<TrendyolApiResult<ResponseGetQuestions>> GetQuestionsAsync(
+  Task<IApiResponse<ResponseGetQuestions>> GetQuestionsAsync(
     [Query] FilterGetQuestions filter
   );
 
@@ -464,7 +463,7 @@ public interface ITrendyolMarketplaceApi
   /// <param name="id">Question ID</param>
   /// <returns>Trendyol API response containing the question details</returns>
   [Get("/integration/qna/sellers/SELLER_ID_PARAMETER/questions/{id}")]
-  Task<TrendyolApiResult<Question>> GetQuestionsByIdAsync(
+  Task<IApiResponse<Question>> GetQuestionsByIdAsync(
     [AliasAs("id")] int id
   );
 
@@ -476,7 +475,7 @@ public interface ITrendyolMarketplaceApi
   /// <param name="request">Request body containing the answer details</param>
   /// <returns>Trendyol API response</returns>
   [Post("/integration/qna/sellers/SELLER_ID_PARAMETER/questions/{id}/answers")]
-  Task<TrendyolApiResult> CreateAnswerAsync(
+  Task<IApiResponse> CreateAnswerAsync(
     [AliasAs("id")] long id,
     [Body] RequestCreateAnswer request
   );
@@ -488,7 +487,7 @@ public interface ITrendyolMarketplaceApi
   /// <param name="filter">Filter parameters for retrieving return orders</param>
   /// <returns>Trendyol API response containing return orders</returns>
   [Get("/integration/order/sellers/SELLER_ID_PARAMETER/claims")]
-  Task<TrendyolApiResult<ResponseGetClaims>> GetClaimsAsync(
+  Task<IApiResponse<ResponseGetClaims>> GetClaimsAsync(
     [Query] RequestGetClaims filter
   );
 
@@ -500,7 +499,7 @@ public interface ITrendyolMarketplaceApi
   /// <param name="request">Request body containing approval details</param>
   /// <returns>Trendyol API response</returns>
   [Put("/integration/order/sellers/SELLER_ID_PARAMETER/claims/{claimId}/items/approve")]
-  Task<TrendyolApiResult> ApproveClaimLineItemsAsync(
+  Task<IApiResponse> ApproveClaimLineItemsAsync(
     [AliasAs("claimId")] string claimId,
     [Body] RequestApproveClaimLineItems request
   );
@@ -513,7 +512,7 @@ public interface ITrendyolMarketplaceApi
   /// <param name="request">Request body containing claim issue details</param>
   /// <returns>Trendyol API response containing claim issue details</returns>
   [Post("/integration/order/sellers/SELLER_ID_PARAMETER/claims/{claimId}/issue")]
-  Task<TrendyolApiResult<ResponseCreateClaim>> CreateClaimIssueAsync(
+  Task<IApiResponse<ResponseCreateClaim>> CreateClaimIssueAsync(
     [AliasAs("claimId")] string claimId,
     [Query] RequestCreateClaimIssue request
   );
@@ -524,7 +523,7 @@ public interface ITrendyolMarketplaceApi
   /// </summary>
   /// <returns>Trendyol API response containing claim issue reasons</returns>
   [Get("/integration/order/claim-issue-reasons")]
-  Task<TrendyolApiResult<ResponseGetClaimsIssueReasons>> GetClaimsIssueReasonsAsync();
+  Task<IApiResponse<ResponseGetClaimsIssueReasons>> GetClaimsIssueReasonsAsync();
 
   /// <summary>
   /// Retrieves audit information for a specific claim item.
@@ -533,7 +532,7 @@ public interface ITrendyolMarketplaceApi
   /// <param name="claimItemsId">Claim item ID</param>
   /// <returns>Trendyol API response containing claim audit information</returns>
   [Get("/integration/order/sellers/SELLER_ID_PARAMETER/claims/items/{claimItemsId}/audit")]
-  Task<TrendyolApiResult<ResponseGetClaimAuditInformation>> GetClaimAuditInformationAsync(
+  Task<IApiResponse<ResponseGetClaimAuditInformation>> GetClaimAuditInformationAsync(
     [AliasAs("claimItemsId")] string claimItemsId
   );
 }

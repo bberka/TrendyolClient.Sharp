@@ -9,16 +9,16 @@ namespace TrendyolClient.Sharp
 {
   public class TrendyolMarketplaceClientFactory
   {
-    public TrendyolClientConfig Config { get; }
-    private readonly IHttpClientFactory _httpClientFactory;
-
     // Store API clients along with credentials for validation
     private readonly ConcurrentDictionary<long, (ITrendyolMarketplaceApi client, string apiKey, string apiSecret)> _clients = new();
+    private readonly IHttpClientFactory _httpClientFactory;
 
-    public TrendyolMarketplaceClientFactory(IHttpClientFactory httpClientFactory,TrendyolClientConfig config) {
+    public TrendyolMarketplaceClientFactory(IHttpClientFactory httpClientFactory, TrendyolClientConfig config) {
       Config = config;
       _httpClientFactory = httpClientFactory;
     }
+
+    public TrendyolClientConfig Config { get; }
 
     public ITrendyolMarketplaceApi GetOrCreateClient(long sellerId,
                                                      string apiKey,
@@ -63,7 +63,9 @@ namespace TrendyolClient.Sharp
 
       httpClient.DefaultRequestHeaders.Add("X-Internal-Seller-Id", sellerId.ToString());
 
-      return RestService.For<ITrendyolMarketplaceApi>(httpClient);
+      return RestService.For<ITrendyolMarketplaceApi>(httpClient, new RefitSettings {
+        UrlParameterKeyFormatter = new LowerCaseFirstCharParameterFormatter()
+      });
     }
   }
 }
