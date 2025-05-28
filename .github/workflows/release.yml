@@ -30,7 +30,7 @@ jobs:
           latest_stable_tag=$(git tag --list 'v[0-9]*.[0-9]*.[0-9]*' --sort=-v:refname | grep -v '^nightly-' | head -n 1 || echo "v0.0.0")
           base_version=$(echo "$latest_stable_tag" | sed 's/^v//')
           timestamp=$(date -u +"%Y%m%d%H%M")
-          nightly_version="${base_version}-nightly.${timestamp}"
+          nightly_version="${base_version}-nightly-${timestamp}"
           echo "NIGHTLY_VERSION=${nightly_version}" >> $GITHUB_ENV
           echo "BASE_VERSION=${base_version}" >> $GITHUB_ENV
 
