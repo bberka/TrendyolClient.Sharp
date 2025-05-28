@@ -22,7 +22,7 @@ jobs:
       - name: Setup .NET 9
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '9.0.x'
+          dotnet-version: '9.0.x' # This sets up SDK, not necessarily the target framework for publish
 
       - name: Determine Nightly Version
         id: versioning
@@ -36,8 +36,6 @@ jobs:
 
           # If the base_version obtained from the stable tag is a prerelease version (e.g., 1.0.0-rc.1),
           # we need to strip the prerelease part for the nightly base.
-          # This regex handles versions like 1.0.0-rc.1, 2.0.0-beta etc.
-          # It captures the major.minor.patch part.
           if [[ "$base_version" =~ ^([0-9]+\.[0-9]+\.[0-9]+) ]]; then
               base_version="${BASH_REMATCH[1]}"
           fi
@@ -47,11 +45,7 @@ jobs:
             base_version="0.0.0"
           fi
 
-          # Generate a timestamp for the nightly build
           timestamp=$(date -u +"%Y%m%d%H%M")
-
-          # Construct the full nightly version string in a NuGet-compatible format
-          # Example: 1.2.3-nightly.202505282109
           nightly_version="${base_version}-nightly.${timestamp}"
 
           echo "Calculated Nightly Base Version: $base_version"
@@ -63,29 +57,28 @@ jobs:
       - name: Restore dependencies
         run: dotnet restore
 
-      - name: Publish Projects
+      - name: Publish Project for net9.0 (for standalone artifact)
+        # We specify -f net9.0 because 'publish' needs a single target framework for a runnable output.
+        # This output will be used for the zip file.
         run: |
-          dotnet publish ./src/TrendyolClient.Sharp/TrendyolClient.Sharp.csproj -c Release -o ./publish/TrendyolClient.Sharp -p:Version=${{ env.NIGHTLY_VERSION }}
-          # Verify the published DLL version (optional, for debugging)
-          # Get-Item (./publish/TrendyolClient.Sharp/*.dll) | Select-Object -ExpandProperty VersionInfo # For PowerShell on Windows runner
-          # For Linux: file ./publish/TrendyolClient.Sharp/*.dll | grep "Version" or check assemblyinfo
-          # A more robust check might involve using 'strings' or a .NET tool if available.
-          # For now, rely on dotnet build/publish's version check.
+          dotnet publish ./src/TrendyolClient.Sharp/TrendyolClient.Sharp.csproj -c Release -o ./publish/TrendyolClient.Sharp -p:Version=${{ env.NIGHTLY_VERSION }} -f net9.0
 
       - name: Prepare Release Assets Directory
         run: mkdir -p release-assets
 
-      - name: Zip Published Projects
+      - name: Zip Published Project (net9.0)
+        # The zip contains the publish output for net9.0
         run: |
-          # Corrected path for zipping. Ensure ./publish/TrendyolClient.Sharp exists.
-          zip -r ./release-assets/TrendyolClient.Sharp-nightly-${{ env.NIGHTLY_VERSION }}.zip ./publish/TrendyolClient.Sharp
+          zip -r ./release-assets/TrendyolClient.Sharp-net9.0-nightly-${{ env.NIGHTLY_VERSION }}.zip ./publish/TrendyolClient.Sharp
 
       - name: Verify Release Assets
         run: ls -R ./release-assets
 
-      - name: Publish NuGet Packages
+      - name: Publish NuGet Packages (multi-target .nupkg)
         run: |
-          # Build NuGet package with the determined nightly version
+          # When `dotnet pack` is run without -f on a multi-target project,
+          # it automatically packages all target frameworks into one .nupkg.
+          # This is usually the desired behavior for a NuGet library.
           dotnet pack ./src/TrendyolClient.Sharp/TrendyolClient.Sharp.csproj -c Release -o ./nuget_packages -p:Version=${{ env.NIGHTLY_VERSION }}
 
           # Push NuGet package
@@ -100,7 +93,7 @@ jobs:
           LAST_NIGHTLY_TAG=$(git tag --sort=-creatordate | grep "nightly-" | head -n 1)
 
           # Determine the git log range
-          GIT_LOG_RANGE="${{ github.sha }}" # Default to current commit if no previous nightly tag
+          GIT_LOG_RANGE="${{ github.sha }}"
           if [ -n "$LAST_NIGHTLY_TAG" ]; then
             LAST_NIGHTLY_COMMIT=$(git rev-list -n 1 "$LAST_NIGHTLY_TAG")
             echo "Finding commits since last nightly build tag: $LAST_NIGHTLY_TAG ($LAST_NIGHTLY_COMMIT)"
@@ -109,24 +102,19 @@ jobs:
             echo "No previous nightly tag found. Using all commits up to current."
           fi
 
-          # Create the release notes file
           echo "# Nightly Build - ${{ env.NIGHTLY_VERSION }}" > custom_release_notes.md
           echo "" >> custom_release_notes.md
           echo "This is a nightly build of the project. It contains the latest changes since the last nightly or stable release." >> custom_release_notes.md
           echo "" >> custom_release_notes.md
 
-          # Generate merge commits (pull requests)
           MERGE_COMMITS_INFO=$(git log --merges --pretty=format:"- [%h](https://github.com/${{ github.repository }}/commit/%H) %s" "$GIT_LOG_RANGE")
           if [ -n "$MERGE_COMMITS_INFO" ]; then
             echo "## 🚀 Merged Pull Requests" >> custom_release_notes.md
             echo "$MERGE_COMMITS_INFO" | while read -r line; do
               if [[ "$line" =~ ^-\ \[([0-9a-f]+)\]\(https://github.com/.+/commit/[0-9a-f]+\)\ Merge\ pull\ request\ #([0-9]+)\ from\ .+$ ]]; then
-                # Original merge commit message for PRs looks like: "- [abc1234](...) Merge pull request #123 from user/branch"
-                # We want to format it as: "- Merged PR #[123](link_to_pr)"
                 PR_NUMBER=${BASH_REMATCH[2]}
                 echo "- Merged PR #[${PR_NUMBER}](https://github.com/${{ github.repository }}/pull/${PR_NUMBER})" >> custom_release_notes.md
               else
-                # Fallback for other merge commits if any
                 echo "$line" >> custom_release_notes.md
               fi
             done
@@ -134,15 +122,13 @@ jobs:
 
           echo "" >> custom_release_notes.md
 
-          # Generate non-merge commits (direct commits)
           NON_MERGE_COMMITS_INFO=$(git log --no-merges --pretty=format:"- [%h](https://github.com/${{ github.repository }}/commit/%H) %s" "$GIT_LOG_RANGE")
           if [ -n "$NON_MERGE_COMMITS_INFO" ]; then
             echo "## 📝 Commits" >> custom_release_notes.md
             echo "$NON_MERGE_COMMITS_INFO" >> custom_release_notes.md
           fi
 
-          # Output the path to the release notes file
-          echo "body_path=custom_release_notes.md" >> "$GITHUB_ENV" # Use $GITHUB_ENV to set environment variables for subsequent steps
+          echo "body_path=custom_release_notes.md" >> "$GITHUB_ENV"
         env:
           GITHUB_SHA: ${{ github.sha }}
           GITHUB_REF: ${{ github.ref }}
@@ -150,14 +136,14 @@ jobs:
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
-        if: startsWith(github.ref, 'refs/heads/') # Only create release for branch pushes, not for tags
+        if: startsWith(github.ref, 'refs/heads/')
         with:
           tag_name: nightly-${{ env.NIGHTLY_VERSION }}
           name: Nightly Build - ${{ env.NIGHTLY_VERSION }}
           draft: false
           prerelease: true
           generate_release_notes: false
-          body_path: custom_release_notes.md # Direct path, as set in previous step
+          body_path: custom_release_notes.md
           append_body: false
           files: |
-            ./release-assets/TrendyolClient.Sharp-nightly-${{ env.NIGHTLY_VERSION }}.zip
+            ./release-assets/TrendyolClient.Sharp-net9.0-nightly-${{ env.NIGHTLY_VERSION }}.zip
