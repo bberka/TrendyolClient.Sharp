@@ -1,0 +1,184 @@
+name: Nightly Build & Publish
+
+on:
+  push:
+    branches:
+      - master # Or main
+  workflow_dispatch:
+
+jobs:
+  # Job 1: Calculate the Nightly Version (runs once)
+  version_calc:
+    runs-on: ubuntu-latest
+    outputs:
+      nightly_version: ${{ steps.versioning.outputs.nightly_version }}
+      base_version: ${{ steps.versioning.outputs.base_version }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Determine Nightly Version
+        id: versioning
+        run: |
+          latest_stable_tag=$(git tag --list 'v[0-9]*.[0-9]*.[0-9]*' --sort=-v:refname | grep -v '^nightly-' | head -n 1 || echo "v0.0.0")
+          base_version=$(echo "$latest_stable_tag" | sed 's/^v//')
+          if [[ "$base_version" =~ ^([0-9]+\.[0-9]+\.[0-9]+) ]]; then
+              base_version="${BASH_REMATCH[1]}"
+          fi
+          if [ -z "$base_version" ]; then
+            base_version="0.0.0"
+          fi
+          timestamp=$(date -u +"%Y%m%d%H%M")
+          nightly_version="${base_version}-nightly.${timestamp}"
+
+          echo "Calculated Nightly Base Version: $base_version"
+          echo "Calculated Nightly Version: $nightly_version"
+
+          # Set outputs for other jobs to consume
+          echo "nightly_version=${nightly_version}" >> $GITHUB_OUTPUT
+          echo "base_version=${base_version}" >> $GITHUB_OUTPUT
+
+  # Job 2: Build and Zip for each target framework (runs in parallel via matrix)
+  build_and_zip:
+    needs: version_calc # This job depends on version_calc to get the version
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        tfm: [net6.0, net7.0, net8.0, net9.0] # Your target frameworks
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup .NET 9
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
+
+      - name: Restore dependencies
+        run: dotnet restore
+
+      - name: Publish Project for ${{ matrix.tfm }}
+        run: |
+          mkdir -p ./publish/TrendyolClient.Sharp/${{ matrix.tfm }}
+          dotnet publish ./src/TrendyolClient.Sharp/TrendyolClient.Sharp.csproj -c Release -o ./publish/TrendyolClient.Sharp/${{ matrix.tfm }} -p:Version=${{ needs.version_calc.outputs.nightly_version }} -f ${{ matrix.tfm }}
+
+      - name: Zip Published Project (${{ matrix.tfm }})
+        run: |
+          # Use the version from the previous job
+          zip_filename="TrendyolClient.Sharp-${{ matrix.tfm }}-nightly-${{ needs.version_calc.outputs.nightly_version }}.zip"
+          zip -r "./${zip_filename}" ./publish/TrendyolClient.Sharp/${{ matrix.tfm }}
+
+          # Upload each zip as an artifact (specific to each TFM)
+          echo "Uploading artifact: ${zip_filename}"
+          echo "artifact_path=${zip_filename}" >> $GITHUB_OUTPUT
+
+      - name: Upload ${{ matrix.tfm }} Build Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: TrendyolClient.Sharp-${{ matrix.tfm }}-nightly-build
+          path: TrendyolClient.Sharp-${{ matrix.tfm }}-nightly-${{ needs.version_calc.outputs.nightly_version }}.zip
+          retention-days: 1 # Optional: How long to keep this artifact on GitHub
+
+  # Job 3: Pack NuGet, Generate Release Notes, and Create GitHub Release (runs once)
+  pack_and_release:
+    needs: [version_calc, build_and_zip] # This job depends on both previous jobs
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # Needed for creating release
+      packages: write # Needed for publishing NuGet
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup .NET 9
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
+
+      - name: Restore dependencies (for packing)
+        # Restore needs to run again in this job as it's a new runner instance
+        run: dotnet restore
+
+      - name: Publish NuGet Packages (multi-target .nupkg)
+        run: |
+          dotnet pack ./src/TrendyolClient.Sharp/TrendyolClient.Sharp.csproj -c Release -o ./nuget_packages -p:Version=${{ needs.version_calc.outputs.nightly_version }}
+          dotnet nuget push "./nuget_packages/*.nupkg" --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
+
+      - name: Download all build artifacts
+        # Downloads all the zips uploaded by the 'build_and_zip' job
+        uses: actions/download-artifact@v4
+        with:
+          path: downloaded_artifacts # This path will contain subdirectories for each artifact name
+
+      - name: Generate Custom Release Notes
+        id: custom_release_notes
+        run: |
+          echo "Generating custom release notes..."
+          # Fetch all tags, including those from other jobs, to determine the log range.
+          # You might need to fetch more history if your repo is large or shallow clones are used.
+          git config remote.origin.url "https://github.com/${{ github.repository }}"
+          git fetch --tags --unshallow || git fetch --tags # Try unshallow first, then full fetch
+
+          # Find the latest nightly tag
+          LAST_NIGHTLY_TAG=$(git tag --sort=-creatordate | grep "nightly-" | head -n 1)
+
+          GIT_LOG_RANGE="${{ github.sha }}"
+          if [ -n "$LAST_NIGHTLY_TAG" ]; then
+            LAST_NIGHTLY_COMMIT=$(git rev-list -n 1 "$LAST_NIGHTLY_TAG")
+            echo "Finding commits since last nightly build tag: $LAST_NIGHTLY_TAG ($LAST_NIGHTLY_COMMIT)"
+            GIT_LOG_RANGE="$LAST_NIGHTLY_COMMIT..${{ github.sha }}"
+          else
+            echo "No previous nightly tag found. Using all commits up to current."
+          fi
+
+          echo "This is a nightly build of the project. It contains the latest changes since the last nightly or stable release." > custom_release_notes.md
+          echo "" >> custom_release_notes.md
+
+          MERGE_COMMITS_INFO=$(git log --merges --pretty=format:"- [%h](https://github.com/${{ github.repository }}/commit/%H) %s" "$GIT_LOG_RANGE")
+          if [ -n "$MERGE_COMMITS_INFO" ]; then
+            echo "## 🚀 Merged Pull Requests" >> custom_release_notes.md
+            echo "$MERGE_COMMITS_INFO" | while read -r line; do
+              if [[ "$line" =~ ^-\ \[([0-9a-f]+)\]\(https://github.com/.+/commit/[0-9a-f]+\)\ Merge\ pull\ request\ #([0-9]+)\ from\ .+$ ]]; then
+                PR_NUMBER=${BASH_REMATCH[2]}
+                echo "- Merged PR #[${PR_NUMBER}](https://github.com/${{ github.repository }}/pull/${PR_NUMBER})" >> custom_release_notes.md
+              else
+                echo "$line" >> custom_release_notes.md
+              fi
+            done
+          fi
+
+          echo "" >> custom_release_notes.md
+
+          NON_MERGE_COMMITS_INFO=$(git log --no-merges --pretty=format:"- [%h](https://github.com/${{ github.repository }}/commit/%H) %s" "$GIT_LOG_RANGE")
+          if [ -n "$NON_MERGE_COMMITS_INFO" ]; then
+            echo "## 📝 Commits" >> custom_release_notes.md
+            echo "$NON_MERGE_COMMITS_INFO" >> custom_release_notes.md
+          fi
+
+          echo "body_path=custom_release_notes.md" >> "$GITHUB_ENV"
+        env:
+          GITHUB_SHA: ${{ github.sha }}
+          GITHUB_REF: ${{ github.ref }}
+        working-directory: ${{ github.workspace }}
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        if: startsWith(github.ref, 'refs/heads/')
+        with:
+          tag_name: v${{ needs.version_calc.outputs.nightly_version }}
+          name: Nightly Build - v${{ needs.version_calc.outputs.nightly_version }}
+          draft: false
+          prerelease: true
+          generate_release_notes: false
+          body_path: custom_release_notes.md
+          append_body: false
+          # Attach all zips downloaded by the previous step, and the newly packed NuGet package
+          files: |
+            ./downloaded_artifacts/*/TrendyolClient.Sharp-*.zip # Path to zips within downloaded_artifacts
+            ./nuget_packages/*.nupkg
