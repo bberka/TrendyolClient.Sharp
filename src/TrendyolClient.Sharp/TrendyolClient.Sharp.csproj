@@ -4,6 +4,17 @@
     <AssemblyVersion>0.0.1</AssemblyVersion>
     <LangVersion>12</LangVersion>
     <TargetFrameworks>net6.0;net7.0;net8.0;net9.0</TargetFrameworks>
+
+
+    <Title>TrendyolClient.Sharp</Title>
+    <Description>TrendyolClient.Sharp is a simple Trendyol API Client for C# with .NET 6+ version.</Description>
+    <RepositoryUrl>https://github.com/bberka/TrendyolClient.Sharp</RepositoryUrl>
+    <Authors>bberka</Authors>
+    <Company>bberka</Company>
+    <PackageTags>trendyol, api, client, csharp, dotnet, rest, http, ecommerce, integration</PackageTags>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <ItemGroup>
@@ -16,6 +27,15 @@
     <Folder Include="Services\ExportCenter\"/>
     <Folder Include="Services\FastMarket\"/>
     <Folder Include="Services\Food\"/>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="..\..\LICENSE" Pack="true" PackagePath="\">
+      <Link>LICENSE</Link>
+    </Content>
+    <Content Include="..\..\README.md" Pack="true" PackagePath="\">
+      <Link>README.md</Link>
+    </Content>
   </ItemGroup>
 
 </Project>
