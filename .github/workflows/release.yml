@@ -1,0 +1,118 @@
+name: Release Nightly Build & Publish
+
+on:
+  push:
+    branches:
+      - master
+  workflow_dispatch:
+
+jobs:
+  build-and-publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      packages: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup .NET 9
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
+
+      - name: Determine Nightly Version
+        id: versioning
+        run: |
+          latest_stable_tag=$(git tag --list 'v[0-9]*.[0-9]*.[0-9]*' --sort=-v:refname | grep -v '^nightly-' | head -n 1 || echo "v0.0.0")
+          base_version=$(echo "$latest_stable_tag" | sed 's/^v//')
+          timestamp=$(date -u +"%Y%m%d%H%M")
+          nightly_version="${base_version}-nightly.${timestamp}"
+          echo "NIGHTLY_VERSION=${nightly_version}" >> $GITHUB_ENV
+          echo "BASE_VERSION=${base_version}" >> $GITHUB_ENV
+
+      - name: Restore dependencies
+        run: dotnet restore
+
+      - name: Publish Projects
+        run: |
+          dotnet publish ./src/TrendyolClient.Sharp/TrendyolClient.Sharp.csproj -c Release -o ./publish/TrendyolClient.Sharp -p:Version=${{ env.NIGHTLY_VERSION }}
+      - name: Prepare Release Assets Directory
+        run: mkdir -p release-assets
+
+      - name: Zip Published Projects
+        run: |
+          zip -r ./release-assets/TrendyolClient.Sharp-nightly-${{ env.NIGHTLY_VERSION }}.zip ./publish/ZTrendyolClient.Sharp
+
+      - name: Verify Release Assets
+        run: ls -R ./release-assets
+
+      - name: Publish NuGet Packages
+        run: dotnet nuget push "./src/**/bin/Release/*.nupkg" --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
+
+      - name: Generate Custom Release Notes
+        id: custom_release_notes
+        run: |
+          echo "Generating custom release notes..."
+
+          # Find the latest nightly tag
+          LAST_NIGHTLY_TAG=$(git tag --sort=-creatordate | grep "nightly-" | head -n 1)
+          if [ -n "$LAST_NIGHTLY_TAG" ] && [ "$LAST_NIGHTLY_TAG" != "${{ steps.release_tag.outputs.tag }}" ]; then
+            LAST_NIGHTLY_COMMIT=$(git rev-list -n 1 $LAST_NIGHTLY_TAG)
+            echo "Finding commits since last nightly build tag: $LAST_NIGHTLY_TAG ($LAST_NIGHTLY_COMMIT)"
+            GIT_LOG_RANGE="$LAST_NIGHTLY_COMMIT..${{ github.sha }}"
+          else
+            echo "No previous nightly tag found or it's the same as the current tag. Using all commits."
+            GIT_LOG_RANGE="${{ github.sha }}"
+          fi
+
+          # Create the release notes file
+          echo "" > custom_release_notes.md
+
+          # Generate merge commits (pull requests)
+          MERGE_COMMITS_INFO=$(git log --merges --pretty=format:"- [%h](https://github.com/${{ github.repository }}/commit/%H) %s" $GIT_LOG_RANGE)
+          if [ -n "$MERGE_COMMITS_INFO" ]; then
+            echo "## Pull Requests" >> custom_release_notes.md
+            echo "$MERGE_COMMITS_INFO" | while read -r line; do
+              if [[ "$line" =~ ^-\ \[([0-9a-f]+)\]\(https://github.com/.+/commit/[0-9a-f]+\)\ Merge\ pull\ request\ #([0-9]+)\ from\ .+$ ]]; then
+                SHORT_SHA=${BASH_REMATCH[1]}
+                PR_NUMBER=${BASH_REMATCH[2]}
+                echo "- Merged PR #[${PR_NUMBER}](https://github.com/${{ github.repository }}/pull/${PR_NUMBER})" >> custom_release_notes.md
+              else
+                echo "$line" >> custom_release_notes.md
+              fi
+            done
+          fi
+
+          echo "" >> custom_release_notes.md
+
+          # Generate non-merge commits
+          NON_MERGE_COMMITS_INFO=$(git log --no-merges --pretty=format:"- [%h](https://github.com/${{ github.repository }}/commit/%H) %s" $GIT_LOG_RANGE)
+          if [ -n "$NON_MERGE_COMMITS_INFO" ]; then
+            echo "## Commits" >> custom_release_notes.md
+            echo "$NON_MERGE_COMMITS_INFO" >> custom_release_notes.md
+          fi
+
+          # Output the path to the release notes file
+          echo "body_path=custom_release_notes.md" >> $GITHUB_ENV
+        env:
+          GITHUB_SHA: ${{ github.sha }}
+          GITHUB_REF: ${{ github.ref }}
+        working-directory: ${{ github.workspace }}
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        if: startsWith(github.ref, 'refs/heads/')
+        with:
+          tag_name: nightly-${{ env.NIGHTLY_VERSION }}
+          name: Nightly Build - ${{ env.NIGHTLY_VERSION }}
+          draft: false
+          prerelease: true
+          generate_release_notes: false
+          body_path: ${{ env.body_path }}
+          append_body: false
+          files: |
+            ./release-assets/TrendyolClient.Sharp-${{ env.NIGHTLY_VERSION }}.zip
