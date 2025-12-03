@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 
+namespace TrendyolClient.Sharp.Models;
+
 public readonly struct TrendyolShipmentProvider
 {
     public int Id { get; }
