@@ -1,6 +1,6 @@
 ﻿namespace TrendyolClient.Sharp.Enums;
 
-public enum OtherFinancialTransactionType
+public enum TrendyolOtherFinancialTransactionType
 {
   CashAdvance,
   WireTransfer,

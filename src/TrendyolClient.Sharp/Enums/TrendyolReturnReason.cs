@@ -3,7 +3,7 @@
 /// <summary>
 ///   https://developers.trendyol.com/docs/marketplace/iade-entegrasyonu/iade-sebepleri
 /// </summary>
-public enum ReturnReason
+public enum TrendyolReturnReason
 {
   None = 51, //Trendyol
   WarehouseLoss = 101, //Trendyol

@@ -7,7 +7,7 @@ public sealed class SettlementTransactionData
   public string Id { get; set; }
   public long TransactionDate { get; set; }
   public string Barcode { get; set; }
-  public SettlementsTransactionType TransactionType { get; set; }
+  public TrendyolSettlementsTransactionType TransactionType { get; set; }
   public long ReceiptId { get; set; }
   public string Description { get; set; }
   public double Debt { get; set; }

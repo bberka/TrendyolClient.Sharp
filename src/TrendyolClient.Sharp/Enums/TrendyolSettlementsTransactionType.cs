@@ -1,6 +1,6 @@
 ﻿namespace TrendyolClient.Sharp.Enums;
 
-public enum SettlementsTransactionType
+public enum TrendyolSettlementsTransactionType
 {
   Sale,
   Return,
