@@ -2,18 +2,18 @@
 
 public enum TrendyolSettlementsTransactionType
 {
-  Sale,
-  Return,
-  Discount,
-  DiscountCancel,
-  Coupon,
-  CouponCancel,
-  ProvisionPositive,
-  ProvisionNegative,
-  ManualRefund,
-  ManualRefundCancel,
-  TYDiscount,
-  TYDiscountCancel,
-  TYCoupon,
-  TYCouponCancel
+    Sale,
+    Return,
+    Discount,
+    DiscountCancel,
+    Coupon,
+    CouponCancel,
+    ProvisionPositive,
+    ProvisionNegative,
+    ManualRefund,
+    ManualRefundCancel,
+    TYDiscount,
+    TYDiscountCancel,
+    TYCoupon,
+    TYCouponCancel
 }

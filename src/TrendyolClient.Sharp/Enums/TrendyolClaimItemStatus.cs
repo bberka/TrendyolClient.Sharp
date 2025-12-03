@@ -2,11 +2,11 @@
 
 public enum TrendyolClaimItemStatus
 {
-  Created,
-  WaitingInAction,
-  Accepted,
-  Cancelled,
-  Rejected,
-  Unresolved,
-  InAnalysis
+    Created,
+    WaitingInAction,
+    Accepted,
+    Cancelled,
+    Rejected,
+    Unresolved,
+    InAnalysis
 }

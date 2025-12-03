@@ -9,7 +9,7 @@ namespace TrendyolClient.Sharp;
 public static class TrendyolServiceCollectionExtensions
 {
     /// <summary>
-    /// Adds TrendyolClient services to the dependency injection container
+    ///     Adds TrendyolClient services to the dependency injection container
     /// </summary>
     /// <param name="services">Service collection</param>
     /// <param name="configure">Optional configuration action</param>
@@ -36,10 +36,7 @@ public static class TrendyolServiceCollectionExtensions
             .AddHttpMessageHandler<TrendyolSellerIdInjectorMessageHandler>();
 
         // Add logging handler if enabled
-        if (config.EnableLogging)
-        {
-            httpClientBuilder.AddHttpMessageHandler<TrendyolLoggingHandler>();
-        }
+        if (config.EnableLogging) httpClientBuilder.AddHttpMessageHandler<TrendyolLoggingHandler>();
 
         // Configure timeout
         httpClientBuilder.ConfigureHttpClient(client => { client.Timeout = TimeSpan.FromSeconds(config.RequestTimeoutSeconds); });

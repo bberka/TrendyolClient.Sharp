@@ -18,10 +18,7 @@ public class TrendyolLoggingHandler(ILogger<TrendyolLoggingHandler> logger) : De
 
         // Extract seller ID if available for better log context
         string sellerId = null;
-        if (request.Headers.TryGetValues("X-Internal-Seller-Id", out var sellerIdValues))
-        {
-            sellerId = sellerIdValues.FirstOrDefault();
-        }
+        if (request.Headers.TryGetValues("X-Internal-Seller-Id", out var sellerIdValues)) sellerId = sellerIdValues.FirstOrDefault();
 
         logger.LogInformation("[{RequestId}] Trendyol API Request: {Method} {Uri} {SellerContext}", requestId, request.Method,
             request.RequestUri?.PathAndQuery, sellerId != null ? $"[Seller: {sellerId}]" : string.Empty);
@@ -32,15 +29,11 @@ public class TrendyolLoggingHandler(ILogger<TrendyolLoggingHandler> logger) : De
             stopwatch.Stop();
 
             if (response.IsSuccessStatusCode)
-            {
                 logger.LogInformation("[{RequestId}] Trendyol API Success: {StatusCode} in {ElapsedMs}ms", requestId, (int)response.StatusCode,
                     stopwatch.ElapsedMilliseconds);
-            }
             else
-            {
                 logger.LogWarning("[{RequestId}] Trendyol API Failed: {StatusCode} {ReasonPhrase} in {ElapsedMs}ms", requestId,
                     (int)response.StatusCode, response.ReasonPhrase, stopwatch.ElapsedMilliseconds);
-            }
 
             return response;
         }

@@ -8,7 +8,8 @@ internal class TrendyolNotFoundException(
     string resourceType,
     string resourceId) : TrendyolException(message)
 {
-    public TrendyolNotFoundException(string resourceType, string resourceId) : this($"{resourceType} with ID '{resourceId}' was not found", resourceType, resourceId)
+    public TrendyolNotFoundException(string resourceType, string resourceId) : this($"{resourceType} with ID '{resourceId}' was not found",
+        resourceType, resourceId)
     {
     }
 

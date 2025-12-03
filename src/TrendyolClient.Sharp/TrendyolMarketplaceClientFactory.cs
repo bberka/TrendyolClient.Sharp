@@ -66,68 +66,12 @@ public class TrendyolMarketplaceClientFactory(IHttpClientFactory httpClientFacto
         if (_clients.TryGetValue(sellerId, out var existingContainer))
         {
             // Validate credentials
-            if (existingContainer.ApiKey == apiKey && existingContainer.ApiSecret == apiSecret)
-            {
-                return existingContainer;
-            }
+            if (existingContainer.ApiKey == apiKey && existingContainer.ApiSecret == apiSecret) return existingContainer;
 
             InvalidateClient(sellerId);
         }
 
         return _clients.GetOrAdd(sellerId, new ClientContainer(sellerId, apiKey, apiSecret, useStageApi, httpClientFactory, Config));
-    }
-
-    /// <summary>
-    /// Internal container that holds shared HTTP infrastructure and Lazy-loaded clients.
-    /// </summary>
-    private class ClientContainer
-    {
-        public string ApiKey { get; }
-        public string ApiSecret { get; }
-
-        // Lazy objects ensure Refit creation logic only runs when specifically requested
-        public Lazy<ITrendyolMarketplaceApi> Marketplace { get; }
-        public Lazy<ITrendyolWebhookApi> Webhook { get; }
-        public Lazy<ITrendyolFinanceApi> Finance { get; }
-
-        public ClientContainer(
-            long sellerId,
-            string apiKey,
-            string apiSecret,
-            bool useStageApi,
-            IHttpClientFactory httpClientFactory,
-            TrendyolClientConfig config
-        )
-        {
-            ApiKey = apiKey;
-            ApiSecret = apiSecret;
-
-            // 1. Setup Shared HttpClient
-            var baseUrl = useStageApi ? "https://stageapigw.trendyol.com" : "https://apigw.trendyol.com";
-            var httpClient = httpClientFactory.CreateClient("TrendyolClient");
-            httpClient.BaseAddress = new Uri(baseUrl);
-
-            var authHeader = Convert.ToBase64String(Encoding.UTF8.GetBytes($"{apiKey}:{apiSecret}"));
-            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", authHeader);
-            httpClient.DefaultRequestHeaders.AcceptEncoding.Add(new StringWithQualityHeaderValue("gzip"));
-            httpClient.DefaultRequestHeaders.AcceptEncoding.Add(new StringWithQualityHeaderValue("deflate"));
-            httpClient.DefaultRequestHeaders.AcceptLanguage.Add(new StringWithQualityHeaderValue("tr-TR"));
-            httpClient.DefaultRequestHeaders.Add("User-Agent", $"{sellerId} - {config.IntegrationName}");
-            httpClient.DefaultRequestHeaders.Add("X-Internal-Seller-Id", sellerId.ToString());
-
-            // 2. Setup Shared Refit Settings
-            var refitSettings = new RefitSettings
-            {
-                UrlParameterKeyFormatter = new LowerCaseFirstCharParameterFormatter(),
-                ExceptionFactory = CreateExceptionFactory(sellerId)
-            };
-
-            // 3. Define Lazy Initializers
-            // The code inside the lambda () => ... is NOT executed yet.
-            Marketplace = new Lazy<ITrendyolMarketplaceApi>(() => RestService.For<ITrendyolMarketplaceApi>(httpClient, refitSettings));
-            Webhook = new Lazy<ITrendyolWebhookApi>(() => RestService.For<ITrendyolWebhookApi>(httpClient, refitSettings));
-            Finance = new Lazy<ITrendyolFinanceApi>(() => RestService.For<ITrendyolFinanceApi>(httpClient, refitSettings));
-        }
     }
 
     // -------------------------------------------------------------------------
@@ -173,9 +117,7 @@ public class TrendyolMarketplaceClientFactory(IHttpClientFactory httpClientFacto
         try
         {
             if (!string.IsNullOrEmpty(content) && content.Contains("errors"))
-            {
                 return new TrendyolValidationException("Request", "Invalid parameters. " + content);
-            }
         }
         catch
         {
@@ -183,5 +125,58 @@ public class TrendyolMarketplaceClientFactory(IHttpClientFactory httpClientFacto
         }
 
         return new TrendyolValidationException("Request", "Invalid request parameters");
+    }
+
+    /// <summary>
+    ///     Internal container that holds shared HTTP infrastructure and Lazy-loaded clients.
+    /// </summary>
+    private class ClientContainer
+    {
+        public ClientContainer(
+            long sellerId,
+            string apiKey,
+            string apiSecret,
+            bool useStageApi,
+            IHttpClientFactory httpClientFactory,
+            TrendyolClientConfig config
+        )
+        {
+            ApiKey = apiKey;
+            ApiSecret = apiSecret;
+
+            // 1. Setup Shared HttpClient
+            var baseUrl = useStageApi ? "https://stageapigw.trendyol.com" : "https://apigw.trendyol.com";
+            var httpClient = httpClientFactory.CreateClient("TrendyolClient");
+            httpClient.BaseAddress = new Uri(baseUrl);
+
+            var authHeader = Convert.ToBase64String(Encoding.UTF8.GetBytes($"{apiKey}:{apiSecret}"));
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", authHeader);
+            httpClient.DefaultRequestHeaders.AcceptEncoding.Add(new StringWithQualityHeaderValue("gzip"));
+            httpClient.DefaultRequestHeaders.AcceptEncoding.Add(new StringWithQualityHeaderValue("deflate"));
+            httpClient.DefaultRequestHeaders.AcceptLanguage.Add(new StringWithQualityHeaderValue("tr-TR"));
+            httpClient.DefaultRequestHeaders.Add("User-Agent", $"{sellerId} - {config.IntegrationName}");
+            httpClient.DefaultRequestHeaders.Add("X-Internal-Seller-Id", sellerId.ToString());
+
+            // 2. Setup Shared Refit Settings
+            var refitSettings = new RefitSettings
+            {
+                UrlParameterKeyFormatter = new LowerCaseFirstCharParameterFormatter(),
+                ExceptionFactory = CreateExceptionFactory(sellerId)
+            };
+
+            // 3. Define Lazy Initializers
+            // The code inside the lambda () => ... is NOT executed yet.
+            Marketplace = new Lazy<ITrendyolMarketplaceApi>(() => RestService.For<ITrendyolMarketplaceApi>(httpClient, refitSettings));
+            Webhook = new Lazy<ITrendyolWebhookApi>(() => RestService.For<ITrendyolWebhookApi>(httpClient, refitSettings));
+            Finance = new Lazy<ITrendyolFinanceApi>(() => RestService.For<ITrendyolFinanceApi>(httpClient, refitSettings));
+        }
+
+        public string ApiKey { get; }
+        public string ApiSecret { get; }
+
+        // Lazy objects ensure Refit creation logic only runs when specifically requested
+        public Lazy<ITrendyolMarketplaceApi> Marketplace { get; }
+        public Lazy<ITrendyolWebhookApi> Webhook { get; }
+        public Lazy<ITrendyolFinanceApi> Finance { get; }
     }
 }

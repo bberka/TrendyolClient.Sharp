@@ -2,11 +2,11 @@
 
 public enum TrendyolOtherFinancialTransactionType
 {
-  CashAdvance,
-  WireTransfer,
-  IncomingTransfer,
-  ReturnInvoice,
-  CommissionAgreementInvoice,
-  PaymentOrder,
-  DeductionInvoices
+    CashAdvance,
+    WireTransfer,
+    IncomingTransfer,
+    ReturnInvoice,
+    CommissionAgreementInvoice,
+    PaymentOrder,
+    DeductionInvoices
 }
