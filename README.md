@@ -10,7 +10,7 @@ A modern, strongly-typed, and community-driven C\# client library for the [Trend
 
 > **⚠️ PROJECT STATUS: ACTIVE DEVELOPMENT**
 >
-> This project is actively maintained for bug fixes and issue resolution; however, it is **not yet considered production-ready**.
+> This project is maintained for bug fixes and issue resolution; however, it is **not yet considered production-ready**.
 >
 > - **Breaking Changes:** The public API may change significantly between versions.
 > - **Validation:** Input validation is minimal; you must validate data before sending it.
