@@ -1,6 +1,4 @@
-﻿using Refit;
-
-namespace TrendyolClient.Sharp.Models.Marketplace.Request;
+﻿namespace TrendyolClient.Sharp.Models.Marketplace.Request;
 
 public class RequestCreateClaimIssue
 {
