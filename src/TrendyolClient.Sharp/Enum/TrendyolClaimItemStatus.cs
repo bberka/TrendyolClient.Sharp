@@ -1,13 +1,12 @@
-﻿namespace TrendyolClient.Sharp.Enum
+﻿namespace TrendyolClient.Sharp.Enum;
+
+public enum ClaimItemStatus
 {
-  public enum ClaimItemStatus
-  {
-    Created,
-    WaitingInAction,
-    Accepted,
-    Cancelled,
-    Rejected,
-    Unresolved,
-    InAnalysis
-  }
+  Created,
+  WaitingInAction,
+  Accepted,
+  Cancelled,
+  Rejected,
+  Unresolved,
+  InAnalysis
 }

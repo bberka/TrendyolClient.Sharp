@@ -1,9 +1,8 @@
 ﻿using System.Collections.Generic;
 
-namespace TrendyolClient.Sharp.Models.Marketplace
+namespace TrendyolClient.Sharp.Models.Marketplace;
+
+public sealed class TrendyolSplitGroup
 {
-  public sealed class TrendyolSplitGroup
-  {
-    public List<long> OrderLineIds { get; set; }
-  }
+  public List<long> OrderLineIds { get; set; }
 }

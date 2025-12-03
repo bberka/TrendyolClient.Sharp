@@ -1,7 +1,6 @@
-﻿namespace TrendyolClient.Sharp.Models.Marketplace.Request
+﻿namespace TrendyolClient.Sharp.Models.Marketplace.Request;
+
+public sealed class RequestUpdateWarehouse
 {
-  public sealed class RequestUpdateWarehouse
-  {
-    public long WarehouseId { get; set; }
-  }
+  public long WarehouseId { get; set; }
 }

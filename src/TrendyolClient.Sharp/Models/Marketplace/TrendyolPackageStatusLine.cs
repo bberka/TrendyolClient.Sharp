@@ -1,8 +1,7 @@
-﻿namespace TrendyolClient.Sharp.Models.Marketplace
+﻿namespace TrendyolClient.Sharp.Models.Marketplace;
+
+public sealed class PackageStatusLine
 {
-  public sealed class PackageStatusLine
-  {
-    public long LineId { get; set; }
-    public long Quantity { get; set; }
-  }
+  public long LineId { get; set; }
+  public long Quantity { get; set; }
 }

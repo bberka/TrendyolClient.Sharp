@@ -1,9 +1,8 @@
-﻿namespace TrendyolClient.Sharp.Models.Marketplace
-{
-  public sealed class DeliveryOption
-  {
-    public long DeliveryDuration { get; set; }
+﻿namespace TrendyolClient.Sharp.Models.Marketplace;
 
-    public string FastDeliveryType { get; set; }
-  }
+public sealed class DeliveryOption
+{
+  public long DeliveryDuration { get; set; }
+
+  public string FastDeliveryType { get; set; }
 }

@@ -1,9 +1,8 @@
 ﻿using System.Collections.Generic;
 
-namespace TrendyolClient.Sharp.Models.Marketplace.Request
+namespace TrendyolClient.Sharp.Models.Marketplace.Request;
+
+public sealed class RequestSplitShipmentPackage
 {
-  public sealed class RequestSplitShipmentPackage
-  {
-    public List<long> OrderLineIds { get; set; }
-  }
+  public List<long> OrderLineIds { get; set; }
 }

@@ -1,9 +1,8 @@
 ﻿using System.Collections.Generic;
 
-namespace TrendyolClient.Sharp.Models.Marketplace.Request
+namespace TrendyolClient.Sharp.Models.Marketplace.Request;
+
+public sealed class RequestDeleteProducts
 {
-  public sealed class RequestDeleteProducts
-  {
-    public List<TrendyolProductBarcode> Items { get; set; }
-  }
+  public List<TrendyolProductBarcode> Items { get; set; }
 }

@@ -1,7 +1,6 @@
-﻿namespace TrendyolClient.Sharp.Models.Marketplace
+﻿namespace TrendyolClient.Sharp.Models.Marketplace;
+
+public sealed class BatchRequestResultRequestItem
 {
-  public sealed class BatchRequestResultRequestItem
-  {
-    public BatchRequestResultProduct Product { get; set; }
-  }
+  public BatchRequestResultProduct Product { get; set; }
 }

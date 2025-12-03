@@ -1,10 +1,9 @@
 ﻿using System.Collections.Generic;
 
-namespace TrendyolClient.Sharp.Models.Marketplace.Request
+namespace TrendyolClient.Sharp.Models.Marketplace.Request;
+
+public sealed class RequestApproveClaimLineItems
 {
-  public sealed class RequestApproveClaimLineItems
-  {
-    public List<string> ClaimLineItemIdList { get; set; }
-    public Dictionary<string, object> Params { get; set; }
-  }
+  public List<string> ClaimLineItemIdList { get; set; }
+  public Dictionary<string, object> Params { get; set; }
 }

@@ -1,7 +1,6 @@
-﻿namespace TrendyolClient.Sharp.Models.Marketplace.Request
+﻿namespace TrendyolClient.Sharp.Models.Marketplace.Request;
+
+public sealed class RequestChangeCargoProvider
 {
-  public sealed class RequestChangeCargoProvider
-  {
-    public string CargoProvider { get; set; }
-  }
+  public string CargoProvider { get; set; }
 }

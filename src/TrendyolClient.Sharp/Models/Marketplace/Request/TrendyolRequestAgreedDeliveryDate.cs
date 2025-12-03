@@ -1,7 +1,6 @@
-﻿namespace TrendyolClient.Sharp.Models.Marketplace.Request
+﻿namespace TrendyolClient.Sharp.Models.Marketplace.Request;
+
+public sealed class RequestAgreedDeliveryDate
 {
-  public sealed class RequestAgreedDeliveryDate
-  {
-    public long ExtendedDayCount { get; set; }
-  }
+  public long ExtendedDayCount { get; set; }
 }

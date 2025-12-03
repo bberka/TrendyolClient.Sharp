@@ -1,7 +1,6 @@
-﻿namespace TrendyolClient.Sharp.Models.Marketplace
+﻿namespace TrendyolClient.Sharp.Models.Marketplace;
+
+public sealed class FastDeliveryOption
 {
-  public sealed class FastDeliveryOption
-  {
-    public string Type { get; set; }
-  }
+  public string Type { get; set; }
 }

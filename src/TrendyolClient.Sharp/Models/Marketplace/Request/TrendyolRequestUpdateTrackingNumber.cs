@@ -1,7 +1,6 @@
-﻿namespace TrendyolClient.Sharp.Models.Marketplace.Request
+﻿namespace TrendyolClient.Sharp.Models.Marketplace.Request;
+
+public sealed class RequestUpdateTrackingNumber
 {
-  public sealed class RequestUpdateTrackingNumber
-  {
-    public string TrackingNumber { get; set; }
-  }
+  public string TrackingNumber { get; set; }
 }

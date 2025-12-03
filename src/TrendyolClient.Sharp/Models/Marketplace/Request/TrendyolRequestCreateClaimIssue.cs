@@ -1,11 +1,10 @@
 ﻿using Refit;
 
-namespace TrendyolClient.Sharp.Models.Marketplace.Request
+namespace TrendyolClient.Sharp.Models.Marketplace.Request;
+
+public class RequestCreateClaimIssue
 {
-  public class RequestCreateClaimIssue
-  {
-    public long ClaimIssueReasonId { get; set; }
-    public string ClaimItemIdList { get; set; }
-    public string Description { get; set; }
-  }
+  public long ClaimIssueReasonId { get; set; }
+  public string ClaimItemIdList { get; set; }
+  public string Description { get; set; }
 }

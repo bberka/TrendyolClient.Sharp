@@ -1,7 +1,6 @@
-﻿namespace TrendyolClient.Sharp.Models.Marketplace
+﻿namespace TrendyolClient.Sharp.Models.Marketplace;
+
+public sealed class DefaultReturningAddress
 {
-  public sealed class DefaultReturningAddress
-  {
-    public bool Present { get; set; }
-  }
+  public bool Present { get; set; }
 }

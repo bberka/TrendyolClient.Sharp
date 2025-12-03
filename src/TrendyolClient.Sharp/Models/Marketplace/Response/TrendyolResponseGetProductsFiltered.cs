@@ -1,13 +1,12 @@
 ﻿using System.Collections.Generic;
 
-namespace TrendyolClient.Sharp.Models.Marketplace.Response
+namespace TrendyolClient.Sharp.Models.Marketplace.Response;
+
+public sealed class ResponseGetProductsFiltered
 {
-  public sealed class ResponseGetProductsFiltered
-  {
-    public long TotalElements { get; set; }
-    public long TotalPages { get; set; }
-    public long Page { get; set; }
-    public long Size { get; set; }
-    public List<TrendyolProductContent> Content { get; set; }
-  }
+  public long TotalElements { get; set; }
+  public long TotalPages { get; set; }
+  public long Page { get; set; }
+  public long Size { get; set; }
+  public List<TrendyolProductContent> Content { get; set; }
 }

@@ -1,9 +1,8 @@
 ﻿using System.Collections.Generic;
 
-namespace TrendyolClient.Sharp.Models.Marketplace
+namespace TrendyolClient.Sharp.Models.Marketplace;
+
+public sealed class PackageDetailGroup
 {
-  public sealed class PackageDetailGroup
-  {
-    public List<PackageDetail> PackageDetails { get; set; }
-  }
+  public List<PackageDetail> PackageDetails { get; set; }
 }

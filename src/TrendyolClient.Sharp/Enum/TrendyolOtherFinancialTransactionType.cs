@@ -1,13 +1,12 @@
-﻿namespace TrendyolClient.Sharp.Enum
+﻿namespace TrendyolClient.Sharp.Enum;
+
+public enum OtherFinancialTransactionType
 {
-  public enum OtherFinancialTransactionType
-  {
-    CashAdvance,
-    WireTransfer,
-    IncomingTransfer,
-    ReturnInvoice,
-    CommissionAgreementInvoice,
-    PaymentOrder,
-    DeductionInvoices
-  }
+  CashAdvance,
+  WireTransfer,
+  IncomingTransfer,
+  ReturnInvoice,
+  CommissionAgreementInvoice,
+  PaymentOrder,
+  DeductionInvoices
 }

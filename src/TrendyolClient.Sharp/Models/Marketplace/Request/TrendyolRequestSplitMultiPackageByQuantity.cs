@@ -1,9 +1,8 @@
 ﻿using System.Collections.Generic;
 
-namespace TrendyolClient.Sharp.Models.Marketplace.Request
+namespace TrendyolClient.Sharp.Models.Marketplace.Request;
+
+public sealed class RequestSplitMultiPackageByQuantity
 {
-  public sealed class RequestSplitMultiPackageByQuantity
-  {
-    public List<PackageDetailGroup> SplitPackages { get; set; }
-  }
+  public List<PackageDetailGroup> SplitPackages { get; set; }
 }

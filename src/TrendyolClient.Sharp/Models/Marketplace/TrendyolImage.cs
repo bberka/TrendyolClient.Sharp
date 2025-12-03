@@ -1,7 +1,6 @@
-﻿namespace TrendyolClient.Sharp.Models.Marketplace
+﻿namespace TrendyolClient.Sharp.Models.Marketplace;
+
+public sealed class Image
 {
-  public sealed class Image
-  {
-    public string Url { get; set; }
-  }
+  public string Url { get; set; }
 }
