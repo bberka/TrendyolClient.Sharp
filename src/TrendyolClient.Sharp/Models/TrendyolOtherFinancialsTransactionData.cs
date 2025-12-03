@@ -48,13 +48,13 @@ public class TrendyolOtherFinancialsTransactionData
     ///     Debt amount
     /// </summary>
     [JsonPropertyName("debt")]
-    public double Debt { get; set; }
+    public decimal Debt { get; set; }
 
     /// <summary>
     ///     Credit amount
     /// </summary>
     [JsonPropertyName("credit")]
-    public double Credit { get; set; }
+    public decimal Credit { get; set; }
 
     /// <summary>
     ///     Payment period in days (may be null)
@@ -66,19 +66,19 @@ public class TrendyolOtherFinancialsTransactionData
     ///     Commission rate percentage (may be null)
     /// </summary>
     [JsonPropertyName("commissionRate")]
-    public double? CommissionRate { get; set; }
+    public decimal? CommissionRate { get; set; }
 
     /// <summary>
     ///     Commission amount (may be null)
     /// </summary>
     [JsonPropertyName("commissionAmount")]
-    public double? CommissionAmount { get; set; }
+    public decimal? CommissionAmount { get; set; }
 
     /// <summary>
     ///     Seller revenue amount (may be null)
     /// </summary>
     [JsonPropertyName("sellerRevenue")]
-    public double? SellerRevenue { get; set; }
+    public decimal? SellerRevenue { get; set; }
 
     /// <summary>
     ///     Order number (may be null)

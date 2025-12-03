@@ -8,5 +8,5 @@ public class TrendyolRequestNotifyBoxInfo
     public int BoxQuantity { get; set; }
 
     [JsonPropertyName("deci")]
-    public double Deci { get; set; }
+    public decimal Deci { get; set; }
 }

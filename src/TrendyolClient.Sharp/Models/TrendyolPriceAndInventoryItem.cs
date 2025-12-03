@@ -11,8 +11,8 @@ public class TrendyolPriceAndInventoryItem
     public int Quantity { get; set; }
 
     [JsonPropertyName("salePrice")]
-    public double SalePrice { get; set; }
+    public decimal SalePrice { get; set; }
 
     [JsonPropertyName("listPrice")]
-    public double ListPrice { get; set; }
+    public decimal ListPrice { get; set; }
 }

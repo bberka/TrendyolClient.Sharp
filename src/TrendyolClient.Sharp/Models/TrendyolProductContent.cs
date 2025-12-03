@@ -54,16 +54,16 @@ public class TrendyolProductContent
     public int Quantity { get; set; }
 
     [JsonPropertyName("listPrice")]
-    public double ListPrice { get; set; }
+    public decimal ListPrice { get; set; }
 
     [JsonPropertyName("salePrice")]
-    public double SalePrice { get; set; }
+    public decimal SalePrice { get; set; }
 
     [JsonPropertyName("vatRate")]
-    public double VatRate { get; set; }
+    public decimal VatRate { get; set; }
 
     [JsonPropertyName("dimensionalWeight")]
-    public double DimensionalWeight { get; set; }
+    public decimal DimensionalWeight { get; set; }
 
     [JsonPropertyName("stockCode")]
     public string StockCode { get; set; }

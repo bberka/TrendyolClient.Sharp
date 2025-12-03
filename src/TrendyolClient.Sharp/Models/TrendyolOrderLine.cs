@@ -11,5 +11,5 @@ public class TrendyolOrderLine
     public int Quantity { get; set; }
 
     [JsonPropertyName("discountPercentage")]
-    public double? DiscountPercentage { get; set; }
+    public decimal? DiscountPercentage { get; set; }
 }

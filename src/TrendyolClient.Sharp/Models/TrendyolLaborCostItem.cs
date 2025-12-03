@@ -8,5 +8,5 @@ public class TrendyolLaborCostItem
     public long OrderLineId { get; set; }
 
     [JsonPropertyName("laborCostPerItem")]
-    public double LaborCostPerItem { get; set; }
+    public decimal LaborCostPerItem { get; set; }
 }

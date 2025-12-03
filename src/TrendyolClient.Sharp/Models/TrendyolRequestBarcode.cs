@@ -11,5 +11,5 @@ public class TrendyolRequestBarcode
     public int? BoxQuantity { get; set; }
 
     [JsonPropertyName("volumetricHeight")]
-    public double? VolumetricHeight { get; set; }
+    public decimal? VolumetricHeight { get; set; }
 }
