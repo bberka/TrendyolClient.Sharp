@@ -6,7 +6,7 @@ using TrendyolClient.Sharp.Handlers;
 
 namespace TrendyolClient.Sharp;
 
-public static class ServiceCollectionExtensions
+public static class TrendyolServiceCollectionExtensions
 {
     public static IServiceCollection AddTrendyolClientFactory(this IServiceCollection services, Action<TrendyolClientConfig> configure = null)
     {
