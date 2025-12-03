@@ -6,7 +6,7 @@ namespace TrendyolClient.Sharp.Models.Finance;
 /// <summary>
 /// Settlement transaction data (Sales, Returns, Discounts, Coupons, Provisions)
 /// </summary>
-public sealed class TrendyolSettlementTransactionData
+public class TrendyolSettlementTransactionData
 {
     /// <summary>
     /// Unique transaction ID

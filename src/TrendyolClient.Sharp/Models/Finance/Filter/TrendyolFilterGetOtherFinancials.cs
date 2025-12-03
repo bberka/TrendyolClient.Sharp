@@ -6,7 +6,7 @@ namespace TrendyolClient.Sharp.Models.Finance.Filter;
 /// <summary>
 /// Filter parameters for retrieving other financial transactions
 /// </summary>
-public sealed class TrendyolFilterGetOtherFinancials
+public class TrendyolFilterGetOtherFinancials
 {
     /// <summary>
     /// Type of financial transaction (Stoppage, CashAdvance, WireTransfer, etc.)

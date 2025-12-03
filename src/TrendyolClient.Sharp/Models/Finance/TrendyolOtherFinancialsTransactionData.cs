@@ -6,7 +6,7 @@ namespace TrendyolClient.Sharp.Models.Finance;
 /// <summary>
 /// Other financial transaction data (Supplier financing, transfers, payments, invoices)
 /// </summary>
-public sealed class TrendyolOtherFinancialsTransactionData
+public class TrendyolOtherFinancialsTransactionData
 {
     /// <summary>
     /// Unique transaction ID

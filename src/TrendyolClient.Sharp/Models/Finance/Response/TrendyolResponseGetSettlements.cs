@@ -2,7 +2,7 @@
 
 namespace TrendyolClient.Sharp.Models.Finance.Response;
 
-public sealed class TrendyolResponseGetSettlements
+public class TrendyolResponseGetSettlements
 {
   public long Page { get; set; }
   public long Size { get; set; }
