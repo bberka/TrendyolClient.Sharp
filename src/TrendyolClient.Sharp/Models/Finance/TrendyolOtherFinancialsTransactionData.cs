@@ -2,7 +2,7 @@
 
 namespace TrendyolClient.Sharp.Models.Finance;
 
-public sealed class OtherFinancialsTransactionData
+public sealed class TrendyolOtherFinancialsTransactionData
 {
   public string Id { get; set; }
   public long TransactionDate { get; set; }

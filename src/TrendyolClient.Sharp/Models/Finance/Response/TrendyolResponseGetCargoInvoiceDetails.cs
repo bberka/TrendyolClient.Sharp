@@ -3,7 +3,7 @@ using TrendyolClient.Sharp.Models.Marketplace;
 
 namespace TrendyolClient.Sharp.Models.Finance.Response;
 
-public sealed class ResponseGetCargoInvoiceDetails
+public sealed class TrendyolResponseGetCargoInvoiceDetails
 {
   public long Page { get; set; }
   public long Size { get; set; }
