@@ -4,7 +4,7 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace TrendyolClient.Sharp;
+namespace TrendyolClient.Sharp.Handlers;
 
 internal sealed class SellerIdInjectorMessageHandler : DelegatingHandler
 {

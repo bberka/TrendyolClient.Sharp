@@ -2,6 +2,7 @@ using System;
 using System.Net;
 using System.Net.Http;
 using Microsoft.Extensions.DependencyInjection;
+using TrendyolClient.Sharp.Handlers;
 
 namespace TrendyolClient.Sharp;
 
