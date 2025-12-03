@@ -6,7 +6,7 @@ namespace TrendyolClient.Sharp.Models;
 public class TrendyolResponseGetProducts
 {
     [JsonPropertyName("content")]
-    public List<TrendyolProduct> Content { get; set; }
+    public List<TrendyolProductContent> Content { get; set; }
 
     [JsonPropertyName("page")]
     public int Page { get; set; }
