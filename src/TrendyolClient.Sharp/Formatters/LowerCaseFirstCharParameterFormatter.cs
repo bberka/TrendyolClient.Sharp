@@ -1,7 +1,7 @@
 ﻿using System.Web;
 using Refit;
 
-namespace TrendyolClient.Sharp;
+namespace TrendyolClient.Sharp.Formatters;
 
 internal sealed class LowerCaseFirstCharParameterFormatter : IUrlParameterKeyFormatter
 {

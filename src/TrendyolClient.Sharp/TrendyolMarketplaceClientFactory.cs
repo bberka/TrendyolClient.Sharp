@@ -4,6 +4,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using Refit;
+using TrendyolClient.Sharp.Formatters;
 
 namespace TrendyolClient.Sharp;
 
