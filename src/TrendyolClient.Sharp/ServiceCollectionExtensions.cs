@@ -18,7 +18,7 @@ public static class ServiceCollectionExtensions
                 AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate
             })
             .AddHttpMessageHandler<TrendyolLoggingHandler>()
-            .AddHttpMessageHandler<SellerIdInjectorMessageHandler>();
+            .AddHttpMessageHandler<TrendyolSellerIdInjectorMessageHandler>();
 
         if (configure is not null)
         {
@@ -27,7 +27,7 @@ public static class ServiceCollectionExtensions
             services.AddSingleton(config);
         }
 
-        services.AddSingleton<SellerIdInjectorMessageHandler>();
+        services.AddSingleton<TrendyolSellerIdInjectorMessageHandler>();
         services.AddSingleton<TrendyolLoggingHandler>();
         services.AddSingleton<TrendyolMarketplaceClientFactory>();
 

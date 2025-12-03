@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace TrendyolClient.Sharp.Handlers;
 
-internal sealed class SellerIdInjectorMessageHandler : DelegatingHandler
+internal sealed class TrendyolSellerIdInjectorMessageHandler : DelegatingHandler
 {
   protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken) {
     if (request.Headers.TryGetValues("X-Internal-Seller-Id", out var sellerIdValues)) {
