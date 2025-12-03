@@ -1,4 +1,4 @@
-﻿namespace TrendyolClient.Sharp.Enum;
+﻿namespace TrendyolClient.Sharp.Enums;
 
 /// <summary>
 ///   https://developers.trendyol.com/docs/marketplace/iade-entegrasyonu/iade-sebepleri

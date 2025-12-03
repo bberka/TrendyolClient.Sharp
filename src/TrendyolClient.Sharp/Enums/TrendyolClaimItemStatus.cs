@@ -1,4 +1,4 @@
-﻿namespace TrendyolClient.Sharp.Enum;
+﻿namespace TrendyolClient.Sharp.Enums;
 
 public enum ClaimItemStatus
 {

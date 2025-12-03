@@ -1,4 +1,4 @@
-﻿using TrendyolClient.Sharp.Enum;
+﻿using TrendyolClient.Sharp.Enums;
 
 namespace TrendyolClient.Sharp.Models.Finance;
 

@@ -1,5 +1,5 @@
 ﻿using System;
-using TrendyolClient.Sharp.Enum;
+using TrendyolClient.Sharp.Enums;
 
 namespace TrendyolClient.Sharp.Models.Finance.Filter;
 
