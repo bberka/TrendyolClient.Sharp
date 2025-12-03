@@ -2,7 +2,7 @@
 
 namespace TrendyolClient.Sharp.Models.Marketplace;
 
-public sealed class Claim
+public class TrendyolClaim
 {
   public string Id { get; set; }
   public string OrderNumber { get; set; }
@@ -16,6 +16,6 @@ public sealed class Claim
   public string CargoProviderName { get; set; }
   public long OrderShipmentPackageId { get; set; }
   public TrendyolReplacementInfo ReplacementOutboundpackageinfo { get; set; }
-  public RejectedInfo RejectedPackageInfo { get; set; }
-  public List<ClaimItem> Items { get; set; }
+  public TrendyolRejectedInfo RejectedPackageInfo { get; set; }
+  public List<TrendyolClaimItem> Items { get; set; }
 }

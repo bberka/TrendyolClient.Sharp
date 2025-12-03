@@ -1,6 +1,6 @@
 ﻿namespace TrendyolClient.Sharp.Models.Marketplace.Filter;
 
-public sealed class FilterGetCategoryTree
+public class TrendyolFilterGetCategoryTree
 {
   public long? Id { get; set; }
   public long? ParentId { get; set; }

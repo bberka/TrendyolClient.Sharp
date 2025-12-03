@@ -1,6 +1,6 @@
 ﻿namespace TrendyolClient.Sharp.Models.Marketplace;
 
-public sealed class CategoryAttributeValue
+public class TrendyolCategoryAttributeValue
 {
   public long Id { get; set; }
 

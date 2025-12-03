@@ -2,7 +2,7 @@
 
 namespace TrendyolClient.Sharp.Models.Marketplace.Request;
 
-public sealed class RequestSplitShipmentPackage
+public class TrendyolRequestSplitShipmentPackage
 {
   public List<long> OrderLineIds { get; set; }
 }

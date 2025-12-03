@@ -2,12 +2,12 @@
 
 namespace TrendyolClient.Sharp.Models.Marketplace.Response;
 
-public sealed class ResponseGetBatchRequestResult
+public class TrendyolResponseGetBatchRequestResult
 {
   public string BatchRequestId { get; set; }
 
 
-  public List<BatchRequestResultItem> Items { get; set; }
+  public List<TrendyolBatchRequestResultItem> Items { get; set; }
 
 
   public string Status { get; set; }

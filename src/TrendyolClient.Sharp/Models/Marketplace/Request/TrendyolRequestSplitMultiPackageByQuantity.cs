@@ -2,7 +2,7 @@
 
 namespace TrendyolClient.Sharp.Models.Marketplace.Request;
 
-public sealed class RequestSplitMultiPackageByQuantity
+public class TrendyolRequestSplitMultiPackageByQuantity
 {
-  public List<PackageDetailGroup> SplitPackages { get; set; }
+  public List<TrendyolPackageDetailGroup> SplitPackages { get; set; }
 }

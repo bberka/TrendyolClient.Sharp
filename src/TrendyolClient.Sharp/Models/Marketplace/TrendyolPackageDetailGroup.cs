@@ -2,7 +2,7 @@
 
 namespace TrendyolClient.Sharp.Models.Marketplace;
 
-public sealed class PackageDetailGroup
+public class TrendyolPackageDetailGroup
 {
-  public List<PackageDetail> PackageDetails { get; set; }
+  public List<TrendyolPackageDetail> PackageDetails { get; set; }
 }

@@ -2,9 +2,9 @@
 
 namespace TrendyolClient.Sharp.Models.Marketplace.Request;
 
-public sealed class RequestUpdatePackageUnsupplied
+public class TrendyolRequestUpdatePackageUnsupplied
 {
-  public List<PackageStatusLine> Lines { get; set; }
+  public List<TrendyolPackageStatusLine> Lines { get; set; }
 
   /// <summary>
   ///   500	Stok tükendi	Ürünün stoğu tükenmesi ve gönderimin gecikmesi gibi sebeplerle tedarik edilememesi durumunda

@@ -1,6 +1,6 @@
 ﻿namespace TrendyolClient.Sharp.Models.Marketplace;
 
-public sealed class Answer
+public class TrendyolAnswer
 {
   public long CreationDate { get; set; }
   public bool HasPrivateInfo { get; set; }

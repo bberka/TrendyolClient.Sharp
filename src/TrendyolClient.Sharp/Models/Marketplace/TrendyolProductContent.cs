@@ -2,7 +2,7 @@
 
 namespace TrendyolClient.Sharp.Models.Marketplace;
 
-public sealed class TrendyolProductContent
+public class TrendyolProductContent
 {
   public string Id { get; set; }
 
@@ -67,10 +67,10 @@ public sealed class TrendyolProductContent
   public string StockCode { get; set; }
 
 
-  public DeliveryOption DeliveryOption { get; set; }
+  public TrendyolDeliveryOption DeliveryOption { get; set; }
 
 
-  public List<Image> Images { get; set; }
+  public List<TrendyolImage> Images { get; set; }
 
 
   public List<TrendyolProductsAttribute> Attributes { get; set; }

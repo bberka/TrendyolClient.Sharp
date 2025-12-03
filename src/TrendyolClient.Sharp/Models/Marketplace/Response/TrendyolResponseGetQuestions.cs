@@ -2,9 +2,9 @@
 
 namespace TrendyolClient.Sharp.Models.Marketplace.Response;
 
-public sealed class ResponseGetQuestions
+public class TrendyolResponseGetQuestions
 {
-  public List<Question> Content { get; set; }
+  public List<TrendyolQuestion> Content { get; set; }
   public long Page { get; set; }
   public long Size { get; set; }
   public long TotalElements { get; set; }

@@ -1,6 +1,6 @@
 ﻿namespace TrendyolClient.Sharp.Models.Marketplace;
 
-public sealed class DiscountDetail
+public class TrendyolDiscountDetail
 {
   public decimal LineItemPrice { get; set; }
   public decimal LineItemDiscount { get; set; }

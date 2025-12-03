@@ -2,11 +2,11 @@
 
 namespace TrendyolClient.Sharp.Models.Marketplace;
 
-public sealed class CategoryAttribute
+public class TrendyolCategoryAttribute
 {
   public long CategoryId { get; set; }
 
-  public CategoryAttributeName AttributeName { get; set; }
+  public TrendyolCategoryAttributeName AttributeName { get; set; }
 
   public bool Required { get; set; }
 
@@ -16,5 +16,5 @@ public sealed class CategoryAttribute
 
   public bool Slicer { get; set; }
 
-  public List<CategoryAttributeValue> AttributeValues { get; set; }
+  public List<TrendyolCategoryAttributeValue> AttributeValues { get; set; }
 }

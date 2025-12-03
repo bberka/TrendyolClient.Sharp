@@ -1,6 +1,6 @@
 ﻿namespace TrendyolClient.Sharp.Models.Marketplace;
 
-public sealed class BrandInfo
+public class TrendyolBrandInfo
 {
   public long Id { get; set; }
 

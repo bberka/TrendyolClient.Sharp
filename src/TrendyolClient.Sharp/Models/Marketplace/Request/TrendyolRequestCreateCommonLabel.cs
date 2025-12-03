@@ -1,6 +1,6 @@
 ﻿namespace TrendyolClient.Sharp.Models.Marketplace.Request;
 
-public sealed class RequestCreateCommonLabel
+public class TrendyolRequestCreateCommonLabel
 {
   public string Format { get; set; } // required
   public long BoxQuantity { get; set; }

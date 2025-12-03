@@ -1,6 +1,6 @@
 ﻿namespace TrendyolClient.Sharp.Models.Marketplace.Request;
 
-public sealed class RequestUpdateWarehouse
+public class TrendyolRequestUpdateWarehouse
 {
   public long WarehouseId { get; set; }
 }

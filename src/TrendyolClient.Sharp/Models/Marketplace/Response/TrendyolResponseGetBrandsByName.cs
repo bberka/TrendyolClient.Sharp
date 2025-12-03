@@ -2,4 +2,4 @@
 
 namespace TrendyolClient.Sharp.Models.Marketplace.Response;
 
-public sealed class ResponseGetBrandsByName : List<BrandInfo> { }
+public class TrendyolResponseGetBrandsByName : List<TrendyolBrandInfo> { }

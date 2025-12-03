@@ -1,6 +1,6 @@
 ﻿namespace TrendyolClient.Sharp.Models.Marketplace;
 
-public sealed class ClaimItemStatus
+public class TrendyolClaimItemStatus
 {
   //TODO: Convert this to enum
   public string Name { get; set; }

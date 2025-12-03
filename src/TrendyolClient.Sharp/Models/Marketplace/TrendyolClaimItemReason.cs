@@ -1,6 +1,6 @@
 ﻿namespace TrendyolClient.Sharp.Models.Marketplace;
 
-public sealed class ClaimItemReason
+public class TrendyolClaimItemReason
 {
   public string Name { get; set; }
   public long ExternalReasonId { get; set; }

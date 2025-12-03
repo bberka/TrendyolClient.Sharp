@@ -2,7 +2,7 @@
 
 namespace TrendyolClient.Sharp.Models.Marketplace.Request;
 
-public sealed class RequestDeleteProducts
+public class TrendyolRequestDeleteProducts
 {
   public List<TrendyolProductBarcode> Items { get; set; }
 }

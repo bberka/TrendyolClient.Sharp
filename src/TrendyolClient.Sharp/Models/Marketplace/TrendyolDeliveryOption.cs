@@ -1,6 +1,6 @@
 ﻿namespace TrendyolClient.Sharp.Models.Marketplace;
 
-public sealed class DeliveryOption
+public class TrendyolDeliveryOption
 {
   public long DeliveryDuration { get; set; }
 

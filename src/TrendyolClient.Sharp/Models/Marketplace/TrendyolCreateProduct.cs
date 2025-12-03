@@ -2,7 +2,7 @@
 
 namespace TrendyolClient.Sharp.Models.Marketplace;
 
-public sealed class CreateProduct
+public class TrendyolCreateProduct
 {
   public string Barcode { get; set; }
 
@@ -48,11 +48,11 @@ public sealed class CreateProduct
 
   public long? ReturningAddressId { get; set; }
 
-  public DeliveryOption DeliveryOption { get; set; }
+  public TrendyolDeliveryOption DeliveryOption { get; set; }
 
 
-  public List<Image> Images { get; set; }
+  public List<TrendyolImage> Images { get; set; }
 
 
-  public List<Attribute> Attributes { get; set; }
+  public List<TrendyolAttribute> Attributes { get; set; }
 }

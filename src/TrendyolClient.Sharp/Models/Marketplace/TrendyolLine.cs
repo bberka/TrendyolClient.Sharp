@@ -2,7 +2,7 @@
 
 namespace TrendyolClient.Sharp.Models.Marketplace;
 
-public sealed class Line
+public class TrendyolLine
 {
   public long Quantity { get; set; }
   public long SalesCampaignId { get; set; }
@@ -15,8 +15,8 @@ public sealed class Line
   public decimal Amount { get; set; }
   public decimal Discount { get; set; }
   public decimal TyDiscount { get; set; }
-  public List<DiscountDetail> DiscountDetails { get; set; }
-  public List<FastDeliveryOption> FastDeliveryOptions { get; set; }
+  public List<TrendyolDiscountDetail> DiscountDetails { get; set; }
+  public List<TrendyolFastDeliveryOption> FastDeliveryOptions { get; set; }
   public string CurrencyCode { get; set; }
   public string ProductColor { get; set; }
   public long Id { get; set; }

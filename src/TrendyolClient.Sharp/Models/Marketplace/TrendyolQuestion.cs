@@ -1,8 +1,8 @@
 ﻿namespace TrendyolClient.Sharp.Models.Marketplace;
 
-public sealed class Question
+public class TrendyolQuestion
 {
-  public Answer Answer { get; set; }
+  public TrendyolAnswer Answer { get; set; }
   public string AnsweredDateMessage { get; set; }
   public long CreationDate { get; set; }
   public long CustomerId { get; set; }
@@ -11,7 +11,7 @@ public sealed class Question
   public string ProductName { get; set; }
   public bool Public { get; set; }
   public string Reason { get; set; }
-  public Answer RejectedAnswer { get; set; }
+  public TrendyolAnswer RejectedAnswer { get; set; }
   public long RejectedDate { get; set; }
   public string ReportReason { get; set; }
   public long ReportedDate { get; set; }

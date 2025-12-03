@@ -2,7 +2,7 @@
 
 namespace TrendyolClient.Sharp.Models.Marketplace.Response;
 
-public sealed class ResponseGetProductsFiltered
+public class TrendyolResponseGetProductsFiltered
 {
   public long TotalElements { get; set; }
   public long TotalPages { get; set; }

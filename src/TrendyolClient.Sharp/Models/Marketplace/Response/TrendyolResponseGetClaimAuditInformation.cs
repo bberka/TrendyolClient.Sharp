@@ -2,4 +2,4 @@
 
 namespace TrendyolClient.Sharp.Models.Marketplace.Response;
 
-public sealed class ResponseGetClaimAuditInformation : List<ClaimAuditInformation> { }
+public class TrendyolResponseGetClaimAuditInformation : List<TrendyolClaimAuditInformation> { }

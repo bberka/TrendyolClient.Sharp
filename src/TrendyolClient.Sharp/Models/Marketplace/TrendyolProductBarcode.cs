@@ -1,6 +1,6 @@
 ﻿namespace TrendyolClient.Sharp.Models.Marketplace;
 
-public sealed class TrendyolProductBarcode
+public class TrendyolProductBarcode
 {
   public string Barcode { get; set; }
 }

@@ -2,9 +2,9 @@
 
 namespace TrendyolClient.Sharp.Models.Marketplace.Request;
 
-public sealed class RequestUpdatePackageStatus
+public class TrendyolRequestUpdatePackageStatus
 {
-  public List<PackageStatusLine> Lines { get; set; }
-  public PackageStatusParams Params { get; set; }
+  public List<TrendyolPackageStatusLine> Lines { get; set; }
+  public TrendyolPackageStatusParams Params { get; set; }
   public string Status { get; set; }
 }

@@ -2,7 +2,7 @@
 
 namespace TrendyolClient.Sharp.Models.Marketplace;
 
-public sealed class BatchRequestResultProduct
+public class TrendyolBatchRequestResultProduct
 {
   public string Brand { get; set; }
 
@@ -40,7 +40,7 @@ public sealed class BatchRequestResultProduct
   public string StockCode { get; set; }
 
 
-  public List<Image> Images { get; set; }
+  public List<TrendyolImage> Images { get; set; }
 
 
   public string ProductMainId { get; set; }

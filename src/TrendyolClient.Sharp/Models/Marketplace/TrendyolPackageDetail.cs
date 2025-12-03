@@ -1,6 +1,6 @@
 ﻿namespace TrendyolClient.Sharp.Models.Marketplace;
 
-public sealed class PackageDetail
+public class TrendyolPackageDetail
 {
   public long OrderLineId { get; set; }
   public long Quantities { get; set; }

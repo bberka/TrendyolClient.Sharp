@@ -2,8 +2,8 @@
 
 namespace TrendyolClient.Sharp.Models.Marketplace;
 
-public sealed class ClaimItem
+public class TrendyolClaimItem
 {
-  public OrderLine OrderLine { get; set; }
-  public List<ClaimItemDetail> ClaimItems { get; set; }
+  public TrendyolOrderLine OrderLine { get; set; }
+  public List<TrendyolClaimItemDetail> ClaimItems { get; set; }
 }

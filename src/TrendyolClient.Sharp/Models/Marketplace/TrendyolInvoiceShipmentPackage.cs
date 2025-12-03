@@ -1,6 +1,6 @@
 ﻿namespace TrendyolClient.Sharp.Models.Marketplace;
 
-public sealed class InvoiceShipmentPackage
+public class TrendyolInvoiceShipmentPackage
 {
   public string ShipmentPackageType { get; set; }
   public long ParcelUniqueId { get; set; }

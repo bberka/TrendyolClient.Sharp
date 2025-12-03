@@ -1,6 +1,6 @@
 ﻿namespace TrendyolClient.Sharp.Models.Marketplace.Response;
 
-public sealed class ResponseGetSuppliersAddresses
+public class TrendyolResponseGetSuppliersAddresses
 {
   public TrendyolSupplierAddress[] SupplierAddresses { get; set; }
 
@@ -8,5 +8,5 @@ public sealed class ResponseGetSuppliersAddresses
 
   public TrendyolSupplierAddress DefaultInvoiceAddress { get; set; }
 
-  public DefaultReturningAddress GetSuppliersAddressesDefaultReturningAddress { get; set; }
+  public TrendyolDefaultReturningAddress GetSuppliersAddressesDefaultReturningAddress { get; set; }
 }

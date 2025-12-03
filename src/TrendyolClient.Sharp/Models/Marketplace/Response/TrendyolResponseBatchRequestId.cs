@@ -1,6 +1,6 @@
 ﻿namespace TrendyolClient.Sharp.Models.Marketplace.Response;
 
-public sealed class ResponseBatchRequestId
+public class TrendyolResponseBatchRequestId
 {
   public string BatchRequestId { get; set; }
 }

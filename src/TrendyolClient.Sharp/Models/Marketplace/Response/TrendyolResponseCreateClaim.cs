@@ -2,7 +2,7 @@
 
 namespace TrendyolClient.Sharp.Models.Marketplace.Response;
 
-public sealed class ResponseCreateClaim
+public class TrendyolResponseCreateClaim
 {
   public string ClaimId { get; set; }
   public long CargoTrackingNumber { get; set; }

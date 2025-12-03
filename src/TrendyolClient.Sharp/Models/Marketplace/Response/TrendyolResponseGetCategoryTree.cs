@@ -2,4 +2,4 @@
 
 namespace TrendyolClient.Sharp.Models.Marketplace.Response;
 
-public sealed class ResponseGetCategoryTree : List<Category> { }
+public class TrendyolResponseGetCategoryTree : List<TrendyolCategory> { }

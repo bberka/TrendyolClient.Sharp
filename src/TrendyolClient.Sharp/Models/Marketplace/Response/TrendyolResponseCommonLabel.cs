@@ -2,7 +2,7 @@
 
 namespace TrendyolClient.Sharp.Models.Marketplace.Response;
 
-public sealed class ResponseCommonLabel
+public class TrendyolResponseCommonLabel
 {
-  public List<LabelData> Data { get; set; }
+  public List<TrendyolLabelData> Data { get; set; }
 }

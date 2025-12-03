@@ -2,7 +2,7 @@
 
 namespace TrendyolClient.Sharp.Models.Marketplace.Response;
 
-public sealed class ResponseGetShipmentPackages
+public class TrendyolResponseGetShipmentPackages
 {
   public long Page { get; set; }
   public long Size { get; set; }

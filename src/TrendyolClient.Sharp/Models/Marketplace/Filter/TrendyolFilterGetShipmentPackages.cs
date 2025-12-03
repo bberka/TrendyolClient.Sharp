@@ -2,7 +2,7 @@
 
 namespace TrendyolClient.Sharp.Models.Marketplace.Filter;
 
-public sealed class FilterGetShipmentPackages
+public class TrendyolFilterGetShipmentPackages
 {
   public long? StartDate { get; set; }
   public long? EndDate { get; set; }

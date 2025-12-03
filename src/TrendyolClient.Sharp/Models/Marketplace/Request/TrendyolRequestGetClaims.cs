@@ -1,6 +1,6 @@
 ﻿namespace TrendyolClient.Sharp.Models.Marketplace.Request;
 
-public sealed class RequestGetClaims
+public class TrendyolRequestGetClaims
 {
   public string ClaimIds { get; set; }
   public string ClaimItemStatus { get; set; }

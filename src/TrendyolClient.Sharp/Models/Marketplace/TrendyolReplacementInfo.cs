@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace TrendyolClient.Sharp.Models.Marketplace;
 
-public sealed class TrendyolReplacementInfo
+public class TrendyolReplacementInfo
 {
   public long CargoTrackingNumber { get; set; }
   public string CargoProviderName { get; set; }

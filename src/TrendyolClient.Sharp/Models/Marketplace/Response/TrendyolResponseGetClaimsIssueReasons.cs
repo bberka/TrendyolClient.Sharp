@@ -1,6 +1,6 @@
 ﻿namespace TrendyolClient.Sharp.Models.Marketplace.Response;
 
-public sealed class ResponseGetClaimsIssueReasons
+public class TrendyolResponseGetClaimsIssueReasons
 {
   public int Id { get; set; }
 

@@ -3,7 +3,7 @@ using TrendyolClient.Sharp.Enums;
 
 namespace TrendyolClient.Sharp.Models.Marketplace.Filter;
 
-public sealed class FilterGetOtherFinancials
+public class TrendyolFilterGetOtherFinancials
 {
   public TrendyolOtherFinancialTransactionType TransactionType { get; set; }
   public DateTime StartDate { get; set; }

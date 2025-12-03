@@ -1,6 +1,6 @@
 ﻿namespace TrendyolClient.Sharp.Models.Marketplace.Filter;
 
-public sealed class FilterProducts
+public class TrendyolFilterProducts
 {
   public bool? Approved { get; set; }
   public string Barcode { get; set; }

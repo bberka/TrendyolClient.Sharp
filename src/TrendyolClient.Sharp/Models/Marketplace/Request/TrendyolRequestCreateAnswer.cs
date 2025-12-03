@@ -1,6 +1,6 @@
 ﻿namespace TrendyolClient.Sharp.Models.Marketplace.Request;
 
-public sealed class RequestCreateAnswer
+public class TrendyolRequestCreateAnswer
 {
   public string Text { get; set; }
 }

@@ -2,9 +2,9 @@
 
 namespace TrendyolClient.Sharp.Models.Marketplace;
 
-public sealed class BatchRequestResultItem
+public class TrendyolBatchRequestResultItem
 {
-  public BatchRequestResultRequestItem RequestItem { get; set; }
+  public TrendyolBatchRequestResultRequestItem RequestItem { get; set; }
 
 
   public string Status { get; set; }

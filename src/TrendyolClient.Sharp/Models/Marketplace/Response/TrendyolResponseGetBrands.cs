@@ -1,6 +1,6 @@
 ﻿namespace TrendyolClient.Sharp.Models.Marketplace.Response;
 
-public sealed class ResponseGetBrands
+public class TrendyolResponseGetBrands
 {
-  public BrandInfo[] Brands { get; set; }
+  public TrendyolBrandInfo[] Brands { get; set; }
 }

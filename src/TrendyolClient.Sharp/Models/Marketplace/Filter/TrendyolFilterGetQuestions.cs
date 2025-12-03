@@ -1,6 +1,6 @@
 ﻿namespace TrendyolClient.Sharp.Models.Marketplace.Filter;
 
-public sealed class FilterGetQuestions
+public class TrendyolFilterGetQuestions
 {
   public long? Barcode { get; set; }
   public long? Page { get; set; }

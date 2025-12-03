@@ -2,7 +2,7 @@
 
 namespace TrendyolClient.Sharp.Models.Marketplace.Request;
 
-public sealed class RequestManualDeliver
+public class TrendyolRequestManualDeliver
 {
   public bool IsPhoneNumber { get; set; }
   public string TrackingInfo { get; set; }

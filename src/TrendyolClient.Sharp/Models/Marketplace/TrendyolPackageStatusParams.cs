@@ -1,6 +1,6 @@
 ﻿namespace TrendyolClient.Sharp.Models.Marketplace;
 
-public sealed class PackageStatusParams
+public class TrendyolPackageStatusParams
 {
   public string InvoiceNumber { get; set; } = null;
 }

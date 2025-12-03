@@ -2,7 +2,7 @@
 
 namespace TrendyolClient.Sharp.Models.Marketplace;
 
-public sealed class TrendyolShipmentPackage
+public class TrendyolShipmentPackage
 {
   public TrendyolShipmentAddress ShipmentAddress { get; set; }
   public string OrderNumber { get; set; }
@@ -10,7 +10,7 @@ public sealed class TrendyolShipmentPackage
   public decimal TotalDiscount { get; set; }
   public decimal TotalTyDiscount { get; set; }
   public string TaxNumber { get; set; }
-  public InvoiceAddress InvoiceAddress { get; set; }
+  public TrendyolInvoiceAddress InvoiceAddress { get; set; }
   public string CustomerFirstName { get; set; }
   public string CustomerEmail { get; set; }
   public long CustomerId { get; set; }
@@ -20,11 +20,11 @@ public sealed class TrendyolShipmentPackage
   public string CargoTrackingLink { get; set; }
   public string CargoSenderNumber { get; set; }
   public string CargoProviderName { get; set; }
-  public List<Line> Lines { get; set; }
+  public List<TrendyolLine> Lines { get; set; }
   public long OrderDate { get; set; }
   public string TcIdentityNumber { get; set; }
   public string CurrencyCode { get; set; }
-  public List<PackageHistory> PackageHistories { get; set; }
+  public List<TrendyolPackageHistory> PackageHistories { get; set; }
   public string ShipmentPackageStatus { get; set; }
   public string Status { get; set; }
   public string DeliveryType { get; set; }

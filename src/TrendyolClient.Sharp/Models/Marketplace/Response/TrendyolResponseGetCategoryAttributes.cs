@@ -2,7 +2,7 @@
 
 namespace TrendyolClient.Sharp.Models.Marketplace.Response;
 
-public sealed class ResponseGetCategoryAttributes
+public class TrendyolResponseGetCategoryAttributes
 {
   public long Id { get; set; }
 
@@ -12,5 +12,5 @@ public sealed class ResponseGetCategoryAttributes
 
   public string DisplayName { get; set; }
 
-  public List<CategoryAttribute> CategoryAttributes { get; set; }
+  public List<TrendyolCategoryAttribute> CategoryAttributes { get; set; }
 }

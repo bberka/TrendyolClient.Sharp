@@ -1,6 +1,6 @@
 ﻿namespace TrendyolClient.Sharp.Models.Marketplace;
 
-public sealed class TrendyolVariantAttribute
+public class TrendyolVariantAttribute
 {
   public string AttributeName { get; set; }
 

@@ -2,7 +2,7 @@
 
 namespace TrendyolClient.Sharp.Models.Marketplace.Request;
 
-public sealed class RequestCreateProducts
+public class TrendyolRequestCreateProducts
 {
-  public List<CreateProduct> Items { get; set; }
+  public List<TrendyolCreateProduct> Items { get; set; }
 }
