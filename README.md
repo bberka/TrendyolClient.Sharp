@@ -8,9 +8,9 @@
 
 A modern, strongly-typed, and community-driven C\# client library for the [Trendyol API](https://developers.trendyol.com/). Built on top of **Refit**, this library provides a robust wrapper for Marketplace, Finance, and Webhook endpoints with a focus on memory efficiency and developer experience.
 
-> **⚠️ PROJECT STATUS: ACTIVE DEVELOPMENT**
+> **⚠️ PROJECT STATUS: DEVELOPMENT**
 >
-> This project is actively maintained for bug fixes and issue resolution; however, it is **not yet considered production-ready**.
+> This project is maintained for bug fixes and issue resolution; however, it is **not yet considered production-ready**.
 >
 > - **Breaking Changes:** The public API may change significantly between versions.
 > - **Validation:** Input validation is minimal; you must validate data before sending it.
