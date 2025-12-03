@@ -14,7 +14,7 @@ public static class TrendyolServiceCollectionExtensions
     /// <param name="services">Service collection</param>
     /// <param name="configure">Optional configuration action</param>
     /// <returns>Service collection for chaining</returns>
-    public static IServiceCollection AddTrendyolClientFactory(this IServiceCollection services, Action<TrendyolClientConfig> configure = null)
+    public static IServiceCollection AddTrendyolApiClient(this IServiceCollection services, Action<TrendyolClientConfig> configure = null)
     {
         // Configure TrendyolClient config
         var config = new TrendyolClientConfig();
