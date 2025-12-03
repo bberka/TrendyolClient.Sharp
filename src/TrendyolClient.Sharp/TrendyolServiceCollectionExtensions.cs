@@ -6,29 +6,45 @@ using TrendyolClient.Sharp.Handlers;
 
 namespace TrendyolClient.Sharp;
 
-public static class TrendyolServiceCollectionExtensions
+public static class ServiceCollectionExtensions
 {
+    /// <summary>
+    /// Adds TrendyolClient services to the dependency injection container
+    /// </summary>
+    /// <param name="services">Service collection</param>
+    /// <param name="configure">Optional configuration action</param>
+    /// <returns>Service collection for chaining</returns>
     public static IServiceCollection AddTrendyolClientFactory(this IServiceCollection services, Action<TrendyolClientConfig> configure = null)
     {
-        services.AddHttpClient("TrendyolClient")
+        // Configure TrendyolClient config
+        var config = new TrendyolClientConfig();
+        configure?.Invoke(config);
+        services.AddSingleton(config);
+
+        // Register handlers
+        services.AddTransient<TrendyolLoggingHandler>();
+        services.AddTransient<TrendyolSellerIdInjectorMessageHandler>();
+
+        // Configure HttpClient with handlers
+        var httpClientBuilder = services.AddHttpClient("TrendyolClient")
             .ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
             {
                 UseCookies = true,
                 CookieContainer = new CookieContainer(),
                 AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate
             })
-            .AddHttpMessageHandler<TrendyolLoggingHandler>()
             .AddHttpMessageHandler<TrendyolSellerIdInjectorMessageHandler>();
 
-        if (configure is not null)
+        // Add logging handler if enabled
+        if (config.EnableLogging)
         {
-            var config = new TrendyolClientConfig();
-            configure(config);
-            services.AddSingleton(config);
+            httpClientBuilder.AddHttpMessageHandler<TrendyolLoggingHandler>();
         }
 
-        services.AddSingleton<TrendyolSellerIdInjectorMessageHandler>();
-        services.AddSingleton<TrendyolLoggingHandler>();
+        // Configure timeout
+        httpClientBuilder.ConfigureHttpClient(client => { client.Timeout = TimeSpan.FromSeconds(config.RequestTimeoutSeconds); });
+
+        // Register the client factory
         services.AddSingleton<TrendyolMarketplaceClientFactory>();
 
         return services;
