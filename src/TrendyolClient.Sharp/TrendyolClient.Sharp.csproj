@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <LangVersion>14</LangVersion>
-    <TargetFrameworks>net6.0;net7.0;net8.0;net9.0;net10.0;netstandard2.1</TargetFrameworks>
+    <TargetFrameworks>net10.0;net6.0;net7.0;net8.0;net9.0</TargetFrameworks>
     <Title>TrendyolClient.Sharp</Title>
     <Description>TrendyolClient.Sharp is a simple Trendyol API Client for C# with .NET 6+ version.</Description>
     <RepositoryUrl>https://github.com/bberka/TrendyolClient.Sharp</RepositoryUrl>
