@@ -27,10 +27,6 @@
     </ItemGroup>
 
     <ItemGroup>
-        <Folder Include="Models\Finance\Request\"/>
-    </ItemGroup>
-
-    <ItemGroup>
         <Content Include="..\..\LICENSE" Pack="true" PackagePath="\">
             <Link>LICENSE</Link>
         </Content>
