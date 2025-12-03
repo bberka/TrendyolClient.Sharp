@@ -1,6 +1,6 @@
 ﻿namespace TrendyolClient.Sharp.Enums;
 
-public enum ClaimItemStatus
+public enum TrendyolClaimItemStatus
 {
   Created,
   WaitingInAction,
