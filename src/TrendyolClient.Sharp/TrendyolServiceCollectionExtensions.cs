@@ -6,7 +6,7 @@ using TrendyolClient.Sharp.Handlers;
 
 namespace TrendyolClient.Sharp;
 
-public static class ServiceCollectionExtensions
+public static class TrendyolServiceCollectionExtensions
 {
     /// <summary>
     /// Adds TrendyolClient services to the dependency injection container
