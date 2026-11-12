@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using Refit;
 using TrendyolClient.Sharp.Models;
 

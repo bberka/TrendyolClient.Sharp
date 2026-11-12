@@ -73,9 +73,6 @@ public class TrendyolOtherFinancialsTransactionData
     [JsonPropertyName("commissionAmount")]
     public decimal? CommissionAmount { get; set; }
 
-    /// <summary>
-    ///     Commission invoice serial number
-    /// </summary>
     [JsonPropertyName("commissionInvoiceSerialNumber")]
     public string CommissionInvoiceSerialNumber { get; set; }
 
@@ -85,9 +82,6 @@ public class TrendyolOtherFinancialsTransactionData
     [JsonPropertyName("sellerRevenue")]
     public decimal? SellerRevenue { get; set; }
 
-    /// <summary>
-    ///     Order number
-    /// </summary>
     [JsonPropertyName("orderNumber")]
     public string OrderNumber { get; set; }
 
@@ -103,9 +97,6 @@ public class TrendyolOtherFinancialsTransactionData
     [JsonPropertyName("paymentDate")]
     public long? PaymentDate { get; set; }
 
-    /// <summary>
-    ///     Seller ID
-    /// </summary>
     [JsonPropertyName("sellerId")]
     public long SellerId { get; set; }
 
@@ -127,9 +118,6 @@ public class TrendyolOtherFinancialsTransactionData
     [JsonPropertyName("storeAddress")]
     public string StoreAddress { get; set; }
 
-    /// <summary>
-    ///     Country
-    /// </summary>
     [JsonPropertyName("country")]
     public string Country { get; set; }
 
@@ -145,9 +133,6 @@ public class TrendyolOtherFinancialsTransactionData
     [JsonPropertyName("affiliate")]
     public string Affiliate { get; set; }
 
-    /// <summary>
-    ///     Shipment package ID
-    /// </summary>
     [JsonPropertyName("shipmentPackageId")]
     public long? ShipmentPackageId { get; set; }
 }

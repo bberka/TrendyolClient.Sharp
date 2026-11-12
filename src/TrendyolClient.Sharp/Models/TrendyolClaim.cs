@@ -9,7 +9,6 @@ public class TrendyolClaim
     [JsonPropertyName("id")]
     public string Id { get; set; }
 
-    /// <summary>Claim id.</summary>
     [JsonPropertyName("claimId")]
     public string ClaimId { get; set; }
 

@@ -7,7 +7,6 @@ namespace TrendyolClient.Sharp.Models;
 /// <summary>A webhook registered by an International seller (getWebhooks).</summary>
 public class TrendyolIntlWebhook
 {
-    /// <summary></summary>
     [JsonPropertyName("id")]
     public string Id { get; set; }
 
@@ -19,7 +18,6 @@ public class TrendyolIntlWebhook
     [JsonPropertyName("lastModifiedDate")]
     public long? LastModifiedDate { get; set; }
 
-    /// <summary></summary>
     [JsonPropertyName("url")]
     public string Url { get; set; }
 
@@ -27,11 +25,9 @@ public class TrendyolIntlWebhook
     [JsonPropertyName("countryCodes")]
     public List<string> CountryCodes { get; set; }
 
-    /// <summary></summary>
     [JsonPropertyName("username")]
     public string Username { get; set; }
 
-    /// <summary></summary>
     [JsonPropertyName("authenticationType")]
     public TrendyolWebhookAuthenticationType AuthenticationType { get; set; }
 
@@ -39,7 +35,6 @@ public class TrendyolIntlWebhook
     [JsonPropertyName("status")]
     public string Status { get; set; }
 
-    /// <summary></summary>
     [JsonPropertyName("subscribedStatuses")]
     public List<TrendyolOrderStatus> SubscribedStatuses { get; set; }
 

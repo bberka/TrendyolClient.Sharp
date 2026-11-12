@@ -4,9 +4,6 @@ using System.Text.Json.Serialization;
 
 namespace TrendyolClient.Sharp.Models;
 
-/// <summary>
-///     Request to update a webhook.
-/// </summary>
 public class TrendyolRequestUpdateWebhook
 {
     /// <summary>

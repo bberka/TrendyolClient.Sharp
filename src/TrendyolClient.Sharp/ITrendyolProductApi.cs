@@ -12,8 +12,6 @@ namespace TrendyolClient.Sharp;
 /// </summary>
 public interface ITrendyolProductApi
 {
-    #region Brands
-
     /// <summary>
     ///     Lists Trendyol brands (GET /integration/product/brands). Use the returned id as brandId when creating products.
     ///     Pagination is required to get all brands.
@@ -40,10 +38,6 @@ public interface ITrendyolProductApi
         [Header("storeFrontCode")] string storeFrontCode,
         [AliasAs("name")] string name,
         [AliasAs("images")] IEnumerable<StreamPart> images);
-
-    #endregion
-
-    #region Categories
 
     /// <summary>
     ///     Gets the category tree (GET /integration/product/product-categories). Products must use a leaf category id.
@@ -83,10 +77,6 @@ public interface ITrendyolProductApi
         [Query] TrendyolFilterGetCategoryAttributeValues filter,
         [Header("storefrontcode")] string storefrontCode = null,
         [Header("Accept-Language")] string acceptLanguage = null);
-
-    #endregion
-
-    #region Create and update
 
     /// <summary>
     ///     Creates products (POST /integration/product/sellers/{sellerId}/v2/products). Up to 1000 items per request.
@@ -140,10 +130,6 @@ public interface ITrendyolProductApi
         [Header("storefrontcode")] string storefrontCode = null,
         [Header("Accept-Language")] string acceptLanguage = null);
 
-    #endregion
-
-    #region Price, stock and state
-
     /// <summary>
     ///     Updates stock and/or price of approved products (POST /integration/inventory/sellers/{sellerId}/products/price-and-inventory).
     ///     Up to 1000 items, up to 20000 stock per product. Sending an identical request again within 15 minutes is rejected.
@@ -183,10 +169,6 @@ public interface ITrendyolProductApi
     [Get("/integration/product/sellers/SELLER_ID_PARAMETER/products/batch-requests/{batchRequestId}")]
     Task<IApiResponse<TrendyolResponseGetBatchRequest>> GetBatchRequestResultAsync([AliasAs("batchRequestId")] string batchRequestId);
 
-    #endregion
-
-    #region Filtering
-
     /// <summary>
     ///     Gets basic status information of a product by barcode.
     /// </summary>
@@ -212,10 +194,6 @@ public interface ITrendyolProductApi
     [Get("/integration/product/sellers/SELLER_ID_PARAMETER/products/approved/inventory-and-price")]
     Task<IApiResponse<TrendyolResponseGetApprovedProductsInventoryAndPrice>> GetApprovedProductsInventoryAndPriceAsync([Query(CollectionFormat.Multi)] TrendyolFilterGetApprovedProductsInventoryAndPrice filter);
 
-    #endregion
-
-    #region Lookup and video
-
     /// <summary>
     ///     Lists cargo providers whose codes can be sent in the cargoProviders field of product requests.
     /// </summary>
@@ -236,5 +214,4 @@ public interface ITrendyolProductApi
     [Get("/integration/video/sellers/SELLER_ID_PARAMETER/videos")]
     Task<IApiResponse<TrendyolResponseGetVideos>> GetVideosAsync([Query] TrendyolFilterGetVideos filter);
 
-    #endregion
 }
