@@ -1,5 +1,9 @@
 
 
+<p align="center">
+  <img src="https://raw.githubusercontent.com/bberka/TrendyolClient.Sharp/master/assets/icon.png" width="128" height="128" alt="TrendyolClient.Sharp icon">
+</p>
+
 # TrendyolClient.Sharp
 
 [![.NET](https://img.shields.io/badge/.NET-8%20%7C%209%20%7C%2010-512BD4)](https://dotnet.microsoft.com/)
