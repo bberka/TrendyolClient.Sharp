@@ -12,23 +12,39 @@ namespace TrendyolClient.Sharp.Handlers;
 ///     Turns non-success HTTP responses into the typed <see cref="TrendyolException" /> hierarchy.
 ///     Registered only when <see cref="TrendyolClientConfig.ThrowOnError" /> is enabled.
 /// </summary>
-internal sealed class TrendyolErrorMappingHandler : DelegatingHandler
+internal sealed class TrendyolErrorMappingHandler(TrendyolClientConfig config) : DelegatingHandler
 {
     protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
     {
-        var response = await base.SendAsync(request, cancellationToken)
-            .ConfigureAwait(false);
-        if (response.IsSuccessStatusCode) return response;
-
+        // Read before sending: the wire cleanup handler removes the internal header from this same request on its way out.
         long? sellerId = null;
-        if (request.Headers.TryGetValues("X-Internal-Seller-Id", out var values) && long.TryParse(values.FirstOrDefault(), out var parsed)) sellerId = parsed;
+        if (request.Headers.TryGetValues(TrendyolInternals.SellerIdHeader, out var values) && long.TryParse(values.FirstOrDefault(), out var parsed)) sellerId = parsed;
+        var path = request.RequestUri?.PathAndQuery ?? "unknown";
+
+        HttpResponseMessage response;
+        try
+        {
+            response = await base.SendAsync(request, cancellationToken)
+                .ConfigureAwait(false);
+        }
+        catch (HttpRequestException ex)
+        {
+            throw new TrendyolNetworkException($"Failed to reach Trendyol: {ex.Message}", ex);
+        }
+        catch (TaskCanceledException ex) when (!cancellationToken.IsCancellationRequested)
+        {
+            // The HttpClient timeout, not a cancellation the caller asked for
+            throw new TrendyolNetworkException($"Request timed out after {config.RequestTimeoutSeconds} seconds", ex);
+        }
+
+        if (response.IsSuccessStatusCode) return response;
 
         var content = response.Content == null
             ? string.Empty
             : await response.Content.ReadAsStringAsync(cancellationToken)
                 .ConfigureAwait(false);
 
-        var exception = Map(response, content, sellerId, request.RequestUri?.PathAndQuery ?? "unknown");
+        var exception = Map(response, content, sellerId, path);
         response.Dispose();
         throw exception;
     }

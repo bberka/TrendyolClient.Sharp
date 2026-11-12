@@ -1,18 +1,17 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using TrendyolClient.Sharp.Handlers;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace TrendyolClient.Sharp.Tests.Support;
 
 public sealed record SeenRequest(HttpMethod Method, string PathAndQuery, string Host, HttpRequestMessage Message, string Body);
 
-/// <summary>Fake transport: records requests and answers with a queued or default response.</summary>
+/// <summary>Fake transport: records requests and answers with a configurable response.</summary>
 public sealed class RecordingHandler : HttpMessageHandler
 {
     public List<SeenRequest> Requests { get; } = [];
@@ -33,22 +32,40 @@ public sealed class RecordingHandler : HttpMessageHandler
     }
 }
 
-public sealed class FakeHttpClientFactory(HttpMessageHandler transport) : IHttpClientFactory
-{
-    public HttpClient CreateClient(string name)
-    {
-        // Same handler order as the DI registration: seller-id injector in front of the transport.
-        return new HttpClient(new TrendyolSellerIdInjectorMessageHandler { InnerHandler = transport }, false);
-    }
-}
-
 public static class Harness
 {
     public const long SellerId = 123456;
 
-    public static (TrendyolMarketplaceClientFactory Factory, RecordingHandler Transport) Create(TrendyolClientConfig config = null)
+    /// <summary>
+    ///     Builds the clients through the real <c>AddTrendyolApiClient</c> pipeline (every handler, in production order), with the network
+    ///     replaced by a recording transport, so a test cannot pass against a pipeline that differs from the shipped one.
+    /// </summary>
+    public static (IServiceProvider Services, RecordingHandler Transport) CreateServices(
+        TrendyolClientConfig config = null,
+        Action<IHttpClientBuilder> customize = null,
+        Action<IServiceCollection> register = null
+    )
     {
         var transport = new RecordingHandler();
-        return (new TrendyolMarketplaceClientFactory(new FakeHttpClientFactory(transport), config ?? new TrendyolClientConfig()), transport);
+        var services = new ServiceCollection();
+        services.AddLogging();
+        var builder = services.AddTrendyolApiClient(c =>
+        {
+            if (config == null) return;
+            c.IntegrationName = config.IntegrationName;
+            c.RequestTimeoutSeconds = config.RequestTimeoutSeconds;
+            c.EnableLogging = config.EnableLogging;
+            c.ThrowOnError = config.ThrowOnError;
+        });
+        builder.ConfigurePrimaryHttpMessageHandler(() => TrendyolServiceCollectionExtensions.CreatePrimaryHandler(transport));
+        customize?.Invoke(builder);
+        register?.Invoke(services);
+        return (services.BuildServiceProvider(), transport);
+    }
+
+    public static (TrendyolMarketplaceClientFactory Factory, RecordingHandler Transport) Create(TrendyolClientConfig config = null, Action<IHttpClientBuilder> customize = null)
+    {
+        var (services, transport) = CreateServices(config, customize);
+        return (services.GetRequiredService<TrendyolMarketplaceClientFactory>(), transport);
     }
 }

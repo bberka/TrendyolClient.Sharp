@@ -6,21 +6,32 @@ using System.Net.Http.Headers;
 using System.Text;
 using Refit;
 using TrendyolClient.Sharp.Formatters;
+using TrendyolClient.Sharp.Handlers;
 
 namespace TrendyolClient.Sharp;
 
+/// <summary>
+///     Creates and caches one set of API clients per seller, environment and storefront. Every <c>GetOrCreate*Client</c> method has two
+///     forms: one taking a <see cref="TrendyolCredentials" />, and one taking the same values as separate arguments.
+/// </summary>
 public class TrendyolMarketplaceClientFactory(IHttpClientFactory httpClientFactory, TrendyolClientConfig config)
 {
-    // The dictionary now holds a 'ClientContainer' instead of a Tuple.
     private readonly ConcurrentDictionary<(long SellerId, bool Stage, string StoreFront), ClientContainer> _clients = new();
 
     public TrendyolClientConfig Config { get; } = config;
 
     /// <summary>
-    ///     Client for the Marketplace services. International sellers pass their <paramref name="storeFrontCode" /> (DE, SA, AE, KW, GR, SK, RO, CZ, BG):
+    ///     Client for the Marketplace services. International sellers set <see cref="TrendyolCredentials.StoreFrontCode" /> (DE, SA, AE, KW, GR, SK, RO, CZ, BG):
     ///     it is sent as the <c>storeFrontCode</c> header on every request of this client, so each storefront needs its own client.
     ///     Leave it <c>null</c> for the Türkiye marketplace.
     /// </summary>
+    public ITrendyolMarketplaceApi GetOrCreateMarketplaceClient(TrendyolCredentials credentials)
+    {
+        return GetContainer(credentials)
+            .Marketplace.Value;
+    }
+
+    /// <inheritdoc cref="GetOrCreateMarketplaceClient(TrendyolCredentials)" />
     public ITrendyolMarketplaceApi GetOrCreateMarketplaceClient(
         long sellerId,
         string apiKey,
@@ -29,13 +40,19 @@ public class TrendyolMarketplaceClientFactory(IHttpClientFactory httpClientFacto
         string storeFrontCode = null
     )
     {
-        return GetContainer(sellerId, apiKey, apiSecret, useStageApi, storeFrontCode)
-            .Marketplace.Value;
+        return GetOrCreateMarketplaceClient(new TrendyolCredentials(sellerId, apiKey, apiSecret, useStageApi, storeFrontCode));
     }
 
     /// <summary>
-    ///     Client for the order webhook management services. International sellers pass their <paramref name="storeFrontCode" />.
+    ///     Client for the order webhook management services. International sellers set <see cref="TrendyolCredentials.StoreFrontCode" />.
     /// </summary>
+    public ITrendyolWebhookApi GetOrCreateWebhookClient(TrendyolCredentials credentials)
+    {
+        return GetContainer(credentials)
+            .Webhook.Value;
+    }
+
+    /// <inheritdoc cref="GetOrCreateWebhookClient(TrendyolCredentials)" />
     public ITrendyolWebhookApi GetOrCreateWebhookClient(
         long sellerId,
         string apiKey,
@@ -44,10 +61,19 @@ public class TrendyolMarketplaceClientFactory(IHttpClientFactory httpClientFacto
         string storeFrontCode = null
     )
     {
-        return GetContainer(sellerId, apiKey, apiSecret, useStageApi, storeFrontCode)
-            .Webhook.Value;
+        return GetOrCreateWebhookClient(new TrendyolCredentials(sellerId, apiKey, apiSecret, useStageApi, storeFrontCode));
     }
 
+    /// <summary>
+    ///     Client for the finance services (settlements, other financials, payment orders, cargo invoices).
+    /// </summary>
+    public ITrendyolFinanceApi GetOrCreateFinanceClient(TrendyolCredentials credentials)
+    {
+        return GetContainer(credentials)
+            .Finance.Value;
+    }
+
+    /// <inheritdoc cref="GetOrCreateFinanceClient(TrendyolCredentials)" />
     public ITrendyolFinanceApi GetOrCreateFinanceClient(
         long sellerId,
         string apiKey,
@@ -55,16 +81,25 @@ public class TrendyolMarketplaceClientFactory(IHttpClientFactory httpClientFacto
         bool useStageApi = false
     )
     {
-        return GetContainer(sellerId, apiKey, apiSecret, useStageApi)
-            .Finance.Value;
+        return GetOrCreateFinanceClient(new TrendyolCredentials(sellerId, apiKey, apiSecret, useStageApi));
     }
 
     /// <summary>
     ///     Client for the International Marketplace (Germany, CEE, GULF): the region specific order, webhook and return services.
-    ///     <paramref name="storeFrontCode" /> (DE, SA, AE, KW, GR, SK, RO, CZ, BG) is sent as the <c>storeFrontCode</c> header on every request.
-    ///     Endpoints shared with the Türkiye marketplace (products V2, price and inventory, order packages, ...) are on
-    ///     <see cref="GetOrCreateMarketplaceClient" />, created with the same storefront code.
+    ///     <see cref="TrendyolCredentials.StoreFrontCode" /> (DE, SA, AE, KW, GR, SK, RO, CZ, BG) is required and is sent as the
+    ///     <c>storeFrontCode</c> header on every request. Endpoints shared with the Türkiye marketplace (products V2, price and
+    ///     inventory, order packages, ...) are on <see cref="GetOrCreateMarketplaceClient(TrendyolCredentials)" />, created with the same storefront code.
     /// </summary>
+    public ITrendyolInternationalApi GetOrCreateInternationalClient(TrendyolCredentials credentials)
+    {
+        ArgumentNullException.ThrowIfNull(credentials);
+        if (string.IsNullOrWhiteSpace(credentials.StoreFrontCode))
+            throw new ArgumentException("International calls need a storefront code such as DE or SA.", nameof(credentials));
+        return GetContainer(credentials)
+            .International.Value;
+    }
+
+    /// <inheritdoc cref="GetOrCreateInternationalClient(TrendyolCredentials)" />
     public ITrendyolInternationalApi GetOrCreateInternationalClient(
         long sellerId,
         string apiKey,
@@ -73,14 +108,19 @@ public class TrendyolMarketplaceClientFactory(IHttpClientFactory httpClientFacto
         bool useStageApi = false
     )
     {
-        if (string.IsNullOrWhiteSpace(storeFrontCode)) throw new ArgumentException("International calls need a storefront code such as DE or SA.", nameof(storeFrontCode));
-        return GetContainer(sellerId, apiKey, apiSecret, useStageApi, storeFrontCode)
-            .International.Value;
+        return GetOrCreateInternationalClient(new TrendyolCredentials(sellerId, apiKey, apiSecret, useStageApi, storeFrontCode));
     }
 
     /// <summary>
     ///     Client for the Global Partner (Global Center Gateway, <c>/integration/exportcentergw</c>) API.
     /// </summary>
+    public ITrendyolGlobalPartnerApi GetOrCreateGlobalPartnerClient(TrendyolCredentials credentials)
+    {
+        return GetContainer(credentials)
+            .GlobalPartner.Value;
+    }
+
+    /// <inheritdoc cref="GetOrCreateGlobalPartnerClient(TrendyolCredentials)" />
     public ITrendyolGlobalPartnerApi GetOrCreateGlobalPartnerClient(
         long sellerId,
         string apiKey,
@@ -88,14 +128,20 @@ public class TrendyolMarketplaceClientFactory(IHttpClientFactory httpClientFacto
         bool useStageApi = false
     )
     {
-        return GetContainer(sellerId, apiKey, apiSecret, useStageApi)
-            .GlobalPartner.Value;
+        return GetOrCreateGlobalPartnerClient(new TrendyolCredentials(sellerId, apiKey, apiSecret, useStageApi));
     }
 
     /// <summary>
     ///     Client for the Export Center (AutoFT) API under <c>/integration/ecgw</c>. Kept separate from the marketplace client
     ///     because it reuses method names such as <c>CreateProductsAsync</c> with a different contract.
     /// </summary>
+    public ITrendyolExportApi GetOrCreateExportClient(TrendyolCredentials credentials)
+    {
+        return GetContainer(credentials)
+            .Export.Value;
+    }
+
+    /// <inheritdoc cref="GetOrCreateExportClient(TrendyolCredentials)" />
     public ITrendyolExportApi GetOrCreateExportClient(
         long sellerId,
         string apiKey,
@@ -103,37 +149,33 @@ public class TrendyolMarketplaceClientFactory(IHttpClientFactory httpClientFacto
         bool useStageApi = false
     )
     {
-        return GetContainer(sellerId, apiKey, apiSecret, useStageApi)
-            .Export.Value;
+        return GetOrCreateExportClient(new TrendyolCredentials(sellerId, apiKey, apiSecret, useStageApi));
     }
 
     /// <summary>
-    ///     Drops the cached clients of a seller (production and stage), e.g. after regenerating API credentials.
+    ///     Drops the cached clients of a seller (every environment and storefront), e.g. after regenerating API credentials.
     /// </summary>
     public void InvalidateClient(long sellerId)
     {
         foreach (var key in _clients.Keys.Where(k => k.SellerId == sellerId)) _clients.TryRemove(key, out _);
     }
 
-    private ClientContainer GetContainer(
-        long sellerId,
-        string apiKey,
-        string apiSecret,
-        bool useStageApi,
-        string storeFrontCode = null
-    )
+    private ClientContainer GetContainer(TrendyolCredentials credentials)
     {
-        var storeFront = string.IsNullOrWhiteSpace(storeFrontCode) ? string.Empty : storeFrontCode.Trim().ToUpperInvariant();
-        var key = (sellerId, useStageApi, storeFront);
+        ArgumentNullException.ThrowIfNull(credentials);
+
+        var storeFront = string.IsNullOrWhiteSpace(credentials.StoreFrontCode) ? string.Empty : credentials.StoreFrontCode.Trim().ToUpperInvariant();
+        var key = (credentials.SellerId, credentials.UseStageApi, storeFront);
         if (_clients.TryGetValue(key, out var existingContainer))
         {
-            // Validate credentials
-            if (existingContainer.ApiKey == apiKey && existingContainer.ApiSecret == apiSecret) return existingContainer;
+            // New key or secret for a known seller: rebuild the client
+            if (existingContainer.ApiKey == credentials.ApiKey && existingContainer.ApiSecret == credentials.ApiSecret) return existingContainer;
 
             _clients.TryRemove(key, out _);
         }
 
-        return _clients.GetOrAdd(key, _ => new ClientContainer(sellerId, apiKey, apiSecret, useStageApi, storeFront, httpClientFactory, Config));
+        return _clients.GetOrAdd(key,
+            _ => new ClientContainer(credentials.SellerId, credentials.ApiKey, credentials.ApiSecret, credentials.UseStageApi, storeFront, httpClientFactory, Config));
     }
 
     /// <summary>
@@ -156,7 +198,7 @@ public class TrendyolMarketplaceClientFactory(IHttpClientFactory httpClientFacto
 
             // 1. Setup Shared HttpClient
             var baseUrl = useStageApi ? "https://stageapigw.trendyol.com" : "https://apigw.trendyol.com";
-            var httpClient = httpClientFactory.CreateClient("TrendyolClient");
+            var httpClient = httpClientFactory.CreateClient(TrendyolInternals.HttpClientName);
             httpClient.BaseAddress = new Uri(baseUrl);
 
             var authHeader = Convert.ToBase64String(Encoding.UTF8.GetBytes($"{apiKey}:{apiSecret}"));
@@ -165,7 +207,7 @@ public class TrendyolMarketplaceClientFactory(IHttpClientFactory httpClientFacto
             httpClient.DefaultRequestHeaders.AcceptEncoding.Add(new StringWithQualityHeaderValue("deflate"));
             httpClient.DefaultRequestHeaders.AcceptLanguage.Add(new StringWithQualityHeaderValue("tr-TR"));
             httpClient.DefaultRequestHeaders.Add("User-Agent", $"{sellerId} - {config.IntegrationName}");
-            httpClient.DefaultRequestHeaders.Add("X-Internal-Seller-Id", sellerId.ToString());
+            httpClient.DefaultRequestHeaders.Add(TrendyolInternals.SellerIdHeader, sellerId.ToString());
             if (storeFrontCode.Length > 0) httpClient.DefaultRequestHeaders.Add("storeFrontCode", storeFrontCode);
 
             // 2. Setup Shared Refit Settings
