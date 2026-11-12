@@ -5,6 +5,15 @@ namespace TrendyolClient.Sharp.Models;
 
 public class TrendyolResponseGetAddresses
 {
-    [JsonPropertyName("addresses")]
-    public List<TrendyolAddress> Addresses { get; set; }
+    [JsonPropertyName("supplierAddresses")]
+    public List<TrendyolSupplierAddress> SupplierAddresses { get; set; }
+
+    [JsonPropertyName("defaultShipmentAddress")]
+    public TrendyolSupplierAddress DefaultShipmentAddress { get; set; }
+
+    [JsonPropertyName("defaultInvoiceAddress")]
+    public TrendyolSupplierAddress DefaultInvoiceAddress { get; set; }
+
+    [JsonPropertyName("defaultReturningAddress")]
+    public TrendyolDefaultReturningAddress DefaultReturningAddress { get; set; }
 }

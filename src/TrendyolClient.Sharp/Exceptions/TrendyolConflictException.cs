@@ -3,7 +3,7 @@ namespace TrendyolClient.Sharp.Exceptions;
 /// <summary>
 ///     Exception thrown when API request conflicts with current state
 /// </summary>
-internal class TrendyolConflictException(string message, string conflictDetails = null) : TrendyolException(message)
+public class TrendyolConflictException(string message, string conflictDetails = null) : TrendyolException(message)
 {
     /// <summary>
     ///     Additional details about the conflict

@@ -7,7 +7,7 @@ namespace TrendyolClient.Sharp.Exceptions;
 /// <summary>
 ///     Exception thrown when request validation fails
 /// </summary>
-internal class TrendyolValidationException : TrendyolException
+public class TrendyolValidationException : TrendyolException
 {
     public TrendyolValidationException(IEnumerable<ValidationFailure> errors) : base("One or more validation errors occurred")
     {

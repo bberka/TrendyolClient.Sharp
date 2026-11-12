@@ -4,9 +4,13 @@ namespace TrendyolClient.Sharp.Models;
 
 public class TrendyolCountry
 {
-    [JsonPropertyName("countryCode")]
-    public string CountryCode { get; set; }
+    [JsonPropertyName("id")]
+    public long Id { get; set; }
 
-    [JsonPropertyName("countryName")]
-    public string CountryName { get; set; }
+    /// <summary>Country code used by the city endpoints.</summary>
+    [JsonPropertyName("code")]
+    public string Code { get; set; }
+
+    [JsonPropertyName("name")]
+    public string Name { get; set; }
 }

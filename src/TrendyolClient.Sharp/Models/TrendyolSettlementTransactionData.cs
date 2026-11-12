@@ -1,39 +1,38 @@
-﻿using System.Text.Json.Serialization;
-using TrendyolClient.Sharp.Enums;
+using System.Text.Json.Serialization;
 
 namespace TrendyolClient.Sharp.Models;
 
 /// <summary>
-///     Settlement transaction data (Sales, Returns, Discounts, Coupons, Provisions)
+///     Settlement (current account statement) record: sales, returns, discounts, coupons, provisions, delivery fees
 /// </summary>
 public class TrendyolSettlementTransactionData
 {
     /// <summary>
-    ///     Unique transaction ID
+    ///     Unique transaction ID (for cargo invoices this is the invoiceSerialNumber)
     /// </summary>
     [JsonPropertyName("id")]
     public string Id { get; set; }
 
     /// <summary>
-    ///     Transaction date (timestamp in milliseconds)
+    ///     Transaction date (unix timestamp, milliseconds)
     /// </summary>
     [JsonPropertyName("transactionDate")]
     public long TransactionDate { get; set; }
 
     /// <summary>
-    ///     Product barcode
+    ///     Product barcode (null for non-product transactions)
     /// </summary>
     [JsonPropertyName("barcode")]
     public string Barcode { get; set; }
 
     /// <summary>
-    ///     Type of financial transaction
+    ///     Localized transaction type label returned by the API (e.g. "Satış", "Ödeme"), not the request enum value
     /// </summary>
     [JsonPropertyName("transactionType")]
-    public TrendyolSettlementsTransactionType TransactionType { get; set; }
+    public string TransactionType { get; set; }
 
     /// <summary>
-    ///     Receipt ID
+    ///     Receipt number (dekont no)
     /// </summary>
     [JsonPropertyName("receiptId")]
     public long? ReceiptId { get; set; }
@@ -63,16 +62,22 @@ public class TrendyolSettlementTransactionData
     public long? PaymentPeriod { get; set; }
 
     /// <summary>
-    ///     Commission rate percentage
+    ///     Commission rate of the ordered product
     /// </summary>
     [JsonPropertyName("commissionRate")]
     public decimal? CommissionRate { get; set; }
 
     /// <summary>
-    ///     Commission amount
+    ///     Trendyol commission amount
     /// </summary>
     [JsonPropertyName("commissionAmount")]
     public decimal? CommissionAmount { get; set; }
+
+    /// <summary>
+    ///     Commission invoice serial number
+    /// </summary>
+    [JsonPropertyName("commissionInvoiceSerialNumber")]
+    public string CommissionInvoiceSerialNumber { get; set; }
 
     /// <summary>
     ///     Seller revenue amount
@@ -87,22 +92,16 @@ public class TrendyolSettlementTransactionData
     public string OrderNumber { get; set; }
 
     /// <summary>
-    ///     Payment order ID (formed after order is paid, typically created on Wednesdays)
+    ///     Payment order ID; created after the order is paid (normally every Wednesday). Matches orders with payments
     /// </summary>
     [JsonPropertyName("paymentOrderId")]
     public long? PaymentOrderId { get; set; }
 
     /// <summary>
-    ///     Payment date (timestamp in milliseconds)
+    ///     Payment date (unix timestamp, milliseconds)
     /// </summary>
     [JsonPropertyName("paymentDate")]
     public long? PaymentDate { get; set; }
-
-    /// <summary>
-    ///     Commission invoice serial number
-    /// </summary>
-    [JsonPropertyName("commissionInvoiceSerialNumber")]
-    public string CommissionInvoiceSerialNumber { get; set; }
 
     /// <summary>
     ///     Seller ID
@@ -111,37 +110,37 @@ public class TrendyolSettlementTransactionData
     public long SellerId { get; set; }
 
     /// <summary>
-    ///     Store ID (for Market vendors, null for Marketplace vendors)
+    ///     Store ID (null for Marketplace sellers)
     /// </summary>
     [JsonPropertyName("storeId")]
-    public string StoreId { get; set; }
+    public long? StoreId { get; set; }
 
     /// <summary>
-    ///     Store name
+    ///     Store name (null for Marketplace sellers)
     /// </summary>
     [JsonPropertyName("storeName")]
     public string StoreName { get; set; }
 
     /// <summary>
-    ///     Store address
+    ///     Store address (null for Marketplace sellers)
     /// </summary>
     [JsonPropertyName("storeAddress")]
     public string StoreAddress { get; set; }
 
     /// <summary>
-    ///     Country name
+    ///     Country
     /// </summary>
     [JsonPropertyName("country")]
     public string Country { get; set; }
 
     /// <summary>
-    ///     Order date (timestamp in milliseconds)
+    ///     Order date (unix timestamp, milliseconds)
     /// </summary>
     [JsonPropertyName("orderDate")]
     public long? OrderDate { get; set; }
 
     /// <summary>
-    ///     Affiliate identifier (e.g., "TRENDYOLTR" or "TRENDYOLAZJV")
+    ///     Affiliate code: "TRENDYOLTR" or "TRENDYOLAZJV"
     /// </summary>
     [JsonPropertyName("affiliate")]
     public string Affiliate { get; set; }

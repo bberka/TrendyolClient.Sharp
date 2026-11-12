@@ -14,6 +14,9 @@ public class TrendyolResponseGetOrderPackages
     [JsonPropertyName("size")]
     public int Size { get; set; }
 
+    /// <summary>
+    ///     Total matching packages. Only the first 10,000 are reachable; use the stream endpoint when it is larger.
+    /// </summary>
     [JsonPropertyName("totalElements")]
     public long TotalElements { get; set; }
 

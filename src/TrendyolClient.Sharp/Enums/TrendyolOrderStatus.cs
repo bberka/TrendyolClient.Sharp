@@ -1,66 +1,25 @@
-using System.Runtime.Serialization;
 using System.Text.Json.Serialization;
 
 namespace TrendyolClient.Sharp.Enums;
 
 /// <summary>
-///     Order statuses that can trigger webhook notifications
-///     Based on Trendyol order lifecycle
+///     Package statuses a webhook can subscribe to. Serialized in upper snake case ("AT_COLLECTION_POINT").
+///     https://developers.trendyol.com/docs/webhook-model
 /// </summary>
-[JsonConverter(typeof(JsonStringEnumConverter))]
+[JsonConverter(typeof(TrendyolUpperSnakeCaseEnumConverter))]
 public enum TrendyolOrderStatus
 {
-    /// <summary>
-    ///     Order has been created and is awaiting seller confirmation
-    /// </summary>
-    [EnumMember(Value = "CREATED")]
     Created,
-
-    /// <summary>
-    ///     Order is being prepared/picked from warehouse
-    /// </summary>
-    [EnumMember(Value = "PICKING")]
     Picking,
-
-    /// <summary>
-    ///     Order items have been picked and ready for shipment
-    /// </summary>
-    [EnumMember(Value = "PICKED")]
-    Picked,
-
-    /// <summary>
-    ///     Order has been shipped to customer
-    /// </summary>
-    [EnumMember(Value = "SHIPPED")]
+    Invoiced,
     Shipped,
-
-    /// <summary>
-    ///     Order has been delivered to customer
-    /// </summary>
-    [EnumMember(Value = "DELIVERED")]
-    Delivered,
-
-    /// <summary>
-    ///     Order has been cancelled (by customer or seller)
-    /// </summary>
-    [EnumMember(Value = "CANCELLED")]
     Cancelled,
-
-    /// <summary>
-    ///     Order has been returned by customer
-    /// </summary>
-    [EnumMember(Value = "RETURNED")]
+    Delivered,
+    Undelivered,
     Returned,
-
-    /// <summary>
-    ///     Order is in return process
-    /// </summary>
-    [EnumMember(Value = "RETURNING")]
-    Returning,
-
-    /// <summary>
-    ///     Order is awaiting action/confirmation
-    /// </summary>
-    [EnumMember(Value = "AWAITING")]
-    Awaiting
+    Unsupplied,
+    Awaiting,
+    Unpacked,
+    AtCollectionPoint,
+    Verified
 }

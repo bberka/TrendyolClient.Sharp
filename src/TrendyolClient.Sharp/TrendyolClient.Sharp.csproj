@@ -27,6 +27,10 @@
     </ItemGroup>
 
     <ItemGroup>
+        <InternalsVisibleTo Include="TrendyolClient.Sharp.Tests"/>
+    </ItemGroup>
+
+    <ItemGroup>
         <Content Include="..\..\LICENSE" Pack="true" PackagePath="\">
             <Link>LICENSE</Link>
         </Content>

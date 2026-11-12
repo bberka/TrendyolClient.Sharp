@@ -4,6 +4,7 @@ public enum TrendyolClaimItemStatus
 {
     Created,
     WaitingInAction,
+    WaitingFraudCheck,
     Accepted,
     Cancelled,
     Rejected,

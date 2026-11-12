@@ -1,12 +1,10 @@
-﻿using System;
+using System;
 using System.Collections.Concurrent;
-using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using Refit;
-using TrendyolClient.Sharp.Exceptions;
 using TrendyolClient.Sharp.Formatters;
 
 namespace TrendyolClient.Sharp;
@@ -14,7 +12,7 @@ namespace TrendyolClient.Sharp;
 public class TrendyolMarketplaceClientFactory(IHttpClientFactory httpClientFactory, TrendyolClientConfig config)
 {
     // The dictionary now holds a 'ClientContainer' instead of a Tuple.
-    private readonly ConcurrentDictionary<long, ClientContainer> _clients = new();
+    private readonly ConcurrentDictionary<(long SellerId, bool Stage), ClientContainer> _clients = new();
 
     public TrendyolClientConfig Config { get; } = config;
 
@@ -51,9 +49,28 @@ public class TrendyolMarketplaceClientFactory(IHttpClientFactory httpClientFacto
             .Finance.Value;
     }
 
+    /// <summary>
+    ///     Client for the Export Center (AutoFT) API under <c>/integration/ecgw</c>. Kept separate from the marketplace client
+    ///     because it reuses method names such as <c>CreateProductsAsync</c> with a different contract.
+    /// </summary>
+    public ITrendyolExportApi GetOrCreateExportClient(
+        long sellerId,
+        string apiKey,
+        string apiSecret,
+        bool useStageApi = false
+    )
+    {
+        return GetContainer(sellerId, apiKey, apiSecret, useStageApi)
+            .Export.Value;
+    }
+
+    /// <summary>
+    ///     Drops the cached clients of a seller (production and stage), e.g. after regenerating API credentials.
+    /// </summary>
     public void InvalidateClient(long sellerId)
     {
-        _clients.TryRemove(sellerId, out _);
+        _clients.TryRemove((sellerId, false), out _);
+        _clients.TryRemove((sellerId, true), out _);
     }
 
     private ClientContainer GetContainer(
@@ -63,68 +80,16 @@ public class TrendyolMarketplaceClientFactory(IHttpClientFactory httpClientFacto
         bool useStageApi
     )
     {
-        if (_clients.TryGetValue(sellerId, out var existingContainer))
+        var key = (sellerId, useStageApi);
+        if (_clients.TryGetValue(key, out var existingContainer))
         {
             // Validate credentials
             if (existingContainer.ApiKey == apiKey && existingContainer.ApiSecret == apiSecret) return existingContainer;
 
-            InvalidateClient(sellerId);
+            _clients.TryRemove(key, out _);
         }
 
-        return _clients.GetOrAdd(sellerId, new ClientContainer(sellerId, apiKey, apiSecret, useStageApi, httpClientFactory, Config));
-    }
-
-    // -------------------------------------------------------------------------
-    // Static Exception Helpers (Pure Functions)
-    // -------------------------------------------------------------------------
-
-    private static Func<HttpResponseMessage, Task<Exception>> CreateExceptionFactory(long sellerId)
-    {
-        return async response =>
-        {
-            if (response.IsSuccessStatusCode) return null;
-
-            var content = await response.Content.ReadAsStringAsync()
-                .ConfigureAwait(false);
-
-            return response.StatusCode switch
-            {
-                HttpStatusCode.Unauthorized => new TrendyolAuthenticationException(
-                    $"Authentication failed for seller {sellerId}. Verify API credentials.", sellerId),
-
-                HttpStatusCode.Forbidden => new TrendyolAuthenticationException($"Access forbidden for seller {sellerId}.", sellerId),
-
-                HttpStatusCode.NotFound => new TrendyolNotFoundException("Resource", response.RequestMessage?.RequestUri?.PathAndQuery ?? "unknown"),
-
-                HttpStatusCode.TooManyRequests => new TrendyolRateLimitException("Rate limit exceeded.", response.Headers.RetryAfter?.Date),
-
-                HttpStatusCode.BadRequest => ParseBadRequestException(content),
-
-                HttpStatusCode.Conflict => new TrendyolConflictException("Resource conflict.", content),
-
-                HttpStatusCode.UnprocessableEntity => new TrendyolBusinessRuleException("Business rule validation failed."),
-
-                HttpStatusCode.InternalServerError or HttpStatusCode.BadGateway or HttpStatusCode.ServiceUnavailable => new TrendyolServerException(
-                    $"Trendyol server error: {response.StatusCode}", (int)response.StatusCode, content),
-
-                _ => new TrendyolRequestFailedException($"Request failed: {response.StatusCode} {response.ReasonPhrase}")
-            };
-        };
-    }
-
-    private static Exception ParseBadRequestException(string content)
-    {
-        try
-        {
-            if (!string.IsNullOrEmpty(content) && content.Contains("errors"))
-                return new TrendyolValidationException("Request", "Invalid parameters. " + content);
-        }
-        catch
-        {
-            /* Ignore parse errors */
-        }
-
-        return new TrendyolValidationException("Request", "Invalid request parameters");
+        return _clients.GetOrAdd(key, _ => new ClientContainer(sellerId, apiKey, apiSecret, useStageApi, httpClientFactory, Config));
     }
 
     /// <summary>
@@ -161,7 +126,7 @@ public class TrendyolMarketplaceClientFactory(IHttpClientFactory httpClientFacto
             var refitSettings = new RefitSettings
             {
                 UrlParameterKeyFormatter = new LowerCaseFirstCharParameterFormatter(),
-                ExceptionFactory = CreateExceptionFactory(sellerId)
+                ContentSerializer = TrendyolJson.CreateContentSerializer()
             };
 
             // 3. Define Lazy Initializers
@@ -169,6 +134,7 @@ public class TrendyolMarketplaceClientFactory(IHttpClientFactory httpClientFacto
             Marketplace = new Lazy<ITrendyolMarketplaceApi>(() => RestService.For<ITrendyolMarketplaceApi>(httpClient, refitSettings));
             Webhook = new Lazy<ITrendyolWebhookApi>(() => RestService.For<ITrendyolWebhookApi>(httpClient, refitSettings));
             Finance = new Lazy<ITrendyolFinanceApi>(() => RestService.For<ITrendyolFinanceApi>(httpClient, refitSettings));
+            Export = new Lazy<ITrendyolExportApi>(() => RestService.For<ITrendyolExportApi>(httpClient, refitSettings));
         }
 
         public string ApiKey { get; }
@@ -178,5 +144,6 @@ public class TrendyolMarketplaceClientFactory(IHttpClientFactory httpClientFacto
         public Lazy<ITrendyolMarketplaceApi> Marketplace { get; }
         public Lazy<ITrendyolWebhookApi> Webhook { get; }
         public Lazy<ITrendyolFinanceApi> Finance { get; }
+        public Lazy<ITrendyolExportApi> Export { get; }
     }
 }

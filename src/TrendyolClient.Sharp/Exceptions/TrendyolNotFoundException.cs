@@ -3,7 +3,7 @@ namespace TrendyolClient.Sharp.Exceptions;
 /// <summary>
 ///     Exception thrown when a requested resource is not found
 /// </summary>
-internal class TrendyolNotFoundException(
+public class TrendyolNotFoundException(
     string message,
     string resourceType,
     string resourceId) : TrendyolException(message)

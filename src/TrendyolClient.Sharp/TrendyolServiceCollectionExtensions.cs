@@ -24,6 +24,7 @@ public static class TrendyolServiceCollectionExtensions
         // Register handlers
         services.AddTransient<TrendyolLoggingHandler>();
         services.AddTransient<TrendyolSellerIdInjectorMessageHandler>();
+        services.AddTransient<TrendyolErrorMappingHandler>();
 
         // Configure HttpClient with handlers
         var httpClientBuilder = services.AddHttpClient("TrendyolClient")
@@ -34,6 +35,9 @@ public static class TrendyolServiceCollectionExtensions
                 AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate
             })
             .AddHttpMessageHandler<TrendyolSellerIdInjectorMessageHandler>();
+
+        // Sits outside the logging handler, so the raw failure is logged before it is turned into an exception
+        if (config.ThrowOnError) httpClientBuilder.AddHttpMessageHandler<TrendyolErrorMappingHandler>();
 
         // Add logging handler if enabled
         if (config.EnableLogging) httpClientBuilder.AddHttpMessageHandler<TrendyolLoggingHandler>();

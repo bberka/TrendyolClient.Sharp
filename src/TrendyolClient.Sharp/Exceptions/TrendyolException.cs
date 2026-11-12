@@ -2,7 +2,7 @@ using System;
 
 namespace TrendyolClient.Sharp.Exceptions;
 
-internal abstract class TrendyolException : Exception
+public abstract class TrendyolException : Exception
 {
     protected TrendyolException(string message) : base(message)
     {
