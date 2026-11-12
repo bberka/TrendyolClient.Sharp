@@ -241,6 +241,8 @@ The package version lives in one place: the **`VERSION`** file in the repository
 | `nightly-release.yml` | push to `master` | Runs the tests, then publishes `<VERSION without suffix>-nightly.<timestamp>` to NuGet as a pre-release. |
 | `release.yml` | manual (**Actions > Release > Run workflow**) | Publishes exactly the version in `VERSION` to NuGet, then creates the `v<version>` tag and GitHub release (marked pre-release if the version has a suffix such as `-rc.1`). |
 
+The first stable release is **2.0.0**, matching Trendyol's Product V2 and Order V2 services. There is no 1.x: before this the package was only published as `0.0.1-nightly.*` builds, so the version jumps straight to 2.
+
 To make a release:
 
 1. Open a pull request that changes `VERSION` to the version you want to publish, and merge it.
