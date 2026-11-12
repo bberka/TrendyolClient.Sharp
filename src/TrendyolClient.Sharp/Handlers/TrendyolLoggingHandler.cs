@@ -18,7 +18,7 @@ public class TrendyolLoggingHandler(ILogger<TrendyolLoggingHandler> logger) : De
 
         // Extract seller ID if available for better log context
         string sellerId = null;
-        if (request.Headers.TryGetValues("X-Internal-Seller-Id", out var sellerIdValues)) sellerId = sellerIdValues.FirstOrDefault();
+        if (request.Headers.TryGetValues(TrendyolInternals.SellerIdHeader, out var sellerIdValues)) sellerId = sellerIdValues.FirstOrDefault();
 
         logger.LogInformation("[{RequestId}] Trendyol API Request: {Method} {Uri} {SellerContext}", requestId, request.Method,
             request.RequestUri?.PathAndQuery, sellerId != null ? $"[Seller: {sellerId}]" : string.Empty);

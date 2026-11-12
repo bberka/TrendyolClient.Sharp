@@ -1,22 +1,5 @@
-using System.Collections.Generic;
-using System.Text.Json.Serialization;
-
 namespace TrendyolClient.Sharp.Models;
 
-public class TrendyolResponseGetPaymentOrders
+public class TrendyolResponseGetPaymentOrders : TrendyolFinancePagedResponse<TrendyolPaymentOrder>
 {
-    [JsonPropertyName("page")]
-    public long Page { get; set; }
-
-    [JsonPropertyName("size")]
-    public long Size { get; set; }
-
-    [JsonPropertyName("totalPages")]
-    public long TotalPages { get; set; }
-
-    [JsonPropertyName("totalElements")]
-    public long TotalElements { get; set; }
-
-    [JsonPropertyName("content")]
-    public List<TrendyolPaymentOrder> Content { get; set; }
 }

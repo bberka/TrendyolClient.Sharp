@@ -38,7 +38,7 @@ This package does one thing: it gives you **type-safe access to the Trendyol API
 - **No retries.** Failed calls are not repeated. Many calls are not safe to repeat (creating products, splitting packages, creating claims), and the right policy depends on your workload.
 - **No business logic.** No caching of Trendyol data, no mapping to your domain model, no synchronization jobs.
 
-Keeping these out keeps the library small, predictable and easy to keep in step with Trendyol's API. If you need them, add them around the client. Retries and throttling, for example, belong in the `HttpClient` pipeline: the clients are built on the named `HttpClient` `"TrendyolClient"`, so you can attach your own handler or resilience policy with `services.AddHttpClient("TrendyolClient")` after `AddTrendyolApiClient`.
+Keeping these out keeps the library small, predictable and easy to keep in step with Trendyol's API. If you need them, add them around the client: see [Retries, throttling and other middleware](#retries-throttling-and-other-middleware).
 
 ## Supported frameworks
 
@@ -54,8 +54,6 @@ dotnet add package TrendyolClient.Sharp
 
 ### 1\. Registration
 
-Add the client factory to your dependency injection container in `Program.cs`.
-
 ```csharp
 builder.Services.AddTrendyolApiClient(config =>
 {
@@ -66,48 +64,74 @@ builder.Services.AddTrendyolApiClient(config =>
 });
 ```
 
-### 2\. Usage
+`AddTrendyolApiClient` returns the `IHttpClientBuilder` of the `HttpClient` all clients use, so you can chain your own handlers (see [Retries, throttling and other middleware](#retries-throttling-and-other-middleware)).
 
-Inject `TrendyolMarketplaceClientFactory` into your service. You can request specific clients (Marketplace, International, Webhook, Finance, Global Partner or Export) based on your needs (see [International Marketplace](#international-marketplace) for the other regions).
+### 2\. Get a client
+
+Pick the setup that fits how many sellers you serve.
+
+**One seller: register the credentials once and inject the client.** The clients are singletons, and each area interface (`ITrendyolOrderApi`, `ITrendyolProductApi`, `ITrendyolClaimApi`, ...) is registered too, so a class can depend on, and a test can fake, just the area it uses.
 
 ```csharp
-public class ProductService
+builder.Services.AddTrendyolApiClient();
+builder.Services.AddTrendyolSeller(new TrendyolCredentials(sellerId, apiKey, apiSecret));
+
+// or read them when first needed, from configuration or a secret store:
+builder.Services.AddTrendyolSeller(sp =>
+    sp.GetRequiredService<IOptions<MyTrendyolOptions>>().Value.ToCredentials());
+
+public class InventoryService(ITrendyolMarketplaceApi trendyol) { /* ... */ }
+```
+
+**Several sellers, or credentials that change: use the factory.** Pass a `TrendyolCredentials` (or the same values as separate arguments); clients are cached per seller, environment and storefront, and a new key or secret rebuilds the client.
+
+```csharp
+public class SyncJob(TrendyolMarketplaceClientFactory factory)
 {
-    private readonly TrendyolMarketplaceClientFactory _factory;
-
-    public ProductService(TrendyolMarketplaceClientFactory factory)
+    public async Task Run(TrendyolCredentials credentials)
     {
-        _factory = factory;
-    }
-
-    public async Task SyncInventory(long sellerId, string apiKey, string apiSecret)
-    {
-        // 1. Get the Marketplace client
-        // This leverages internal caching; calling this multiple times is cheap.
-        var client = _factory.GetOrCreateMarketplaceClient(sellerId, apiKey, apiSecret);
-
-        // 2. Make the API call (every method returns Refit's IApiResponse<T>)
-        try
-        {
-            var response = await client.UpdatePriceAndInventoryAsync(new TrendyolRequestUpdatePriceAndInventory
-            {
-                Items = new List<TrendyolPriceAndInventoryItem>
-                {
-                    new() { Barcode = "123456789", Quantity = 50, SalePrice = 199.90m, ListPrice = 249.90m }
-                }
-            });
-
-            // Product writes are asynchronous: poll the batch result with the returned id.
-            var batch = await client.GetBatchRequestResultAsync(response.Content.BatchRequestId);
-        }
-        catch (TrendyolRateLimitException ex) // only thrown when ThrowOnError = true
-        {
-            // HTTP 429: Trendyol allows 50 requests per 10 seconds per endpoint
-            Console.WriteLine($"Rate limited. Retry after: {ex.RetryAfter}");
-        }
+        var client = factory.GetOrCreateMarketplaceClient(credentials);
+        // ...
     }
 }
 ```
+
+`TrendyolCredentials` leaves the key and secret out of `ToString()`, so it is safe in a log line. Clients: Marketplace, International, Webhook, Finance, Global Partner and Export (see [International Marketplace](#international-marketplace) for the other regions).
+
+### 3\. Make a call
+
+```csharp
+public class ProductService(ITrendyolMarketplaceApi client)
+{
+    public async Task SyncInventory()
+    {
+        var response = await client.UpdatePriceAndInventoryAsync(new TrendyolRequestUpdatePriceAndInventory
+        {
+            Items = new List<TrendyolPriceAndInventoryItem>
+            {
+                new() { Barcode = "123456789", Quantity = 50, SalePrice = 199.90m, ListPrice = 249.90m }
+            }
+        });
+
+        // Every method returns Refit's IApiResponse<T>. Product writes are asynchronous: they answer 200 when queued,
+        // and Trendyol checks the items afterwards. Read the outcome with the batch id.
+        var batch = await client.GetBatchRequestResultAsync(response.Content.BatchRequestId);
+        batch.Content.EnsureSuccess(); // throws TrendyolBatchRequestFailedException if any item was rejected
+    }
+}
+```
+
+### Batch results
+
+Product operations (create, update, price and inventory, delete, archive, unlock) return a `batchRequestId` as soon as Trendyol accepts them. A rejected barcode or a missing brand only shows up later in `GetBatchRequestResultAsync`. The result has helpers so a failure is hard to miss:
+
+| Member | Meaning |
+| :----- | :------ |
+| `IsCompleted` | Trendyol finished the batch (status `COMPLETED`; for stock and price updates, which return no status, no item is `IN_PROGRESS`). |
+| `HasFailures` / `FailedItems` | Whether items were rejected, and which, with `FailureReasons`. |
+| `EnsureSuccess()` | Throws `TrendyolBatchRequestFailedException` (batch id, failed count, failed items) if anything failed; returns the result otherwise. |
+
+The library does not poll: how long to wait before reading the result is up to you.
 
 ## Architecture & Performance
 
@@ -115,7 +139,7 @@ This library uses a **Lazy-Loaded Container Pattern**.
 
 When you call `GetOrCreateMarketplaceClient`, the factory:
 
-1.  Checks an internal `ConcurrentDictionary` for an existing session for that `sellerId`.
+1.  Checks an internal `ConcurrentDictionary` for an existing client set for that seller, environment (production or stage) and storefront.
 2.  If found, it returns the client immediately.
 3.  If not found, it creates a **ClientContainer**.
 
@@ -237,9 +261,40 @@ if (!response.IsSuccessStatusCode)
 | `422` | `TrendyolBusinessRuleException` | Business rule violation. |
 | `429` | `TrendyolRateLimitException` | Too many requests. `RetryAfter` is taken from the `Retry-After` header, or one minute from now. |
 | `500` `502` `503` `504` | `TrendyolServerException` | Trendyol-side failure. Carries `StatusCode` and `ResponseBody`. Retry; on stage, `503` usually means your IP is not whitelisted. |
+| no response | `TrendyolNetworkException` | The connection failed or the request timed out (`InnerException` has the cause). A call you cancelled yourself is not wrapped. |
 | other | `TrendyolRequestFailedException` | For example `405`, `414`, `415`. Carries `StatusCode` and `ResponseBody`. |
 
 Trendyol allows **50 requests per 10 seconds per endpoint**; the 51st gets a `429`.
+
+## Retries, throttling and other middleware
+
+The library does not retry, throttle or validate (see [Scope](#scope)). When you need it, add it to the `HttpClient` pipeline through the builder `AddTrendyolApiClient` returns. A handler runs for every call of every Trendyol client, and it can read the seller from the `X-Internal-Seller-Id` request header (the header is removed just before the request leaves, so Trendyol never sees it).
+
+```csharp
+builder.Services.AddTrendyolApiClient(config => config.ThrowOnError = false)
+    .AddHttpMessageHandler<MyThrottlingHandler>();   // your own DelegatingHandler
+```
+
+With `Microsoft.Extensions.Http.Resilience`, retry only what is safe to repeat: reads, and the `429` that Trendyol returns when you exceed its limit. Do not blindly retry writes: creating products, splitting packages and creating claims are not idempotent.
+
+```csharp
+builder.Services.AddTrendyolApiClient()
+    .AddResilienceHandler("trendyol", pipeline =>
+    {
+        pipeline.AddRetry(new HttpRetryStrategyOptions
+        {
+            MaxRetryAttempts = 3,
+            BackoffType = DelayBackoffType.Exponential,
+            UseJitter = true,
+            ShouldHandle = args => ValueTask.FromResult(
+                args.Outcome.Result?.StatusCode == HttpStatusCode.TooManyRequests ||
+                (args.Outcome.Result?.RequestMessage?.Method == HttpMethod.Get &&
+                 args.Outcome.Result.StatusCode >= HttpStatusCode.InternalServerError))
+        });
+    });
+```
+
+Trendyol allows 50 requests per 10 seconds per endpoint. To stay under it, put a rate limiter in the same pipeline (`AddRateLimiter`, or your own handler keyed on the seller header).
 
 ## Advanced Configuration
 

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Net.Http;
 using System.Threading;
@@ -10,18 +10,18 @@ internal sealed class TrendyolSellerIdInjectorMessageHandler : DelegatingHandler
 {
     protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
     {
-        if (request.Headers.TryGetValues("X-Internal-Seller-Id", out var sellerIdValues))
+        if (request.Headers.TryGetValues(TrendyolInternals.SellerIdHeader, out var sellerIdValues))
         {
             var sellerId = sellerIdValues.FirstOrDefault();
             var uriBuilder = new UriBuilder(request.RequestUri!);
-            uriBuilder.Path = uriBuilder.Path.Replace("SELLER_ID_PARAMETER", sellerId);
+            uriBuilder.Path = uriBuilder.Path.Replace(TrendyolInternals.SellerIdToken, sellerId);
             request.RequestUri = uriBuilder.Uri;
 
             // Some endpoints (e.g. test orders) take the seller id as a header, declared with the same placeholder.
-            if (request.Headers.TryGetValues("SellerID", out var headerValues) && headerValues.Any(x => x.Contains("SELLER_ID_PARAMETER")))
+            if (request.Headers.TryGetValues(TrendyolInternals.SellerIdRequestHeader, out var headerValues) && headerValues.Any(x => x.Contains(TrendyolInternals.SellerIdToken)))
             {
-                request.Headers.Remove("SellerID");
-                request.Headers.TryAddWithoutValidation("SellerID", sellerId);
+                request.Headers.Remove(TrendyolInternals.SellerIdRequestHeader);
+                request.Headers.TryAddWithoutValidation(TrendyolInternals.SellerIdRequestHeader, sellerId);
             }
         }
 

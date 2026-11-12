@@ -2,7 +2,6 @@ using System;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
 using TrendyolClient.Sharp.Exceptions;
 using TrendyolClient.Sharp.Tests.Support;
 using Xunit;
@@ -14,26 +13,13 @@ public class ErrorHandlingTests
     private static (ITrendyolMarketplaceApi Client, RecordingHandler Transport) Build(bool throwOnError, HttpStatusCode status, string body = """{"errors":[{"message":"boom"}]}""",
         Action<HttpResponseMessage> tweak = null)
     {
-        var transport = new RecordingHandler
+        var (factory, transport) = Harness.Create(new TrendyolClientConfig { ThrowOnError = throwOnError, EnableLogging = false });
+        transport.Responder = _ =>
         {
-            Responder = _ =>
-            {
-                var response = RecordingHandler.Json(status, body);
-                tweak?.Invoke(response);
-                return response;
-            }
+            var response = RecordingHandler.Json(status, body);
+            tweak?.Invoke(response);
+            return response;
         };
-
-        var services = new ServiceCollection();
-        services.AddTrendyolApiClient(c =>
-        {
-            c.ThrowOnError = throwOnError;
-            c.EnableLogging = false;
-        });
-        // Replace the real network handler with the fake transport
-        services.AddHttpClient("TrendyolClient").ConfigurePrimaryHttpMessageHandler(() => transport);
-
-        var factory = services.BuildServiceProvider().GetRequiredService<TrendyolMarketplaceClientFactory>();
         return (factory.GetOrCreateMarketplaceClient(Harness.SellerId, "k", "s"), transport);
     }
 
@@ -147,5 +133,54 @@ public class ErrorHandlingTests
         var response = await client.GetCountriesAsync();
 
         Assert.True(response.IsSuccessStatusCode);
+    }
+
+    // ---- network failures --------------------------------------------------------------------------------------
+
+    [Fact]
+    public async Task Connection_failure_throws_network_exception_with_the_cause()
+    {
+        var (client, transport) = Build(true, HttpStatusCode.OK);
+        transport.Responder = _ => throw new HttpRequestException("connection refused");
+
+        var ex = await Assert.ThrowsAsync<TrendyolNetworkException>(() => client.GetCountriesAsync());
+
+        Assert.IsType<HttpRequestException>(ex.InnerException);
+        Assert.Contains("connection refused", ex.Message);
+    }
+
+    [Fact]
+    public async Task Timeout_throws_network_exception_mentioning_the_configured_timeout()
+    {
+        var (client, transport) = Build(true, HttpStatusCode.OK);
+        transport.Responder = _ => throw new TaskCanceledException("timeout", new TimeoutException());
+
+        var ex = await Assert.ThrowsAsync<TrendyolNetworkException>(() => client.GetCountriesAsync());
+
+        Assert.Contains("30 seconds", ex.Message);
+    }
+
+    [Fact]
+    public async Task Cancelling_the_call_is_not_reported_as_a_network_error()
+    {
+        using var cts = new System.Threading.CancellationTokenSource();
+        await cts.CancelAsync();
+        var handler = new TrendyolClient.Sharp.Handlers.TrendyolErrorMappingHandler(new TrendyolClientConfig())
+        {
+            InnerHandler = new RecordingHandler { Responder = _ => throw new TaskCanceledException() }
+        };
+        using var http = new HttpClient(handler);
+
+        // The caller asked for the cancellation, so it must pass through untouched
+        await Assert.ThrowsAsync<TaskCanceledException>(() => http.GetAsync("https://example.com", cts.Token));
+    }
+
+    [Fact]
+    public async Task Without_throw_on_error_network_failures_stay_raw()
+    {
+        var (client, transport) = Build(false, HttpStatusCode.OK);
+        transport.Responder = _ => throw new HttpRequestException("connection refused");
+
+        await Assert.ThrowsAsync<HttpRequestException>(() => client.GetCountriesAsync());
     }
 }

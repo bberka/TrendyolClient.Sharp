@@ -56,6 +56,7 @@ public class RouteSmokeTests
             Assert.DoesNotContain("}", request.PathAndQuery);
             Assert.True(request.PathAndQuery.StartsWith("/integration/"), where);
             var route = method.GetCustomAttributes().OfType<HttpMethodAttribute>().Single().Path;
+            Assert.False(request.Message.Headers.Contains("X-Internal-Seller-Id"), where);
             if (route.Contains("SELLER_ID_PARAMETER")) Assert.Contains($"/{SellerId}", request.PathAndQuery);
             if (request.Message.Headers.TryGetValues("SellerID", out var sid)) Assert.Equal(SellerId.ToString(), sid.Single());
         }

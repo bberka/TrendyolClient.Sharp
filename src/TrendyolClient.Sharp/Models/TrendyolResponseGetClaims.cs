@@ -1,22 +1,5 @@
-using System.Collections.Generic;
-using System.Text.Json.Serialization;
-
 namespace TrendyolClient.Sharp.Models;
 
-public class TrendyolResponseGetClaims
+public class TrendyolResponseGetClaims : TrendyolPagedResponse<TrendyolClaim>
 {
-    [JsonPropertyName("content")]
-    public List<TrendyolClaim> Content { get; set; }
-
-    [JsonPropertyName("page")]
-    public int Page { get; set; }
-
-    [JsonPropertyName("size")]
-    public int Size { get; set; }
-
-    [JsonPropertyName("totalElements")]
-    public long TotalElements { get; set; }
-
-    [JsonPropertyName("totalPages")]
-    public int TotalPages { get; set; }
 }
