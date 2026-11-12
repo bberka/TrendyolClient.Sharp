@@ -21,4 +21,10 @@
         <ProjectReference Include="..\..\src\TrendyolClient.Sharp\TrendyolClient.Sharp.csproj"/>
     </ItemGroup>
 
+    <!-- Installs the Git hooks (Husky.Net) on a developer's first restore. Skipped on CI and when HUSKY=0. -->
+    <Target Name="InstallGitHooks" BeforeTargets="Restore;CollectPackageReferences" Condition="'$(HUSKY)' != '0' And '$(CI)' != 'true'">
+        <Exec Command="dotnet tool restore" WorkingDirectory="$(MSBuildThisFileDirectory)../.." StandardOutputImportance="Low" StandardErrorImportance="High" ContinueOnError="true"/>
+        <Exec Command="dotnet husky install" WorkingDirectory="$(MSBuildThisFileDirectory)../.." StandardOutputImportance="Low" StandardErrorImportance="High" ContinueOnError="true"/>
+    </Target>
+
 </Project>

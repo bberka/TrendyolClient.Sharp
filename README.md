@@ -70,7 +70,7 @@ builder.Services.AddTrendyolApiClient(config =>
 
 Pick the setup that fits how many sellers you serve.
 
-**One seller: register the credentials once and inject the client.** The clients are singletons, and each area interface (`ITrendyolOrderApi`, `ITrendyolProductApi`, `ITrendyolClaimApi`, ...) is registered too, so a class can depend on, and a test can fake, just the area it uses.
+For one seller, register the credentials once and inject the client. The clients are singletons, and each area interface (`ITrendyolOrderApi`, `ITrendyolProductApi`, `ITrendyolClaimApi`, ...) is registered too, so a class can depend on, and a test can fake, just the area it uses.
 
 ```csharp
 builder.Services.AddTrendyolApiClient();
@@ -83,7 +83,7 @@ builder.Services.AddTrendyolSeller(sp =>
 public class InventoryService(ITrendyolMarketplaceApi trendyol) { /* ... */ }
 ```
 
-**Several sellers, or credentials that change: use the factory.** Pass a `TrendyolCredentials` (or the same values as separate arguments); clients are cached per seller, environment and storefront, and a new key or secret rebuilds the client.
+For several sellers, or credentials that change, use the factory. Pass a `TrendyolCredentials` (or the same values as separate arguments); clients are cached per seller, environment and storefront, and a new key or secret rebuilds the client.
 
 ```csharp
 public class SyncJob(TrendyolMarketplaceClientFactory factory)
@@ -335,38 +335,61 @@ The **`VERSION`** file in the repository root holds only `MAJOR.MINOR` (for exam
 
 | Workflow | Trigger | What it does |
 | :------- | :------ | :----------- |
-| `ci.yml` | every pull request | Builds, runs the tests on net8.0, net9.0 and net10.0, and packs. Mark the **Build & test** check as required in the branch protection rules so a pull request cannot merge unless it passes. |
-| `nightly-release.yml` | push to `master` | Runs the tests, then publishes `<next version>-nightly.<timestamp>` (for example `2.0.1-nightly.202611121200`) to NuGet as a pre-release. |
-| `release.yml` | manual (**Actions > Release > Run workflow**, on `master`) | Runs the tests, publishes the next version (for example `2.0.1`) to NuGet, then creates the `v2.0.1` tag and GitHub release. Tick *dry run* to build, test and pack without publishing. |
+| `ci.yml` | every pull request | Builds, runs the tests on net8.0, net9.0 and net10.0, and packs. `master` is protected: the **Build & test** check must pass before a merge. |
+| `release.yml` | manual only (**Actions > Release > Run workflow**) | Runs the tests, then publishes to NuGet and creates the GitHub release. Two checkboxes choose what it does, see below. |
 
-There are no release candidates: every merge to `master` produces a nightly, and a stable version is published only when you run **Release**. The release workflow refuses to run outside `master`, and it never silently skips a version that already exists on NuGet.
+Nothing is published automatically: a merge to `master` publishes nothing. When you run **Release**, two checkboxes decide the outcome:
+
+| `nightly` | `dry run` | Result |
+| :-------- | :-------- | :----- |
+| ticked (default) | unticked | A pre-release `<next version>-nightly.<timestamp>` (for example `2.1.0-nightly.202611121200`) on NuGet and GitHub. Runs from any branch. |
+| unticked | unticked | A stable release `<next version>` (for example `2.1.0`) on NuGet, with its `v2.1.0` tag and GitHub release. Runs on `master` only. |
+| either | ticked | Builds, tests and packs only. Nothing is published or tagged, and the packages are attached to the run for inspection. |
+
+`nightly` is ticked by default, so a stray click cannot publish a stable version. Both kinds attach the `.nupkg` and a zip per target framework. The workflow never silently skips a version that already exists on NuGet.
 
 ### One-time NuGet setup (trusted publishing)
 
 The workflows publish with [NuGet trusted publishing](https://learn.microsoft.com/en-us/nuget/nuget-org/trusted-publishing), so **no NuGet API key is stored in the repository**. GitHub proves which workflow is running, and nuget.org hands it a temporary API key that is valid for one hour. Set it up once:
 
-1. On nuget.org: click your username, then **Trusted Publishing**, and add one policy per publishing workflow:
+1. On nuget.org: click your username, then **Trusted Publishing**, and add a policy for the publishing workflow:
 
    | Repository Owner | Repository | Workflow File | Environment |
    | :--------------- | :--------- | :------------ | :---------- |
-   | `bberka` | `TrendyolClient.Sharp` | `nightly-release.yml` | (leave empty) |
    | `bberka` | `TrendyolClient.Sharp` | `release.yml` | (leave empty) |
 
-   The workflow file is the file name only, without `.github/workflows/`.
+   The workflow file is the file name only, without `.github/workflows/`. An older policy for `nightly-release.yml` is no longer used and can be deleted.
 2. On GitHub: **Settings > Secrets and variables > Actions > Variables**, add a repository variable `NUGET_USER` with your nuget.org **username** (the profile name, not your email address).
 3. Delete the old `NUGET_API_KEY` secret and revoke that key on nuget.org.
 
-The first stable release will be **2.0.0**, matching Trendyol's Product V2 and Order V2 services. There is no 1.x: before this the package was only published as `0.0.1-nightly.*` builds.
+The first stable release was **2.0.0**, matching Trendyol's Product V2 and Order V2 services. There is no 1.x: before 2.0.0 the package was only published as `0.0.1-nightly.*` builds.
 
 A local `dotnet build` or `dotnet pack` produces `<MAJOR.MINOR>.0-local`, so a local package can never be mistaken for a release.
 
 ## Contributing
 
-We welcome contributions\! Since this is a community project:
+Open an issue before significant work, so we agree on the direction first.
 
-1.  **Open an Issue** before starting significant work to ensure alignment.
-2.  **Follow Conventions:** Ensure all new models use the `Trendyol` prefix.
-3.  **Tests:** Run `dotnet test` (it runs on net8.0, net9.0 and net10.0). The suite calls every client method against a fake handler and checks the models against Trendyol's documented example payloads; add a fixture when you add a model.
+### Setup
+
+Install the .NET 10 SDK (and the .NET 8 and 9 runtimes to run every test target), clone the repository, and run `dotnet restore`. The first restore installs Git hooks with [Husky.Net](https://alirezanet.github.io/Husky.Net/):
+
+| Hook | What it checks |
+| :--- | :------------- |
+| `pre-commit` | Builds with warnings as errors and runs the tests, unless only docs changed. Checks that Markdown code fences are closed. |
+| `commit-msg` | Subject of at most 72 characters without a trailing period, a blank second line, body wrapped at 72. |
+
+Run the build and test check by hand with `bash scripts/check-dotnet.sh`. Set `HUSKY=0` to skip installing the hooks, and do not bypass them with `--no-verify`.
+
+### Pull requests
+
+Branch from `master` (a separate Git worktree per task keeps work apart), commit in logical groups, and open the pull request when the work is done. `master` is protected: the **Build & test** check must pass before a merge.
+
+- **Conventions:** models are one class per file with the `Trendyol` prefix (`TrendyolIntl` and `TrendyolGlobal` for those clients).
+- **Tests:** run `dotnet test`. The suite calls every client method against a fake handler and checks the models against Trendyol's documented example payloads. Add a fixture when you add a model.
+- **Docs:** update the README in the same pull request.
+
+AI coding agents follow [AGENTS.md](AGENTS.md), which describes the workflow in full.
 
 ## Disclaimer
 
