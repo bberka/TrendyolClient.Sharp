@@ -1,22 +1,9 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512" role="img" aria-label="TrendyolClient.Sharp icon: a shopping bag with code brackets">
-  <defs>
-    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#4338ca"/>
-      <stop offset="1" stop-color="#7c3aed"/>
-    </linearGradient>
-  </defs>
-  <rect width="512" height="512" rx="112" fill="url(#bg)"/>
-  <!-- bag handle: a wide, shallow loop -->
-  <path d="M190 214C190 120 322 120 322 214" fill="none" stroke="#ffffff" stroke-width="22" stroke-linecap="round"/>
-  <!-- bag body, slightly wider at the bottom -->
-  <path d="M146 196H366L398 420Q400 444 376 444H136Q112 444 114 420Z" fill="#ffffff"/>
-  <!-- handle rivets -->
-  <circle cx="190" cy="228" r="10" fill="#4338ca"/>
-  <circle cx="322" cy="228" r="10" fill="#4338ca"/>
-  <!-- </> -->
-  <g fill="none" stroke="#4338ca" stroke-width="20" stroke-linecap="round" stroke-linejoin="round">
-    <polyline points="222,290 190,324 222,358"/>
-    <polyline points="290,290 322,324 290,358"/>
-    <line x1="270" y1="282" x2="242" y2="366"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512" role="img" aria-label="TrendyolClient.Sharp icon: a T between curly braces">
+  <rect width="512" height="512" rx="112" fill="#111827"/>
+  <g fill="none" stroke="#fbbf24" stroke-width="22" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M188 112C142 112 148 152 148 198C148 238 124 246 110 256C124 266 148 274 148 314C148 360 142 400 188 400"/>
+    <path d="M324 112C370 112 364 152 364 198C364 238 388 246 402 256C388 266 364 274 364 314C364 360 370 400 324 400"/>
   </g>
+  <!-- T: wide bar, sturdy stem, centred on the braces -->
+  <path d="M192 170H320a10 10 0 0 1 10 10V206a10 10 0 0 1-10 10H279V336a10 10 0 0 1-10 10H243a10 10 0 0 1-10-10V216H192a10 10 0 0 1-10-10V180a10 10 0 0 1 10-10Z" fill="#ffffff"/>
 </svg>
