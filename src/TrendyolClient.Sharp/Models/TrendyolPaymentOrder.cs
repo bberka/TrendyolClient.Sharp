@@ -31,15 +31,9 @@ public class TrendyolPaymentOrder
     [JsonPropertyName("payoutDate")]
     public long? PayoutDate { get; set; }
 
-    /// <summary>
-    ///     Payment type
-    /// </summary>
     [JsonPropertyName("paymentType")]
     public string PaymentType { get; set; }
 
-    /// <summary>
-    ///     Seller ID
-    /// </summary>
     [JsonPropertyName("sellerId")]
     public long SellerId { get; set; }
 

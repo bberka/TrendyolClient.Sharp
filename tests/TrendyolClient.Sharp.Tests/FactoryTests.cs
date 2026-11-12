@@ -77,7 +77,7 @@ public class FactoryTests
     }
 
     [Fact]
-    public async Task Invalidate_drops_both_environments()
+    public void Invalidate_drops_both_environments()
     {
         var (factory, _) = Harness.Create();
         var prod = factory.GetOrCreateMarketplaceClient(Seller, "k", "s");

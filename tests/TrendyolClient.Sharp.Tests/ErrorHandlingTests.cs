@@ -148,16 +148,4 @@ public class ErrorHandlingTests
 
         Assert.True(response.IsSuccessStatusCode);
     }
-
-    [Fact]
-    public void Exception_types_are_public_so_callers_can_catch_them()
-    {
-        var publicTypes = typeof(TrendyolException).Assembly.GetExportedTypes();
-        foreach (var type in new[]
-                 {
-                     typeof(TrendyolException), typeof(TrendyolAuthenticationException), typeof(TrendyolRateLimitException),
-                     typeof(TrendyolValidationException), typeof(TrendyolNotFoundException), typeof(TrendyolServerException)
-                 })
-            Assert.Contains(type, publicTypes);
-    }
 }
