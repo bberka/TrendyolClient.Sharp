@@ -42,8 +42,8 @@ jobs:
       - name: Restore
         run: dotnet restore
 
-      - name: Build (all target frameworks)
-        run: dotnet build --configuration Release --no-restore
+      - name: Build (all target frameworks, warnings are errors)
+        run: dotnet build --configuration Release --no-restore -warnaserror
 
       - name: Test (net8.0, net9.0, net10.0)
         run: dotnet test --configuration Release --no-build --logger "trx;LogFileName=test-results.trx" --results-directory ./test-results
