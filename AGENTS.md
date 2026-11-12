@@ -14,7 +14,7 @@ src/TrendyolClient.Sharp/    the package
   TrendyolMarketplaceClientFactory.cs, TrendyolServiceCollectionExtensions.cs, TrendyolJson.cs, TrendyolCredentials.cs
 tests/TrendyolClient.Sharp.Tests/   route smoke tests, fixture round trips, setup and error tests
 scripts/  .husky/                   Git hook checks
-.github/workflows/                  ci.yml, nightly-release.yml, release.yml
+.github/workflows/                  ci.yml (pull requests), release.yml (manual)
 VERSION                             MAJOR.MINOR only; CI computes the patch from release tags
 ```
 
