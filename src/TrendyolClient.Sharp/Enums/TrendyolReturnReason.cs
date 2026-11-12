@@ -37,7 +37,11 @@ public enum TrendyolReturnReason
     ProductWithCustomer = 2013, //Trendyol
     SendForAnalysis = 2014, //Trendyol
     UndeliverableShipment = 2015, //Trendyol
+    Compensation = 2017, //Trendyol
     BetterPriceAvailable = 2030, // Better Price Available
     DontLikeProduct = 2042, // Don't Like Product
-    MissingPartOfProduct = 2043 // Missing Part Of Product
+    MissingPartOfProduct = 2043, // Missing Part Of Product
+    ShipmentNotDispatched = 2058, //Trendyol
+    CustomerApprovalNotCompleted = 2065, //Trendyol
+    CancelledByCustomerRequest = 2067 //Trendyol
 }

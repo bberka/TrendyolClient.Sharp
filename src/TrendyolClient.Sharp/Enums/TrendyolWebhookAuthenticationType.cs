@@ -1,29 +1,20 @@
-using System.Runtime.Serialization;
 using System.Text.Json.Serialization;
 
 namespace TrendyolClient.Sharp.Enums;
 
 /// <summary>
-///     Authentication types supported by Trendyol webhooks
+///     Authentication types supported by Trendyol webhooks ("BASIC_AUTHENTICATION" or "API_KEY").
 /// </summary>
-[JsonConverter(typeof(JsonStringEnumConverter))]
+[JsonConverter(typeof(TrendyolUpperSnakeCaseEnumConverter))]
 public enum TrendyolWebhookAuthenticationType
 {
     /// <summary>
-    ///     Basic HTTP authentication with username and password
+    ///     Requires <c>username</c> and <c>password</c>.
     /// </summary>
-    [EnumMember(Value = "BASIC")]
-    Basic,
+    BasicAuthentication,
 
     /// <summary>
-    ///     API Key authentication
+    ///     Requires <c>apiKey</c>; Trendyol sends it in the <c>x-api-key</c> header.
     /// </summary>
-    [EnumMember(Value = "API_KEY")]
-    ApiKey,
-
-    /// <summary>
-    ///     No authentication required
-    /// </summary>
-    [EnumMember(Value = "NONE")]
-    None
+    ApiKey
 }

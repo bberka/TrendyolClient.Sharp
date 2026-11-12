@@ -7,6 +7,6 @@ public class TrendyolClaimIssueReason
     [JsonPropertyName("id")]
     public long Id { get; set; }
 
-    [JsonPropertyName("reasonText")]
-    public string ReasonText { get; set; }
+    [JsonPropertyName("name")]
+    public string Name { get; set; }
 }

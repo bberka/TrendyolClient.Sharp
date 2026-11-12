@@ -5,7 +5,7 @@ namespace TrendyolClient.Sharp.Exceptions;
 /// <summary>
 ///     Exception thrown when a business rule validation fails on the server
 /// </summary>
-internal class TrendyolBusinessRuleException(
+public class TrendyolBusinessRuleException(
     string message,
     string errorCode = null,
     Dictionary<string, object> errorDetails = null) : TrendyolException(message)

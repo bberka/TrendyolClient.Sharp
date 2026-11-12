@@ -1,5 +1,9 @@
-﻿namespace TrendyolClient.Sharp.Enums;
+namespace TrendyolClient.Sharp.Enums;
 
+/// <summary>
+///     Transaction types accepted by the settlements service. Names are sent to the API as-is.
+///     SellerRevenue* and Commission* records belong together (e.g. SellerRevenuePositive with CommissionNegative).
+/// </summary>
 public enum TrendyolSettlementsTransactionType
 {
     Sale,
@@ -12,8 +16,19 @@ public enum TrendyolSettlementsTransactionType
     ProvisionNegative,
     ManualRefund,
     ManualRefundCancel,
-    TYDiscount,
-    TYDiscountCancel,
-    TYCoupon,
-    TYCouponCancel
+    TyDiscount,
+    TyDiscountCancel,
+    TyCoupon,
+    TyCouponCancel,
+    SellerRevenuePositive,
+    SellerRevenueNegative,
+    CommissionPositive,
+    CommissionNegative,
+    SellerRevenuePositiveCancel,
+    SellerRevenueNegativeCancel,
+    CommissionPositiveCancel,
+    CommissionNegativeCancel,
+    DeliveryFee,
+    DeliveryFeeCancel,
+    PayByLink
 }

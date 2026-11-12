@@ -1,0 +1,149 @@
+{
+ "totalElements": 1,
+ "totalPages": 1,
+ "page": 0,
+ "size": 20,
+ "nextPageToken": "eyJzb3J0IjpbMTI3MTU4MTVdfQ==",
+ "content": [
+  {
+   "contentId": 12715815,
+   "productMainId": "12613876842A60",
+   "brand": {
+    "id": 315675,
+    "name": "GUEYA"
+   },
+   "category": {
+    "id": 91266,
+    "name": "DOKUNMAYIN Attribute Attribute"
+   },
+   "creationDate": 1760531038063,
+   "lastModifiedDate": 1760938781669,
+   "lastModifiedBy": "anilcan.gul@trendyol.com",
+   "title": "Açık Gri T-",
+   "description": "değişti değişti2",
+   "images": [
+    {
+     "url": "/mediacenter-stage3/stage/QC_PREP/20250731/11/f63d6503-ab94-3567-adbc-8f26a5cdaac6/1.jpg"
+    }
+   ],
+   "attributes": [
+    {
+     "attributeId": 47,
+     "attributeName": "Renk",
+     "attributeValue": "Black"
+    },
+    {
+     "attributeId": 295,
+     "attributeName": "Web Color",
+     "attributeValueId": 2886,
+     "attributeValue": "Kırmızı"
+    },
+    {
+     "attributeId": 294,
+     "attributeName": "Yaş Grubu",
+     "attributeValueId": 2879,
+     "attributeValue": "Yetişkin"
+    },
+    {
+     "attributeId": 296,
+     "attributeName": "Cinsiyet",
+     "attributeValueId": 2873,
+     "attributeValue": "Erkek"
+    }
+   ],
+   "variants": [
+    {
+     "variantId": 70228905,
+     "supplierId": 99999999,
+     "barcode": "12613876842A60",
+     "commission": 7.83,
+     "attributes": [
+      {
+       "attributeId": 293,
+       "attributeName": "Beden",
+       "attributeValueId": 4602,
+       "attributeValue": "77 x 200 cm"
+      }
+     ],
+     "productUrl": "https://stage.trendyol.com/abc/xyz-p-12715815?&merchantId=99999999&filterOverPriceListings=false",
+     "onSale": false,
+     "channels": [
+      "CORE",
+      "LUXE"
+     ],
+     "deliveryOption": {
+      "deliveryDuration": 0
+     },
+     "stock": {
+      "quantity": 0,
+      "lastModifiedDate": 1774948958844
+     },
+     "price": {
+      "salePrice": 222,
+      "listPrice": 222,
+      "priceSeenByCustomer": 169
+     },
+     "stockCode": "STK-stokum-1",
+     "origin": "AD",
+     "vatRate": 0,
+     "sellerCreatedDate": 1760534152000,
+     "sellerModifiedDate": 1761041127000,
+     "locked": false,
+     "lockReason": null,
+     "lockDate": null,
+     "archived": false,
+     "archivedDate": null,
+     "docNeeded": false,
+     "hasViolation": false,
+     "blacklisted": false
+    },
+    {
+     "variantId": 70229505,
+     "supplierId": 99999999,
+     "barcode": "12613876842A61",
+     "commission": 7.83,
+     "attributes": [
+      {
+       "attributeId": 293,
+       "attributeName": "Beden",
+       "attributeValueId": 4603,
+       "attributeValue": "77 x 300 cm"
+      }
+     ],
+     "productUrl": "https://stage.trendyol.com/abc/xyz-p-12715815?&merchantId=99999999&filterOverPriceListings=false",
+     "onSale": false,
+     "channels": [
+      "CORE",
+      "LUXE"
+     ],
+     "deliveryOption": {
+      "deliveryDuration": 0
+     },
+     "stock": {
+      "lastModifiedDate": null
+     },
+     "price": {
+      "salePrice": 222,
+      "listPrice": 222,
+      "priceSeenByCustomer": 169
+     },
+     "stockCode": "STK-stokum-1",
+     "vatRate": 0,
+     "sellerCreatedDate": 1760534320000,
+     "sellerModifiedDate": 1761041127000,
+     "locked": false,
+     "lockReason": null,
+     "lockDate": null,
+     "archived": false,
+     "archivedDate": null,
+     "docNeeded": false,
+     "hasViolation": false,
+     "blacklisted": false,
+     "cargoProviders": [
+      "kargo firması kodu"
+     ]
+    }
+   ]
+  }
+ ]
+}

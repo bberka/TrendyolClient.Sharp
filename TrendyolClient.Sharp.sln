@@ -2,6 +2,8 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TrendyolClient.Sharp", "src\TrendyolClient.Sharp\TrendyolClient.Sharp.csproj", "{AE1302D0-B836-4555-A3F9-CCA6F29DFF00}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TrendyolClient.Sharp.Tests", "tests\TrendyolClient.Sharp.Tests\TrendyolClient.Sharp.Tests.csproj", "{B7A2C1D4-5E6F-4A8B-9C0D-1E2F3A4B5C6D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -12,6 +14,10 @@ Global
 		{AE1302D0-B836-4555-A3F9-CCA6F29DFF00}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AE1302D0-B836-4555-A3F9-CCA6F29DFF00}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AE1302D0-B836-4555-A3F9-CCA6F29DFF00}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B7A2C1D4-5E6F-4A8B-9C0D-1E2F3A4B5C6D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B7A2C1D4-5E6F-4A8B-9C0D-1E2F3A4B5C6D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B7A2C1D4-5E6F-4A8B-9C0D-1E2F3A4B5C6D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B7A2C1D4-5E6F-4A8B-9C0D-1E2F3A4B5C6D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 	EndGlobalSection

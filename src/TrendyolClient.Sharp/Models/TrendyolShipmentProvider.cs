@@ -22,7 +22,7 @@ public readonly struct TrendyolShipmentProvider
         TaxNumber = taxNumber;
     }
 
-    public static readonly TrendyolShipmentProvider KolayGelsin = new(38, "SENDEOMP", "Kolay Gelsin Marketplace", "2910804196");
+    public static readonly TrendyolShipmentProvider KolayGelsin = new(38, "KOLAYGELSINMP", "Kolay Gelsin Marketplace", "2910804196");
 
     public static readonly TrendyolShipmentProvider Borusan = new(30, "BORMP", "Borusan Lojistik Marketplace", "1800038254");
 

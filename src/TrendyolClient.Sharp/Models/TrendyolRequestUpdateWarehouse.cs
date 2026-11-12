@@ -5,5 +5,5 @@ namespace TrendyolClient.Sharp.Models;
 public class TrendyolRequestUpdateWarehouse
 {
     [JsonPropertyName("warehouseId")]
-    public int WarehouseId { get; set; }
+    public long WarehouseId { get; set; }
 }

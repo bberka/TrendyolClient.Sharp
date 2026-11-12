@@ -5,7 +5,7 @@ namespace TrendyolClient.Sharp.Exceptions;
 /// <summary>
 ///     Exception thrown when API rate limit is exceeded
 /// </summary>
-internal class TrendyolRateLimitException : TrendyolException
+public class TrendyolRateLimitException : TrendyolException
 {
     public TrendyolRateLimitException(string message, DateTimeOffset? retryAfter = null) : base(message)
     {

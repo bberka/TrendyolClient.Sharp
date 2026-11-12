@@ -1,0 +1,91 @@
+name: Release
+
+# Manual stable release. Run it from the Actions tab on master.
+# VERSION holds MAJOR.MINOR; the patch is the next free number for that line (see .github/scripts/next-version.sh).
+# It publishes MAJOR.MINOR.PATCH to NuGet and creates the matching v<version> tag and GitHub release.
+on:
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Build, test and pack only. Do not publish or tag."
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Require master
+        if: github.ref != 'refs/heads/master'
+        run: |
+          echo "::error::Releases can only be made from master (this run is on ${{ github.ref }})."
+          exit 1
+
+      - name: Compute version
+        id: version
+        run: |
+          info=$(.github/scripts/next-version.sh)
+          echo "$info"
+          version=$(echo "$info" | sed -n 's/^version=//p')
+          previous=$(echo "$info" | sed -n 's/^previous=//p')
+          tag="v$version"
+          if git ls-remote --exit-code --tags origin "refs/tags/$tag" > /dev/null 2>&1; then
+            echo "::error::Tag $tag already exists."
+            exit 1
+          fi
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+          echo "previous=$previous" >> "$GITHUB_OUTPUT"
+          echo "Releasing $version (tag $tag, notes since ${previous:-the beginning})"
+
+      - name: Setup .NET 8, 9 and 10
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: |
+            8.0.x
+            9.0.x
+            10.0.x
+
+      - name: Restore
+        run: dotnet restore
+
+      - name: Test
+        run: dotnet test --configuration Release
+
+      - name: Pack
+        run: dotnet pack ./src/TrendyolClient.Sharp/TrendyolClient.Sharp.csproj --configuration Release --output ./nuget_packages -p:Version=${{ steps.version.outputs.version }}
+
+      - name: Publish to NuGet
+        if: ${{ !inputs.dry_run }}
+        # No --skip-duplicate: publishing a version that already exists must fail loudly.
+        run: dotnet nuget push "./nuget_packages/*.nupkg" --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json
+
+      - name: Create tag and GitHub release
+        if: ${{ !inputs.dry_run }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          args=(--target "${{ github.sha }}" --title "v${{ steps.version.outputs.version }}" --generate-notes --latest)
+          if [ -n "${{ steps.version.outputs.previous }}" ]; then args+=(--notes-start-tag "${{ steps.version.outputs.previous }}"); fi
+          gh release create "${{ steps.version.outputs.tag }}" "${args[@]}" ./nuget_packages/*.nupkg
+
+      - name: Upload package (dry run)
+        if: ${{ inputs.dry_run }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: nuget-packages
+          path: nuget_packages
+          retention-days: 3

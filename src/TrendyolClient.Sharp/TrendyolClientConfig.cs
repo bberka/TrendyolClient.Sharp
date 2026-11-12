@@ -1,4 +1,4 @@
-﻿namespace TrendyolClient.Sharp;
+namespace TrendyolClient.Sharp;
 
 /// <summary>
 ///     Configuration options for TrendyolClient
@@ -6,7 +6,9 @@
 public class TrendyolClientConfig
 {
     /// <summary>
-    ///     Name of your integration (appears in User-Agent header)
+    ///     Name of your integration (appears in the User-Agent header as "{sellerId} - {IntegrationName}").
+    ///     Trendyol requires alphanumeric characters only, at most 30 characters; requests without a User-Agent are rejected with 403.
+    ///     Use "SelfIntegration" when the software belongs to the seller itself.
     ///     Default: "SelfIntegration"
     /// </summary>
     public string IntegrationName { get; set; } = "SelfIntegration";
@@ -22,4 +24,12 @@ public class TrendyolClientConfig
     ///     Default: true
     /// </summary>
     public bool EnableLogging { get; set; } = true;
+
+    /// <summary>
+    ///     Throw the typed exceptions in <c>TrendyolClient.Sharp.Exceptions</c> (for example
+    ///     <c>TrendyolRateLimitException</c>) for non-success HTTP responses.
+    ///     When <c>false</c>, no exception is thrown: check <c>IsSuccessStatusCode</c> and read <c>Error</c> on the response instead.
+    ///     Default: false
+    /// </summary>
+    public bool ThrowOnError { get; set; }
 }

@@ -1,37 +1,36 @@
-using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
 namespace TrendyolClient.Sharp.Models;
 
 public class TrendyolCategoryAttribute
 {
-    [JsonPropertyName("id")]
-    public long Id { get; set; }
+    [JsonPropertyName("attribute")]
+    public TrendyolAttribute Attribute { get; set; }
 
-    [JsonPropertyName("name")]
-    public string Name { get; set; }
+    [JsonPropertyName("categoryId")]
+    public long CategoryId { get; set; }
 
     [JsonPropertyName("required")]
     public bool Required { get; set; }
 
+    /// <summary>
+    ///     If true, send customAttributeValue instead of a value id.
+    /// </summary>
     [JsonPropertyName("allowCustom")]
     public bool AllowCustom { get; set; }
 
-    [JsonPropertyName("displayName")]
-    public string DisplayName { get; set; }
-
-    [JsonPropertyName("attributeId")]
-    public long? AttributeId { get; set; }
-
-    [JsonPropertyName("attributeName")]
-    public string AttributeName { get; set; }
-
-    [JsonPropertyName("slicer")]
-    public bool? Slicer { get; set; }
-
+    /// <summary>
+    ///     The attribute is a variant (e.g. size) within one content.
+    /// </summary>
     [JsonPropertyName("varianter")]
-    public bool? Varianter { get; set; }
+    public bool Varianter { get; set; }
 
-    [JsonPropertyName("attributeValues")]
-    public List<TrendyolAttributeValue> AttributeValues { get; set; }
+    /// <summary>
+    ///     The attribute opens a separate content (e.g. color).
+    /// </summary>
+    [JsonPropertyName("slicer")]
+    public bool Slicer { get; set; }
+
+    [JsonPropertyName("allowMultipleAttributeValues")]
+    public bool AllowMultipleAttributeValues { get; set; }
 }

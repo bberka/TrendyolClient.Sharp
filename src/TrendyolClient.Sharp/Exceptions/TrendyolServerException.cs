@@ -3,7 +3,7 @@ namespace TrendyolClient.Sharp.Exceptions;
 /// <summary>
 ///     Exception thrown when API returns an unexpected server error
 /// </summary>
-internal class TrendyolServerException(
+public class TrendyolServerException(
     string message,
     int statusCode,
     string responseBody = null) : TrendyolException(message)

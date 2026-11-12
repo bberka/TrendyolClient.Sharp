@@ -12,4 +12,10 @@ public class TrendyolOrderLine
 
     [JsonPropertyName("discountPercentage")]
     public decimal? DiscountPercentage { get; set; }
+
+    /// <summary>
+    ///     Percentage of the line price discounted by Trendyol (simulates Trendyol-funded discounts).
+    /// </summary>
+    [JsonPropertyName("trendyolDiscountPercentage")]
+    public decimal? TrendyolDiscountPercentage { get; set; }
 }

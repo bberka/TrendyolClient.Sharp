@@ -5,6 +5,9 @@ namespace TrendyolClient.Sharp.Models;
 
 public class TrendyolRequestCreateProduct
 {
+    /// <summary>
+    ///     Up to 1000 items.
+    /// </summary>
     [JsonPropertyName("items")]
-    public List<TrendyolProductItem> Items { get; set; }
+    public List<TrendyolCreateProductItem> Items { get; set; }
 }

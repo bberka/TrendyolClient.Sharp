@@ -5,7 +5,7 @@ namespace TrendyolClient.Sharp.Exceptions;
 /// <summary>
 ///     Exception thrown when network/timeout errors occur
 /// </summary>
-internal class TrendyolNetworkException(string message, Exception innerException = null) : TrendyolException(message, innerException)
+public class TrendyolNetworkException(string message, Exception innerException = null) : TrendyolException(message, innerException)
 {
     public static TrendyolNetworkException Timeout(int timeoutSeconds)
     {

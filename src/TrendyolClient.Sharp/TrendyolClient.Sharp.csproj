@@ -1,10 +1,14 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
         <LangVersion>14</LangVersion>
-        <TargetFrameworks>net10.0;net8.0;net9.0</TargetFrameworks>
+        <TargetFrameworks>net8.0;net9.0;net10.0</TargetFrameworks>
+        <!-- VERSION (repo root) holds MAJOR.MINOR. CI computes the patch from the release tags and passes the full version with
+             -p:Version=...; a local build without it gets MAJOR.MINOR.0-local, which can never be mistaken for a release. -->
+        <VersionFile>$(MSBuildThisFileDirectory)..\..\VERSION</VersionFile>
+        <Version Condition="'$(Version)' == '' And Exists('$(VersionFile)')">$([System.IO.File]::ReadAllText('$(VersionFile)').Trim()).0-local</Version>
         <Title>TrendyolClient.Sharp</Title>
-        <Description>TrendyolClient.Sharp is a simple Trendyol API Client for C# with .NET 6+ version.</Description>
+        <Description>TrendyolClient.Sharp is a simple Trendyol API Client for C# for .NET 8, .NET 9 and .NET 10.</Description>
         <RepositoryUrl>https://github.com/bberka/TrendyolClient.Sharp</RepositoryUrl>
         <Authors>bberka</Authors>
         <Company>bberka</Company>
@@ -20,10 +24,15 @@
         <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="10.0.0"/>
         <PackageReference Include="Microsoft.Extensions.Http" Version="10.0.0"/>
         <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.0"/>
+        <PackageReference Include="FluentValidation" Version="12.1.0"/>
         <PackageReference Include="Newtonsoft.Json" Version="13.0.4"/>
         <PackageReference Include="Refit" Version="9.0.2"/>
         <PackageReference Include="Refit.Newtonsoft.Json" Version="9.0.2"/>
         <PackageReference Include="Serilog" Version="4.3.0"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <InternalsVisibleTo Include="TrendyolClient.Sharp.Tests"/>
     </ItemGroup>
 
     <ItemGroup>
@@ -33,18 +42,6 @@
         <Content Include="..\..\README.md" Pack="true" PackagePath="\">
             <Link>README.md</Link>
         </Content>
-    </ItemGroup>
-
-    <ItemGroup Condition="'$(TargetFramework)' == 'net10.0'">
-        <PackageReference Include="FluentValidation" Version="12.1.0"/>
-    </ItemGroup>
-
-    <ItemGroup Condition="'$(TargetFramework)' == 'net8.0'">
-        <PackageReference Include="FluentValidation" Version="12.1.0"/>
-    </ItemGroup>
-
-    <ItemGroup Condition="'$(TargetFramework)' == 'net9.0'">
-        <PackageReference Include="FluentValidation" Version="12.1.0"/>
     </ItemGroup>
 
 </Project>

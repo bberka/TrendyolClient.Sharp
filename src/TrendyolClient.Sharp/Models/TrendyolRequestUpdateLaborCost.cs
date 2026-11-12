@@ -1,10 +1,15 @@
-using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
 namespace TrendyolClient.Sharp.Models;
 
 public class TrendyolRequestUpdateLaborCost
 {
-    [JsonPropertyName("items")]
-    public List<TrendyolLaborCostItem> Items { get; set; }
+    [JsonPropertyName("orderLineId")]
+    public long OrderLineId { get; set; }
+
+    /// <summary>
+    ///     Labor cost per single item.
+    /// </summary>
+    [JsonPropertyName("laborCostPerItem")]
+    public decimal LaborCostPerItem { get; set; }
 }

@@ -9,4 +9,10 @@ public class TrendyolBrand
 
     [JsonPropertyName("name")]
     public string Name { get; set; }
+
+    /// <summary>
+    ///     Whether the brand can be used on the LUXE channel.
+    /// </summary>
+    [JsonPropertyName("luxe")]
+    public bool Luxe { get; set; }
 }
