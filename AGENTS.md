@@ -46,6 +46,7 @@ dotnet test -c Release      # net8.0, net9.0 and net10.0
 - The library has no validation, retries or throttling. Consumers add them through the `IHttpClientBuilder` that `AddTrendyolApiClient` returns.
 - Sources: implement from developers.trendyol.com, not from memory. The portal has several doc sets: Türkiye (v1.0, v2.0 is its English copy), International Marketplace (v3.0), Global Partner (v5.0) and Export Center (v6.0). Each page is available as Markdown at `<url>.md`, and `/llms.txt` lists them. When pages disagree, trust the newest changelog entry, then the docs page, then the reference page, and say which you chose.
 - Tests: a new endpoint needs a route (the smoke test covers every interface method automatically). A new model with a documented example payload needs a fixture in `tests/.../Fixtures` and a case in `FixtureCoverageTests`, which fails when a model drops a field.
+- Dependencies: a library's package versions become the floor for every consumer. Keep `Microsoft.Extensions.*` on the latest 10.0.x patch, not the next major. Keep Refit on 10.x: from Refit 11 on, `IApiResponse.Error` is `ApiExceptionBase`, `StatusCode` is nullable, and Refit captures exceptions thrown by handlers instead of throwing them, which would break `ThrowOnError`. Moving past 10.x is a design change that needs a major version, not a package bump.
 - Do not use Trendyol's logo or colors. The project is unofficial.
 
 ## Documentation
