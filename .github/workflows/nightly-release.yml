@@ -15,7 +15,7 @@ jobs:
       base_version: ${{ steps.versioning.outputs.base_version }}
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
@@ -38,10 +38,10 @@ jobs:
     name: Test
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Setup .NET 8, 9 and 10
-        uses: actions/setup-dotnet@v4
+        uses: actions/setup-dotnet@v6
         with:
           dotnet-version: |
             8.0.x
@@ -63,12 +63,12 @@ jobs:
         tfm: [net8.0, net9.0, net10.0] # target frameworks
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
       - name: Setup .NET 10
-        uses: actions/setup-dotnet@v4
+        uses: actions/setup-dotnet@v6
         with:
           dotnet-version: '10.0.x'
 
@@ -91,7 +91,7 @@ jobs:
           echo "artifact_path=${zip_filename}" >> $GITHUB_OUTPUT
 
       - name: Upload ${{ matrix.tfm }} Build Artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: TrendyolClient.Sharp-${{ matrix.tfm }}-nightly-build
           path: TrendyolClient.Sharp-${{ matrix.tfm }}-nightly-${{ needs.version_calc.outputs.nightly_version }}.zip
@@ -106,12 +106,12 @@ jobs:
       id-token: write # Needed for NuGet trusted publishing (OIDC)
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
       - name: Setup .NET 10
-        uses: actions/setup-dotnet@v4
+        uses: actions/setup-dotnet@v6
         with:
           dotnet-version: '10.0.x'
 
@@ -133,7 +133,7 @@ jobs:
         run: dotnet nuget push "./nuget_packages/*.nupkg" --api-key ${{ steps.nuget_login.outputs.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
 
       - name: Download all build artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           path: downloaded_artifacts # This path will contain subdirectories for each artifact name
 
@@ -189,7 +189,7 @@ jobs:
         working-directory: ${{ github.workspace }}
 
       - name: Create GitHub Release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         if: startsWith(github.ref, 'refs/heads/')
         with:
           tag_name: v${{ needs.version_calc.outputs.nightly_version }}
@@ -201,5 +201,5 @@ jobs:
           append_body: false
           
           files: |
-            ./downloaded_artifacts/*/TrendyolClient.Sharp-*.zip # Path to zips within downloaded_artifacts
+            ./downloaded_artifacts/*/TrendyolClient.Sharp-*.zip
             ./nuget_packages/*.nupkg
