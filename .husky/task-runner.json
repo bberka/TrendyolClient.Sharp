@@ -1,0 +1,44 @@
+{
+  "$schema": "https://alirezanet.github.io/Husky.Net/schema.json",
+  "tasks": [
+    {
+      "name": "build-and-test",
+      "group": "pre-commit",
+      "command": "bash",
+      "args": [
+        "scripts/check-dotnet.sh",
+        "${staged}"
+      ],
+      "include": [
+        "**/*.cs",
+        "**/*.csproj",
+        "**/*.props",
+        "**/*.targets",
+        "**/*.json",
+        "global.json",
+        "VERSION"
+      ]
+    },
+    {
+      "name": "markdown",
+      "group": "pre-commit",
+      "command": "bash",
+      "args": [
+        "scripts/check-markdown.sh",
+        "${staged}"
+      ],
+      "include": [
+        "**/*.md"
+      ]
+    },
+    {
+      "name": "commit-message",
+      "group": "commit-msg",
+      "command": "bash",
+      "args": [
+        "scripts/check-commit-msg.sh",
+        "${args}"
+      ]
+    }
+  ]
+}
