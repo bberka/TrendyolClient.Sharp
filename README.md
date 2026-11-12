@@ -70,7 +70,7 @@ builder.Services.AddTrendyolApiClient(config =>
 
 Pick the setup that fits how many sellers you serve.
 
-**One seller: register the credentials once and inject the client.** The clients are singletons, and each area interface (`ITrendyolOrderApi`, `ITrendyolProductApi`, `ITrendyolClaimApi`, ...) is registered too, so a class can depend on, and a test can fake, just the area it uses.
+For one seller, register the credentials once and inject the client. The clients are singletons, and each area interface (`ITrendyolOrderApi`, `ITrendyolProductApi`, `ITrendyolClaimApi`, ...) is registered too, so a class can depend on, and a test can fake, just the area it uses.
 
 ```csharp
 builder.Services.AddTrendyolApiClient();
@@ -83,7 +83,7 @@ builder.Services.AddTrendyolSeller(sp =>
 public class InventoryService(ITrendyolMarketplaceApi trendyol) { /* ... */ }
 ```
 
-**Several sellers, or credentials that change: use the factory.** Pass a `TrendyolCredentials` (or the same values as separate arguments); clients are cached per seller, environment and storefront, and a new key or secret rebuilds the client.
+For several sellers, or credentials that change, use the factory. Pass a `TrendyolCredentials` (or the same values as separate arguments); clients are cached per seller, environment and storefront, and a new key or secret rebuilds the client.
 
 ```csharp
 public class SyncJob(TrendyolMarketplaceClientFactory factory)
@@ -362,11 +362,28 @@ A local `dotnet build` or `dotnet pack` produces `<MAJOR.MINOR>.0-local`, so a l
 
 ## Contributing
 
-We welcome contributions\! Since this is a community project:
+Open an issue before significant work, so we agree on the direction first.
 
-1.  **Open an Issue** before starting significant work to ensure alignment.
-2.  **Follow Conventions:** Ensure all new models use the `Trendyol` prefix.
-3.  **Tests:** Run `dotnet test` (it runs on net8.0, net9.0 and net10.0). The suite calls every client method against a fake handler and checks the models against Trendyol's documented example payloads; add a fixture when you add a model.
+### Setup
+
+Install the .NET 10 SDK (and the .NET 8 and 9 runtimes to run every test target), clone the repository, and run `dotnet restore`. The first restore installs Git hooks with [Husky.Net](https://alirezanet.github.io/Husky.Net/):
+
+| Hook | What it checks |
+| :--- | :------------- |
+| `pre-commit` | Builds with warnings as errors and runs the tests, unless only docs changed. Checks that Markdown code fences are closed. |
+| `commit-msg` | Subject of at most 72 characters without a trailing period, a blank second line, body wrapped at 72. |
+
+Run the build and test check by hand with `bash scripts/check-dotnet.sh`. Set `HUSKY=0` to skip installing the hooks, and do not bypass them with `--no-verify`.
+
+### Pull requests
+
+Branch from `master` (a separate Git worktree per task keeps work apart), commit in logical groups, and open the pull request when the work is done. `master` is protected: the **Build & test** check must pass before a merge.
+
+- **Conventions:** models are one class per file with the `Trendyol` prefix (`TrendyolIntl` and `TrendyolGlobal` for those clients).
+- **Tests:** run `dotnet test`. The suite calls every client method against a fake handler and checks the models against Trendyol's documented example payloads. Add a fixture when you add a model.
+- **Docs:** update the README in the same pull request.
+
+AI coding agents follow [AGENTS.md](AGENTS.md), which describes the workflow in full.
 
 ## Disclaimer
 
