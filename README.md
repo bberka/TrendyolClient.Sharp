@@ -233,23 +233,19 @@ _factory.InvalidateClient(sellerId);
 
 ## Releasing
 
-The package version lives in one place: the **`VERSION`** file in the repository root (for example `1.0.0` or `1.0.0-rc.1`). The project reads it, so local builds and CI produce the same version.
+The **`VERSION`** file in the repository root holds only `MAJOR.MINOR` (for example `2.0`). The **patch number is computed**, never committed: it is the highest existing `v<MAJOR>.<MINOR>.*` release tag plus one, or `0` if that line has no release yet. So with `VERSION` = `2.0`, the first release is `2.0.0`, the next `2.0.1`, and so on. Change `VERSION` only for a new minor (`2.1`) or major (`3.0`) version; the patch restarts at `0`. The calculation lives in `.github/scripts/next-version.sh`.
 
 | Workflow | Trigger | What it does |
 | :------- | :------ | :----------- |
 | `ci.yml` | every pull request | Builds, runs the tests on net8.0, net9.0 and net10.0, and packs. Mark the **Build & test** check as required in the branch protection rules so a pull request cannot merge unless it passes. |
-| `nightly-release.yml` | push to `master` | Runs the tests, then publishes `<VERSION without suffix>-nightly.<timestamp>` to NuGet as a pre-release. |
-| `release.yml` | manual (**Actions > Release > Run workflow**) | Publishes exactly the version in `VERSION` to NuGet, then creates the `v<version>` tag and GitHub release (marked pre-release if the version has a suffix such as `-rc.1`). |
+| `nightly-release.yml` | push to `master` | Runs the tests, then publishes `<next version>-nightly.<timestamp>` (for example `2.0.1-nightly.202611121200`) to NuGet as a pre-release. |
+| `release.yml` | manual (**Actions > Release > Run workflow**, on `master`) | Runs the tests, publishes the next version (for example `2.0.1`) to NuGet, then creates the `v2.0.1` tag and GitHub release. Tick *dry run* to build, test and pack without publishing. |
 
-The first stable release is **2.0.0**, matching Trendyol's Product V2 and Order V2 services. There is no 1.x: before this the package was only published as `0.0.1-nightly.*` builds, so the version jumps straight to 2.
+There are no release candidates: every merge to `master` produces a nightly, and a stable version is published only when you run **Release**. The release workflow refuses to run outside `master`, and it never silently skips a version that already exists on NuGet. It needs the `NUGET_API_KEY` repository secret.
 
-To make a release:
+The first stable release will be **2.0.0**, matching Trendyol's Product V2 and Order V2 services. There is no 1.x: before this the package was only published as `0.0.1-nightly.*` builds.
 
-1. Open a pull request that changes `VERSION` to the version you want to publish, and merge it.
-2. Run **Release** on `master`. Tick *dry run* first to build, test and pack without publishing.
-3. In a follow-up pull request, bump `VERSION` to the next version, so the nightlies sort after the release.
-
-The release workflow refuses to run outside `master`, with an invalid version, or if the tag already exists, and it never silently skips a duplicate NuGet version. It needs the `NUGET_API_KEY` repository secret.
+A local `dotnet build` or `dotnet pack` produces `<MAJOR.MINOR>.0-local`, so a local package can never be mistaken for a release.
 
 ## Contributing
 

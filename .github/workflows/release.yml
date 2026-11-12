@@ -1,7 +1,8 @@
 name: Release
 
-# Manual stable release. Run it from the Actions tab on master after bumping the VERSION file in a merged PR.
-# It publishes exactly the version in VERSION to NuGet and creates the matching v<version> tag and GitHub release.
+# Manual stable release. Run it from the Actions tab on master.
+# VERSION holds MAJOR.MINOR; the patch is the next free number for that line (see .github/scripts/next-version.sh).
+# It publishes MAJOR.MINOR.PATCH to NuGet and creates the matching v<version> tag and GitHub release.
 on:
   workflow_dispatch:
     inputs:
@@ -12,6 +13,10 @@ on:
 
 permissions:
   contents: write
+
+concurrency:
+  group: release
+  cancel-in-progress: false
 
 jobs:
   release:
@@ -29,30 +34,22 @@ jobs:
           echo "::error::Releases can only be made from master (this run is on ${{ github.ref }})."
           exit 1
 
-      - name: Read and validate VERSION
+      - name: Compute version
         id: version
         run: |
-          version=$(tr -d '[:space:]' < VERSION)
-          if ! [[ "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.-]+)?$ ]]; then
-            echo "::error file=VERSION::'$version' is not a valid semantic version"
-            exit 1
-          fi
+          info=$(.github/scripts/next-version.sh)
+          echo "$info"
+          version=$(echo "$info" | sed -n 's/^version=//p')
+          previous=$(echo "$info" | sed -n 's/^previous=//p')
           tag="v$version"
           if git ls-remote --exit-code --tags origin "refs/tags/$tag" > /dev/null 2>&1; then
-            echo "::error::Tag $tag already exists. Bump the VERSION file before releasing again."
+            echo "::error::Tag $tag already exists."
             exit 1
           fi
-          prerelease=false
-          [[ "$version" == *-* ]] && prerelease=true
-
-          # Last stable tag (no pre-release suffix) so the release notes cover everything since then
-          previous=$(git tag --list 'v[0-9]*.[0-9]*.[0-9]*' --sort=-v:refname | grep -v -- '-' | head -n 1 || true)
-
           echo "version=$version" >> "$GITHUB_OUTPUT"
           echo "tag=$tag" >> "$GITHUB_OUTPUT"
-          echo "prerelease=$prerelease" >> "$GITHUB_OUTPUT"
           echo "previous=$previous" >> "$GITHUB_OUTPUT"
-          echo "Releasing $version (tag $tag, prerelease=$prerelease, previous stable=${previous:-none})"
+          echo "Releasing $version (tag $tag, notes since ${previous:-the beginning})"
 
       - name: Setup .NET 8, 9 and 10
         uses: actions/setup-dotnet@v4
@@ -81,8 +78,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          args=(--target "${{ github.sha }}" --title "v${{ steps.version.outputs.version }}" --generate-notes)
-          if [ "${{ steps.version.outputs.prerelease }}" = "true" ]; then args+=(--prerelease); else args+=(--latest); fi
+          args=(--target "${{ github.sha }}" --title "v${{ steps.version.outputs.version }}" --generate-notes --latest)
           if [ -n "${{ steps.version.outputs.previous }}" ]; then args+=(--notes-start-tag "${{ steps.version.outputs.previous }}"); fi
           gh release create "${{ steps.version.outputs.tag }}" "${args[@]}" ./nuget_packages/*.nupkg
 
