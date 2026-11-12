@@ -1,0 +1,9 @@
+<Project>
+
+    <!-- Applies to every project in the repository (library and tests): a warning, including a NuGet vulnerability
+         advisory (NU190x), fails the build. Fix the cause instead of suppressing it. -->
+    <PropertyGroup>
+        <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    </PropertyGroup>
+
+</Project>

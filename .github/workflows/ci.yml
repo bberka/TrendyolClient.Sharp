@@ -42,6 +42,7 @@ jobs:
       - name: Restore
         run: dotnet restore
 
+      # Directory.Build.props turns every warning into an error
       - name: Build (all target frameworks)
         run: dotnet build --configuration Release --no-restore
 
