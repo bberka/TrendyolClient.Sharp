@@ -22,27 +22,43 @@ jobs:
       - name: Determine Nightly Version
         id: versioning
         run: |
-          latest_stable_tag=$(git tag --list 'v[0-9]*.[0-9]*.[0-9]*' --sort=-v:refname | grep -v '^nightly-' | head -n 1 || echo "v0.0.0")
-          base_version=$(echo "$latest_stable_tag" | sed 's/^v//')
-          if [[ "$base_version" =~ ^([0-9]+\.[0-9]+\.[0-9]+) ]]; then
-              base_version="${BASH_REMATCH[1]}"
-          fi
-          if [ -z "$base_version" ]; then
-            base_version="0.0.0"
-          fi
+          # The VERSION file holds the version in development. Nightlies are its core version
+          # (pre-release suffix such as -rc.1 removed) plus -nightly.<timestamp>.
+          version=$(tr -d '[:space:]' < VERSION)
+          base_version="${version%%-*}"
           timestamp=$(date -u +"%Y%m%d%H%M")
           nightly_version="${base_version}-nightly.${timestamp}"
 
-          echo "Calculated Nightly Base Version: $base_version"
-          echo "Calculated Nightly Version: $nightly_version"
+          echo "Base version: $base_version"
+          echo "Nightly version: $nightly_version"
 
-          # Set outputs for other jobs to consume
           echo "nightly_version=${nightly_version}" >> $GITHUB_OUTPUT
           echo "base_version=${base_version}" >> $GITHUB_OUTPUT
 
+  # Job 1b: Run the tests once before anything is published
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET 8, 9 and 10
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: |
+            8.0.x
+            9.0.x
+            10.0.x
+
+      - name: Restore
+        run: dotnet restore
+
+      - name: Test
+        run: dotnet test --configuration Release
+
   # Job 2: Build and Zip for each target framework (runs in parallel via matrix)
   build_and_zip:
-    needs: version_calc # This job depends on version_calc to get the version
+    needs: [version_calc, test] # version from version_calc; only builds when the tests pass
     runs-on: ubuntu-latest
     strategy:
       matrix:

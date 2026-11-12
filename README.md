@@ -147,11 +147,11 @@ Create, list, update, delete, activate, and deactivate order webhooks. `Trendyol
 
 The Export Center (AutoFT, `/integration/ecgw`) API: create and list export products, lookups (origins, compositions, care instructions, category attributes, categories by barcode), stock and price updates, packages (V2/V3), and batch status. Every call requires the `x-clientip`, `x-correlationid`, and `x-agentname` headers, which are exposed as method parameters.
 
-## Migrating from 1.x
+## Migrating from the 0.x nightly builds
 
-Trendyol closed the **Product V1** and **Order V1** services on 15 October 2026, so the matching methods were removed rather than kept.
+Before the first stable release the package was only published as `0.0.1-nightly.*` builds. Trendyol closed the **Product V1** and **Order V1** services on 15 October 2026, so the matching methods were removed rather than kept.
 
-| Removed (1.x) | Use instead |
+| Removed (0.x nightlies) | Use instead |
 | :--- | :--- |
 | `GetOrderPackagesAsync` on `/orders` | `GetOrderPackagesAsync` now calls `/v2/orders` (max 10,000 records per query window; narrow the date range or use `GetOrderPackagesStreamAsync`) |
 | `GetProductsAsync` | `GetProductBaseAsync`, `GetUnapprovedProductsAsync`, `GetApprovedProductsAsync`, `GetApprovedProductsInventoryAndPriceAsync` |
@@ -230,6 +230,24 @@ If a seller regenerates their API credentials, a different key/secret pair alrea
 ```csharp
 _factory.InvalidateClient(sellerId);
 ```
+
+## Releasing
+
+The package version lives in one place: the **`VERSION`** file in the repository root (for example `1.0.0` or `1.0.0-rc.1`). The project reads it, so local builds and CI produce the same version.
+
+| Workflow | Trigger | What it does |
+| :------- | :------ | :----------- |
+| `ci.yml` | every pull request | Builds, runs the tests on net8.0, net9.0 and net10.0, and packs. Mark the **Build & test** check as required in the branch protection rules so a pull request cannot merge unless it passes. |
+| `nightly-release.yml` | push to `master` | Runs the tests, then publishes `<VERSION without suffix>-nightly.<timestamp>` to NuGet as a pre-release. |
+| `release.yml` | manual (**Actions > Release > Run workflow**) | Publishes exactly the version in `VERSION` to NuGet, then creates the `v<version>` tag and GitHub release (marked pre-release if the version has a suffix such as `-rc.1`). |
+
+To make a release:
+
+1. Open a pull request that changes `VERSION` to the version you want to publish, and merge it.
+2. Run **Release** on `master`. Tick *dry run* first to build, test and pack without publishing.
+3. In a follow-up pull request, bump `VERSION` to the next version, so the nightlies sort after the release.
+
+The release workflow refuses to run outside `master`, with an invalid version, or if the tag already exists, and it never silently skips a duplicate NuGet version. It needs the `NUGET_API_KEY` repository secret.
 
 ## Contributing
 

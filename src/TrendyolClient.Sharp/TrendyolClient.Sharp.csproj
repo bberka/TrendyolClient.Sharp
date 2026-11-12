@@ -3,6 +3,9 @@
     <PropertyGroup>
         <LangVersion>14</LangVersion>
         <TargetFrameworks>net8.0;net9.0;net10.0</TargetFrameworks>
+        <!-- The repo-root VERSION file is the single source of the package version. CI can still override it with -p:Version=... -->
+        <VersionFile>$(MSBuildThisFileDirectory)..\..\VERSION</VersionFile>
+        <Version Condition="'$(Version)' == '' And Exists('$(VersionFile)')">$([System.IO.File]::ReadAllText('$(VersionFile)').Trim())</Version>
         <Title>TrendyolClient.Sharp</Title>
         <Description>TrendyolClient.Sharp is a simple Trendyol API Client for C# for .NET 8, .NET 9 and .NET 10.</Description>
         <RepositoryUrl>https://github.com/bberka/TrendyolClient.Sharp</RepositoryUrl>
