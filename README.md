@@ -8,13 +8,11 @@
 
 A modern, strongly-typed, and community-driven C\# client library for the [Trendyol API](https://developers.trendyol.com/). Built on top of **Refit**, this library provides a robust wrapper for Marketplace, Finance, and Webhook endpoints with a focus on memory efficiency and developer experience.
 
-> **⚠️ PROJECT STATUS: DEVELOPMENT**
+> **Status: 2.x release line**
 >
-> This project is maintained for bug fixes and issue resolution; however, it is **not yet considered production-ready**.
+> The client follows Trendyol's current (V2) API documentation, and its automated tests check routes, request and response shapes, and error handling. It has not been verified against the live Trendyol API for every endpoint, so some calls may behave differently than documented. Try the calls you depend on against Trendyol's stage environment first, and please [open an issue](https://github.com/bberka/TrendyolClient.Sharp/issues) when something does not match.
 >
-> - **Breaking Changes:** The public API may change significantly between versions.
-> - **Validation:** The library does not validate input (see [Scope](#scope)); you must validate data before sending it.
-> - **Use at your own risk.**
+> The library does not validate input, throttle or retry (see [Scope](#scope)).
 
 ## Features
 
