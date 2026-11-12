@@ -118,7 +118,7 @@ public class RouteSmokeTests
         if (type == typeof(StreamPart)) return new StreamPart(new MemoryStream([1, 2, 3]), "f.bin", "application/octet-stream");
         if (type == typeof(ByteArrayPart)) return new ByteArrayPart([1, 2, 3], "f.bin", "application/octet-stream");
         if (type.IsArray) return Array.CreateInstance(type.GetElementType(), 0);
-        if (type.IsValueType) return Activator.CreateInstance(Nullable.GetUnderlyingType(type) is { IsEnum: false } ? type : type);
+        if (type.IsValueType) return Activator.CreateInstance(type);
         if (type.IsGenericType && typeof(IEnumerable).IsAssignableFrom(type) && type.GetGenericTypeDefinition() == typeof(List<>))
             return Activator.CreateInstance(type);
         if (type.IsClass && type.GetConstructor(Type.EmptyTypes) != null) return Activator.CreateInstance(type);
