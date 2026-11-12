@@ -13,6 +13,7 @@ on:
 
 permissions:
   contents: write
+  id-token: write # NuGet trusted publishing (OIDC)
 
 concurrency:
   group: release
@@ -68,10 +69,19 @@ jobs:
       - name: Pack
         run: dotnet pack ./src/TrendyolClient.Sharp/TrendyolClient.Sharp.csproj --configuration Release --output ./nuget_packages -p:Version=${{ steps.version.outputs.version }}
 
+      # Trusted publishing: GitHub proves who this workflow is, nuget.org returns a temporary API key (valid 1 hour).
+      # No NuGet API key is stored in the repository.
+      - name: NuGet login (trusted publishing)
+        if: ${{ !inputs.dry_run }}
+        id: nuget_login
+        uses: NuGet/login@v1
+        with:
+          user: ${{ vars.NUGET_USER }}
+
       - name: Publish to NuGet
         if: ${{ !inputs.dry_run }}
         # No --skip-duplicate: publishing a version that already exists must fail loudly.
-        run: dotnet nuget push "./nuget_packages/*.nupkg" --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json
+        run: dotnet nuget push "./nuget_packages/*.nupkg" --api-key ${{ steps.nuget_login.outputs.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json
 
       - name: Create tag and GitHub release
         if: ${{ !inputs.dry_run }}
