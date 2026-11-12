@@ -1,0 +1,43 @@
+{
+ "items": [
+  {
+   "barcode": "TestBarcode",
+   "title": "string",
+   "description": "string",
+   "productMainId": "string",
+   "brandId": 1,
+   "categoryId": 1,
+   "quantity": 0,
+   "stockCode": "string",
+   "origin": "AD",
+   "dimensionalWeight": 0,
+   "listPrice": 0,
+   "salePrice": 0,
+   "vatRate": 0,
+   "lotNumber": "string",
+   "cargoProviders": [
+    "kargo firması kodu"
+   ],
+   "shipmentAddressId": 0,
+   "returningAddressId": 0,
+   "deliveryOption": {
+    "deliveryDuration": 0
+   },
+   "images": [
+    {
+     "url": "trendyol.com/test.jpeg"
+    }
+   ],
+   "attributes": [
+    {
+     "attributeId": 1,
+     "attributeValueId": 1
+    },
+    {
+     "attributeId": 2,
+     "customAttributeValue": "String"
+    }
+   ]
+  }
+ ]
+}

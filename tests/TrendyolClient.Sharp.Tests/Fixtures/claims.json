@@ -1,0 +1,142 @@
+{
+ "totalElements": 2099,
+ "totalPages": 2099,
+ "page": 0,
+ "size": 1,
+ "content": [
+  {
+   "id": "f9da2317-876b-4b86-b8f7-0535c3b65731",
+   "claimId": "f9da2317-876b-4b86-b8f7-0535c3b65731",
+   "channelId": 25,
+   "orderNumber": "65745805",
+   "orderDate": 1524826343886,
+   "customerFirstName": "John",
+   "customerLastName": "Doe",
+   "claimDate": 1525844162827,
+   "cargoTrackingNumber": 72602420957047272632,
+   "cargoTrackingLink": "https://tracking.trendyol.com/?id=111111111-1111-1111-1111-11111111",
+   "cargoSenderNumber": "8106459254413",
+   "cargoProviderName": "Aras Kargo Marketplace",
+   "orderShipmentPackageId": 3853354,
+   "replacementOutboundpackageinfo": {
+    "cargoTrackingNumber": 72602420957047272632,
+    "cargoProviderName": "Aras Kargo Marketplace",
+    "cargoSenderNumber": "733861966410",
+    "cargoTrackingLink": "https://tracking.trendyol.com/?id=111111111-1111-1111-1111-11111111",
+    "packageid": 28717254,
+    "items": [
+     "b71461e3-d1a0-4c1d-9a6d-18ecbcb5432d"
+    ]
+   },
+   "rejectedPackageInfo": {
+    "cargoTrackingNumber": 2207284754,
+    "packageId": 92248304,
+    "cargoProviderName": "ARAS",
+    "cargoTrackingLink": "https://stage-tracking.trendyol.com/?trackingId=f78aee0b-6755-3c89-bf8c-129c4304ec71",
+    "items": [
+     "26889877-203a-468a-abb8-6b8e05497c9M"
+    ],
+    "shipmentAddress": {
+     "address1": "John Doe's House",
+     "address2": "John Doe's House",
+     "city": "Test",
+     "district": ""
+    },
+    "dontShipBack": false,
+    "sellerOtp": "",
+    "sellerDeliveryMethod": ""
+   },
+   "items": [
+    {
+     "orderLine": {
+      "id": 28717254,
+      "productName": "Erkek Bebek Sandalet 8S5280Z1/GREEN CS4, 21",
+      "barcode": "99999999999",
+      "merchantSku": "2083667",
+      "productColor": "GREEN CS4",
+      "productSize": " 21",
+      "price": 12.95,
+      "vatBaseAmount": 8,
+      "vatRate": 8,
+      "salesCampaignId": 183631,
+      "productCategory": "Sandalet"
+     },
+     "claimItems": [
+      {
+       "id": "b71461e3-d1a0-4c1d-9a6d-18ecbcb5158c",
+       "orderLineItemId": 29815493,
+       "customerClaimItemReason": {
+        "id": "451",
+        "name": "Diğer",
+        "externalReasonId": 23,
+        "code": "UNFIT"
+       },
+       "trendyolClaimItemReason": {
+        "id": "451",
+        "name": "Diğer",
+        "externalReasonId": 23,
+        "code": "UNFIT"
+       },
+       "claimItemStatus": {
+        "name": "Created"
+       },
+       "note": "",
+       "customerNote": "Müşteri notu",
+       "resolved": false,
+       "autoAccepted": false,
+       "acceptedBySeller": true
+      }
+     ]
+    },
+    {
+     "orderLine": {
+      "id": 28717255,
+      "productName": "Erkek Bebek Soket Çorap 4'lü 8S7346Z1/MIX YARN DYED K00, 6-12 Ay",
+      "barcode": "99999999999",
+      "merchantSku": "2052551",
+      "productColor": "MIX YARN DYED K00",
+      "productSize": " 17-18 (6-12 Ay)",
+      "price": 9.95,
+      "vatBaseAmount": 8,
+      "vatRate": 8,
+      "salesCampaignId": 183631,
+      "productCategory": "Çorap"
+     },
+     "claimItems": [
+      {
+       "id": "b71461e3-d1a0-4c1d-9a6d-18ecbcb5432d",
+       "orderLineItemId": 29815494,
+       "customerClaimItemReason": {
+        "id": "451",
+        "name": "Diğer",
+        "externalReasonId": 23,
+        "code": "UNFIT"
+       },
+       "trendyolClaimItemReason": {
+        "id": "451",
+        "name": "Diğer",
+        "externalReasonId": 23,
+        "code": "UNFIT"
+       },
+       "claimItemStatus": {
+        "name": "Rejected"
+       },
+       "note": "",
+       "customerNote": "Müşteri notu",
+       "resolved": false,
+       "autoAccepted": false,
+       "acceptedBySeller": true
+      }
+     ]
+    }
+   ],
+   "lastModifiedDate": 1723275767111,
+   "orderOutboundPackageId": 58835111,
+   "sellerOtp": "",
+   "sellerDeliveryMethod": "",
+   "sellerCollectionPointDetails": {
+    "collectionPointId": ""
+   }
+  }
+ ]
+}

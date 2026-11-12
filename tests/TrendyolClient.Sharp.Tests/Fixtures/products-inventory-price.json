@@ -1,0 +1,24 @@
+{
+ "totalElements": 1,
+ "totalPages": 1,
+ "page": 0,
+ "size": 1,
+ "nextPageToken": "eyJzb3J0IjpbMTc4MDQ0NTY5MjAwMasasf",
+ "content": [
+  {
+   "contentId": 12431242141,
+   "productMainId": "1242141241",
+   "variants": [
+    {
+     "variantId": 3953959353,
+     "barcode": "60506560",
+     "salePrice": 699.99,
+     "listPrice": 699.99,
+     "quantity": 50,
+     "stockCode": "056565964",
+     "stockLastModifiedDate": 1780463592464
+    }
+   ]
+  }
+ ]
+}
