@@ -8,13 +8,11 @@
 
 A modern, strongly-typed, and community-driven C\# client library for the [Trendyol API](https://developers.trendyol.com/). Built on top of **Refit**, this library provides a robust wrapper for Marketplace, Finance, and Webhook endpoints with a focus on memory efficiency and developer experience.
 
-> **⚠️ PROJECT STATUS: DEVELOPMENT**
+> **Status: 2.x release line**
 >
-> This project is maintained for bug fixes and issue resolution; however, it is **not yet considered production-ready**.
+> The client follows Trendyol's current (V2) API documentation, and its automated tests check routes, request and response shapes, and error handling. It has not been verified against the live Trendyol API for every endpoint, so some calls may behave differently than documented. Try the calls you depend on against Trendyol's stage environment first, and please [open an issue](https://github.com/bberka/TrendyolClient.Sharp/issues) when something does not match.
 >
-> - **Breaking Changes:** The public API may change significantly between versions.
-> - **Validation:** The library does not validate input (see [Scope](#scope)); you must validate data before sending it.
-> - **Use at your own risk.**
+> The library does not validate input, throttle or retry (see [Scope](#scope)).
 
 ## Features
 
@@ -282,7 +280,22 @@ The **`VERSION`** file in the repository root holds only `MAJOR.MINOR` (for exam
 | `nightly-release.yml` | push to `master` | Runs the tests, then publishes `<next version>-nightly.<timestamp>` (for example `2.0.1-nightly.202611121200`) to NuGet as a pre-release. |
 | `release.yml` | manual (**Actions > Release > Run workflow**, on `master`) | Runs the tests, publishes the next version (for example `2.0.1`) to NuGet, then creates the `v2.0.1` tag and GitHub release. Tick *dry run* to build, test and pack without publishing. |
 
-There are no release candidates: every merge to `master` produces a nightly, and a stable version is published only when you run **Release**. The release workflow refuses to run outside `master`, and it never silently skips a version that already exists on NuGet. It needs the `NUGET_API_KEY` repository secret.
+There are no release candidates: every merge to `master` produces a nightly, and a stable version is published only when you run **Release**. The release workflow refuses to run outside `master`, and it never silently skips a version that already exists on NuGet.
+
+### One-time NuGet setup (trusted publishing)
+
+The workflows publish with [NuGet trusted publishing](https://learn.microsoft.com/en-us/nuget/nuget-org/trusted-publishing), so **no NuGet API key is stored in the repository**. GitHub proves which workflow is running, and nuget.org hands it a temporary API key that is valid for one hour. Set it up once:
+
+1. On nuget.org: click your username, then **Trusted Publishing**, and add one policy per publishing workflow:
+
+   | Repository Owner | Repository | Workflow File | Environment |
+   | :--------------- | :--------- | :------------ | :---------- |
+   | `bberka` | `TrendyolClient.Sharp` | `nightly-release.yml` | (leave empty) |
+   | `bberka` | `TrendyolClient.Sharp` | `release.yml` | (leave empty) |
+
+   The workflow file is the file name only, without `.github/workflows/`.
+2. On GitHub: **Settings > Secrets and variables > Actions > Variables**, add a repository variable `NUGET_USER` with your nuget.org **username** (the profile name, not your email address).
+3. Delete the old `NUGET_API_KEY` secret and revoke that key on nuget.org.
 
 The first stable release will be **2.0.0**, matching Trendyol's Product V2 and Order V2 services. There is no 1.x: before this the package was only published as `0.0.1-nightly.*` builds.
 

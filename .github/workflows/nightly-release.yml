@@ -103,7 +103,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write # Needed for creating release
-      packages: write # Needed for publishing NuGet
+      id-token: write # Needed for NuGet trusted publishing (OIDC)
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -118,10 +118,19 @@ jobs:
       - name: Restore dependencies (for packing)
         run: dotnet restore
 
-      - name: Publish NuGet Packages (multi-target .nupkg)
-        run: |
-          dotnet pack ./src/TrendyolClient.Sharp/TrendyolClient.Sharp.csproj -c Release -o ./nuget_packages -p:Version=${{ needs.version_calc.outputs.nightly_version }}
-          dotnet nuget push "./nuget_packages/*.nupkg" --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
+      - name: Pack NuGet package (multi-target .nupkg)
+        run: dotnet pack ./src/TrendyolClient.Sharp/TrendyolClient.Sharp.csproj -c Release -o ./nuget_packages -p:Version=${{ needs.version_calc.outputs.nightly_version }}
+
+      # Trusted publishing: GitHub proves who this workflow is, nuget.org returns a temporary API key (valid 1 hour).
+      # No NuGet API key is stored in the repository.
+      - name: NuGet login (trusted publishing)
+        id: nuget_login
+        uses: NuGet/login@v1
+        with:
+          user: ${{ vars.NUGET_USER }}
+
+      - name: Publish NuGet package
+        run: dotnet nuget push "./nuget_packages/*.nupkg" --api-key ${{ steps.nuget_login.outputs.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
 
       - name: Download all build artifacts
         uses: actions/download-artifact@v4
