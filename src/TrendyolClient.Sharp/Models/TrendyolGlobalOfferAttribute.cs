@@ -1,0 +1,12 @@
+using System.Text.Json.Serialization;
+
+namespace TrendyolClient.Sharp.Models;
+
+public class TrendyolGlobalOfferAttribute
+{
+    [JsonPropertyName("name")]
+    public string Name { get; set; }
+
+    [JsonPropertyName("value")]
+    public string Value { get; set; }
+}

@@ -35,6 +35,12 @@ public class FixtureCoverageTests
         yield return ["webhook-payload.json", typeof(TrendyolWebhookPayload)];
         yield return ["claims.json", typeof(TrendyolResponseGetClaims)];
         yield return ["settlements.json", typeof(TrendyolResponseGetSettlements)];
+        yield return ["intl-claims-germany.json", typeof(TrendyolIntlResponseGetClaims)];
+        yield return ["intl-claims-cee.json", typeof(TrendyolIntlResponseGetClaims)];
+        yield return ["intl-claims-gulf.json", typeof(TrendyolIntlResponseGetClaims)];
+        yield return ["global-stock.json", typeof(TrendyolGlobalStock)];
+        yield return ["global-create-order-request.json", typeof(TrendyolGlobalRequestCreateOrder)];
+        yield return ["global-create-order-response.json", typeof(TrendyolGlobalResponseCreateOrder)];
     }
 
     [Theory]

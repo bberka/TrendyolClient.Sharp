@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Concurrent;
+using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
@@ -12,29 +13,39 @@ namespace TrendyolClient.Sharp;
 public class TrendyolMarketplaceClientFactory(IHttpClientFactory httpClientFactory, TrendyolClientConfig config)
 {
     // The dictionary now holds a 'ClientContainer' instead of a Tuple.
-    private readonly ConcurrentDictionary<(long SellerId, bool Stage), ClientContainer> _clients = new();
+    private readonly ConcurrentDictionary<(long SellerId, bool Stage, string StoreFront), ClientContainer> _clients = new();
 
     public TrendyolClientConfig Config { get; } = config;
 
+    /// <summary>
+    ///     Client for the Marketplace services. International sellers pass their <paramref name="storeFrontCode" /> (DE, SA, AE, KW, GR, SK, RO, CZ, BG):
+    ///     it is sent as the <c>storeFrontCode</c> header on every request of this client, so each storefront needs its own client.
+    ///     Leave it <c>null</c> for the Türkiye marketplace.
+    /// </summary>
     public ITrendyolMarketplaceApi GetOrCreateMarketplaceClient(
         long sellerId,
         string apiKey,
         string apiSecret,
-        bool useStageApi = false
+        bool useStageApi = false,
+        string storeFrontCode = null
     )
     {
-        return GetContainer(sellerId, apiKey, apiSecret, useStageApi)
+        return GetContainer(sellerId, apiKey, apiSecret, useStageApi, storeFrontCode)
             .Marketplace.Value;
     }
 
+    /// <summary>
+    ///     Client for the order webhook management services. International sellers pass their <paramref name="storeFrontCode" />.
+    /// </summary>
     public ITrendyolWebhookApi GetOrCreateWebhookClient(
         long sellerId,
         string apiKey,
         string apiSecret,
-        bool useStageApi = false
+        bool useStageApi = false,
+        string storeFrontCode = null
     )
     {
-        return GetContainer(sellerId, apiKey, apiSecret, useStageApi)
+        return GetContainer(sellerId, apiKey, apiSecret, useStageApi, storeFrontCode)
             .Webhook.Value;
     }
 
@@ -47,6 +58,39 @@ public class TrendyolMarketplaceClientFactory(IHttpClientFactory httpClientFacto
     {
         return GetContainer(sellerId, apiKey, apiSecret, useStageApi)
             .Finance.Value;
+    }
+
+    /// <summary>
+    ///     Client for the International Marketplace (Germany, CEE, GULF): the region specific order, webhook and return services.
+    ///     <paramref name="storeFrontCode" /> (DE, SA, AE, KW, GR, SK, RO, CZ, BG) is sent as the <c>storeFrontCode</c> header on every request.
+    ///     Endpoints shared with the Türkiye marketplace (products V2, price and inventory, order packages, ...) are on
+    ///     <see cref="GetOrCreateMarketplaceClient" />, created with the same storefront code.
+    /// </summary>
+    public ITrendyolInternationalApi GetOrCreateInternationalClient(
+        long sellerId,
+        string apiKey,
+        string apiSecret,
+        string storeFrontCode,
+        bool useStageApi = false
+    )
+    {
+        if (string.IsNullOrWhiteSpace(storeFrontCode)) throw new ArgumentException("International calls need a storefront code such as DE or SA.", nameof(storeFrontCode));
+        return GetContainer(sellerId, apiKey, apiSecret, useStageApi, storeFrontCode)
+            .International.Value;
+    }
+
+    /// <summary>
+    ///     Client for the Global Partner (Global Center Gateway, <c>/integration/exportcentergw</c>) API.
+    /// </summary>
+    public ITrendyolGlobalPartnerApi GetOrCreateGlobalPartnerClient(
+        long sellerId,
+        string apiKey,
+        string apiSecret,
+        bool useStageApi = false
+    )
+    {
+        return GetContainer(sellerId, apiKey, apiSecret, useStageApi)
+            .GlobalPartner.Value;
     }
 
     /// <summary>
@@ -69,18 +113,19 @@ public class TrendyolMarketplaceClientFactory(IHttpClientFactory httpClientFacto
     /// </summary>
     public void InvalidateClient(long sellerId)
     {
-        _clients.TryRemove((sellerId, false), out _);
-        _clients.TryRemove((sellerId, true), out _);
+        foreach (var key in _clients.Keys.Where(k => k.SellerId == sellerId)) _clients.TryRemove(key, out _);
     }
 
     private ClientContainer GetContainer(
         long sellerId,
         string apiKey,
         string apiSecret,
-        bool useStageApi
+        bool useStageApi,
+        string storeFrontCode = null
     )
     {
-        var key = (sellerId, useStageApi);
+        var storeFront = string.IsNullOrWhiteSpace(storeFrontCode) ? string.Empty : storeFrontCode.Trim().ToUpperInvariant();
+        var key = (sellerId, useStageApi, storeFront);
         if (_clients.TryGetValue(key, out var existingContainer))
         {
             // Validate credentials
@@ -89,7 +134,7 @@ public class TrendyolMarketplaceClientFactory(IHttpClientFactory httpClientFacto
             _clients.TryRemove(key, out _);
         }
 
-        return _clients.GetOrAdd(key, _ => new ClientContainer(sellerId, apiKey, apiSecret, useStageApi, httpClientFactory, Config));
+        return _clients.GetOrAdd(key, _ => new ClientContainer(sellerId, apiKey, apiSecret, useStageApi, storeFront, httpClientFactory, Config));
     }
 
     /// <summary>
@@ -102,6 +147,7 @@ public class TrendyolMarketplaceClientFactory(IHttpClientFactory httpClientFacto
             string apiKey,
             string apiSecret,
             bool useStageApi,
+            string storeFrontCode,
             IHttpClientFactory httpClientFactory,
             TrendyolClientConfig config
         )
@@ -121,6 +167,7 @@ public class TrendyolMarketplaceClientFactory(IHttpClientFactory httpClientFacto
             httpClient.DefaultRequestHeaders.AcceptLanguage.Add(new StringWithQualityHeaderValue("tr-TR"));
             httpClient.DefaultRequestHeaders.Add("User-Agent", $"{sellerId} - {config.IntegrationName}");
             httpClient.DefaultRequestHeaders.Add("X-Internal-Seller-Id", sellerId.ToString());
+            if (storeFrontCode.Length > 0) httpClient.DefaultRequestHeaders.Add("storeFrontCode", storeFrontCode);
 
             // 2. Setup Shared Refit Settings
             var refitSettings = new RefitSettings
@@ -135,6 +182,8 @@ public class TrendyolMarketplaceClientFactory(IHttpClientFactory httpClientFacto
             Webhook = new Lazy<ITrendyolWebhookApi>(() => RestService.For<ITrendyolWebhookApi>(httpClient, refitSettings));
             Finance = new Lazy<ITrendyolFinanceApi>(() => RestService.For<ITrendyolFinanceApi>(httpClient, refitSettings));
             Export = new Lazy<ITrendyolExportApi>(() => RestService.For<ITrendyolExportApi>(httpClient, refitSettings));
+            International = new Lazy<ITrendyolInternationalApi>(() => RestService.For<ITrendyolInternationalApi>(httpClient, refitSettings));
+            GlobalPartner = new Lazy<ITrendyolGlobalPartnerApi>(() => RestService.For<ITrendyolGlobalPartnerApi>(httpClient, refitSettings));
         }
 
         public string ApiKey { get; }
@@ -145,5 +194,7 @@ public class TrendyolMarketplaceClientFactory(IHttpClientFactory httpClientFacto
         public Lazy<ITrendyolWebhookApi> Webhook { get; }
         public Lazy<ITrendyolFinanceApi> Finance { get; }
         public Lazy<ITrendyolExportApi> Export { get; }
+        public Lazy<ITrendyolInternationalApi> International { get; }
+        public Lazy<ITrendyolGlobalPartnerApi> GlobalPartner { get; }
     }
 }

@@ -16,7 +16,7 @@ A modern, strongly-typed, and community-driven C\# client library for the [Trend
 
 ## Features
 
-- **Modular Design:** Separate clients for Marketplace, Finance, Webhook, and Export Center (AutoFT) APIs.
+- **Modular Design:** Separate clients for Marketplace, International Marketplace, Finance, Webhook, Global Partner and Export Center (AutoFT) APIs.
 - **Lazy Loading:** Uses `Lazy<T>` to instantiate specific clients only when accessed, reducing memory footprint.
 - **Type Safety:** Full C\# strong typing for requests, responses, and enumerations.
 - **Error mapping:** Optional mapping of Trendyol HTTP status codes to specific C\# exceptions (e.g., `TrendyolRateLimitException`); see [Error Handling](#error-handling).
@@ -64,7 +64,7 @@ builder.Services.AddTrendyolApiClient(config =>
 
 ### 2\. Usage
 
-Inject `TrendyolMarketplaceClientFactory` into your service. You can request specific clients (Marketplace, Webhook, Finance, or Export) based on your needs.
+Inject `TrendyolMarketplaceClientFactory` into your service. You can request specific clients (Marketplace, International, Webhook, Finance, Global Partner or Export) based on your needs (see [International Marketplace](#international-marketplace) for the other regions).
 
 ```csharp
 public class ProductService
@@ -145,9 +145,50 @@ Create, list, update, delete, activate, and deactivate order webhooks. `Trendyol
 
 The Export Center (AutoFT, `/integration/ecgw`) API: create and list export products, lookups (origins, compositions, care instructions, category attributes, categories by barcode), stock and price updates, packages (V2/V3), and batch status. Every call requires the `x-clientip`, `x-correlationid`, and `x-agentname` headers, which are exposed as method parameters.
 
+### International client (`GetOrCreateInternationalClient`) and Global Partner client (`GetOrCreateGlobalPartnerClient`)
+
+See [International Marketplace](#international-marketplace) and [Global Partner](#global-partner) below.
+
+## International Marketplace
+
+Trendyol's International Marketplace (Germany, CEE and GULF; the "International Marketplace" docs) uses the same hosts and mostly the same services as the Türkiye marketplace, selected by a **`storeFrontCode`** header: `DE`, `SA`, `AE`, `KW`, `GR`, `SK`, `RO`, `CZ`, `BG`. Without it Trendyol treats the request as Türkiye (`TR`).
+
+The storefront is set **once when you create the client** and is sent on every request of that client, so a seller who sells in two countries uses two clients:
+
+```csharp
+// Shared services (products V2, price and inventory, order packages, webhooks, labels, ...):
+var marketplace = _factory.GetOrCreateMarketplaceClient(sellerId, apiKey, apiSecret, storeFrontCode: "DE");
+
+// Region specific services (returns per region, tracking details, EU/GULF test orders, country-aware webhooks):
+var international = _factory.GetOrCreateInternationalClient(sellerId, apiKey, apiSecret, storeFrontCode: "DE");
+```
+
+| Region | Storefronts | Notes |
+| :----- | :---------- | :---- |
+| Germany | `DE` | Returns: `GetClaimsEuropeAsync`, `CreateClaimAsAcceptedEuropeAsync`. |
+| CEE | `GR`, `SK`, `RO`, `CZ`, `BG` | Europe return methods (`...EuropeAsync`); box dimensions in `NotifyIntlBoxInfoAsync`; `sgrPrice` and SGR fees are Romania only. |
+| GULF | `SA`, `AE`, `KW` | GULF return methods (`...GulfAsync`, dedicated `-gulf` paths); `shipmentAddressId`, `returningAddressId` and `cargoProviders` apply to `SA` and `AE`. |
+
+What is where:
+
+- **Marketplace client** (with a `storeFrontCode`): everything the Türkiye docs and the International docs share, e.g. brands, categories, product create and updates (V2), price and inventory, batch results, order packages (`/v2/orders` and the stream), package status, cargo provider changes, alternative delivery, manual deliver/return, common labels.
+- **Webhook client** (`GetOrCreateWebhookClient(..., storeFrontCode: "DE")`): webhook update, delete, activate and deactivate. Creating and listing webhooks differs for International (`countryCodes`), so those two are on the International client.
+- **International client**: only what differs for International: `UpdateIntlTrackingNumberAsync` (`tracking-details`; needed for Seller Pays packages), cancel and split variants with `shouldKeepPreviousStatus`, box info with dimensions, EU and GULF test orders, webhooks with `countryCodes`, and the regional return flows (get, create, approve, reject with reason, audits, rejected package tracking number).
+- The International **V1** product and order services were shut down on 15 October 2026 like the Türkiye ones, so they are not included.
+- Rate limits are shared per group (product read, product write, price and inventory write), plus 30 price updates per minute per barcode.
+
+## Global Partner
+
+The Global Partner (Global Center Gateway) API lives under `/integration/exportcentergw/v1` on the same hosts: offers, offer content medias, stocks, order creation and cancellation, and the vendorRef/B2B lookups. It authenticates with Basic auth like the other APIs, has no seller ID in its routes, and needs the `x-correlationid` (a UUID per request) and `x-agentname` headers, which are method parameters. Paging for offers uses `size` and `pageKey` in the response body. No rate limits are documented.
+
+```csharp
+var global = _factory.GetOrCreateGlobalPartnerClient(sellerId, apiKey, apiSecret);
+var stocks = await global.GetStocksAsync(new TrendyolGlobalFilterGetStocks { /* ... */ }, correlationId: Guid.NewGuid().ToString(), agentName: "Acme");
+```
+
 ## Migrating from the 0.x nightly builds
 
-Before the first stable release the package was only published as `0.0.1-nightly.*` builds. Trendyol closed the **Product V1** and **Order V1** services on 15 October 2026, so the matching methods were removed rather than kept.
+Before the first stable release the package was only published as `0.0.1-nightly.*` builds. Trendyol closed the **Product V1** and **Order V1** services on 15 October 2026 (Türkiye and International), so the matching methods were removed rather than kept.
 
 | Removed (0.x nightlies) | Use instead |
 | :--- | :--- |

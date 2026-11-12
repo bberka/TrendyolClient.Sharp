@@ -118,4 +118,8 @@ public class TrendyolPackageLine
     /// </summary>
     [JsonPropertyName("defectiveClaimListingInsight")]
     public string DefectiveClaimListingInsight { get; set; }
+
+    /// <summary>SGR deposit fee (Romania, non-micro orders).</summary>
+    [JsonPropertyName("lineSgrFee")]
+    public decimal? LineSgrFee { get; set; }
 }

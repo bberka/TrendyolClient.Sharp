@@ -29,6 +29,8 @@ public class RouteSmokeTests
         yield return [typeof(ITrendyolWebhookApi)];
         yield return [typeof(ITrendyolFinanceApi)];
         yield return [typeof(ITrendyolExportApi)];
+        yield return [typeof(ITrendyolInternationalApi)];
+        yield return [typeof(ITrendyolGlobalPartnerApi)];
     }
 
     [Theory]
@@ -103,6 +105,8 @@ public class RouteSmokeTests
             nameof(ITrendyolWebhookApi) => factory.GetOrCreateWebhookClient(SellerId, "key", "secret"),
             nameof(ITrendyolFinanceApi) => factory.GetOrCreateFinanceClient(SellerId, "key", "secret"),
             nameof(ITrendyolExportApi) => factory.GetOrCreateExportClient(SellerId, "key", "secret"),
+            nameof(ITrendyolInternationalApi) => factory.GetOrCreateInternationalClient(SellerId, "key", "secret", "DE"),
+            nameof(ITrendyolGlobalPartnerApi) => factory.GetOrCreateGlobalPartnerClient(SellerId, "key", "secret"),
             _ => throw new NotSupportedException(clientType.Name)
         };
         return (client, recorder);
