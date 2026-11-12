@@ -10,7 +10,7 @@
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Nuget](https://img.shields.io/badge/nuget-TrendyolClient.Sharp-blue)](https://www.nuget.org/packages/TrendyolClient.Sharp)
 
-A modern, strongly-typed, and community-driven C\# client library for the [Trendyol API](https://developers.trendyol.com/). Built on top of **Refit**, this library provides a robust wrapper for Marketplace, Finance, and Webhook endpoints with a focus on memory efficiency and developer experience.
+A strongly-typed, community-driven C\# client library for the [Trendyol API](https://developers.trendyol.com/). Built on **Refit**, it wraps the Marketplace, International Marketplace, Finance, Webhook, Global Partner, and Export Center endpoints and creates clients lazily to keep memory use low.
 
 > **Status: 2.x release line**
 >
@@ -23,8 +23,8 @@ A modern, strongly-typed, and community-driven C\# client library for the [Trend
 - **Modular Design:** Separate clients for Marketplace, International Marketplace, Finance, Webhook, Global Partner and Export Center (AutoFT) APIs.
 - **Lazy Loading:** Uses `Lazy<T>` to instantiate specific clients only when accessed, reducing memory footprint.
 - **Type Safety:** Full C\# strong typing for requests, responses, and enumerations.
-- **Error mapping:** Optional mapping of Trendyol HTTP status codes to specific C\# exceptions (e.g., `TrendyolRateLimitException`); see [Error Handling](#error-handling).
-- **DI Ready:** Seamless integration with ASP.NET Core `IServiceCollection`.
+- **Typed errors:** Optional mapping of Trendyol HTTP status codes to specific C\# exceptions (e.g., `TrendyolRateLimitException`); see [Error Handling](#error-handling).
+- **DI Ready:** Registers through ASP.NET Core `IServiceCollection`.
 - **Multi-Environment:** Native support for switching between Production and Staging APIs.
 
 ## Scope
@@ -243,7 +243,7 @@ Trendyol allows **50 requests per 10 seconds per endpoint**; the 51st gets a `42
 
 ## Advanced Configuration
 
-### Using the Staging Environment
+### Using the staging environment
 
 Production (`apigw.trendyol.com`) needs no IP authorization. The staging environment (`stageapigw.trendyol.com`) does: Trendyol must whitelist your server's outbound IP first (a `503` from stage means it is not), and stage uses its own seller ID, API key and API secret, separate from production. Pass `useStageApi: true` to switch.
 
