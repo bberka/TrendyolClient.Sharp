@@ -2,7 +2,7 @@
 
 # TrendyolClient.Sharp
 
-[![.NET](https://img.shields.io/badge/.NET-8.0%2B-512BD4)](https://dotnet.microsoft.com/)
+[![.NET](https://img.shields.io/badge/.NET-8%20%7C%209%20%7C%2010-512BD4)](https://dotnet.microsoft.com/)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Nuget](https://img.shields.io/badge/nuget-TrendyolClient.Sharp-blue)](https://www.nuget.org/packages/TrendyolClient.Sharp)
 
@@ -24,6 +24,10 @@ A modern, strongly-typed, and community-driven C\# client library for the [Trend
 - **Resilience:** Built-in mapping of Trendyol HTTP status codes to specific C\# exceptions (e.g., `TrendyolRateLimitException`).
 - **DI Ready:** Seamless integration with ASP.NET Core `IServiceCollection`.
 - **Multi-Environment:** Native support for switching between Production and Staging APIs.
+
+## Supported frameworks
+
+The package targets **.NET 8**, **.NET 9** and **.NET 10** (`net8.0`, `net9.0`, `net10.0`). Building from source needs the **.NET 10 SDK** (pinned in `global.json`); running the tests on all three targets needs the .NET 8, 9 and 10 runtimes.
 
 ## Installation
 
@@ -220,7 +224,7 @@ We welcome contributions\! Since this is a community project:
 
 1.  **Open an Issue** before starting significant work to ensure alignment.
 2.  **Follow Conventions:** Ensure all new models use the `Trendyol` prefix.
-3.  **Tests:** Run `dotnet test`. The suite calls every client method against a fake handler and checks the models against Trendyol's documented example payloads; add a fixture when you add a model.
+3.  **Tests:** Run `dotnet test` (it runs on net8.0, net9.0 and net10.0). The suite calls every client method against a fake handler and checks the models against Trendyol's documented example payloads; add a fixture when you add a model.
 
 ## Disclaimer
 

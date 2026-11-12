@@ -1,10 +1,10 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
         <LangVersion>14</LangVersion>
-        <TargetFrameworks>net10.0;net8.0;net9.0</TargetFrameworks>
+        <TargetFrameworks>net8.0;net9.0;net10.0</TargetFrameworks>
         <Title>TrendyolClient.Sharp</Title>
-        <Description>TrendyolClient.Sharp is a simple Trendyol API Client for C# with .NET 6+ version.</Description>
+        <Description>TrendyolClient.Sharp is a simple Trendyol API Client for C# for .NET 8, .NET 9 and .NET 10.</Description>
         <RepositoryUrl>https://github.com/bberka/TrendyolClient.Sharp</RepositoryUrl>
         <Authors>bberka</Authors>
         <Company>bberka</Company>
@@ -20,6 +20,7 @@
         <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="10.0.0"/>
         <PackageReference Include="Microsoft.Extensions.Http" Version="10.0.0"/>
         <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.0"/>
+        <PackageReference Include="FluentValidation" Version="12.1.0"/>
         <PackageReference Include="Newtonsoft.Json" Version="13.0.4"/>
         <PackageReference Include="Refit" Version="9.0.2"/>
         <PackageReference Include="Refit.Newtonsoft.Json" Version="9.0.2"/>
@@ -37,18 +38,6 @@
         <Content Include="..\..\README.md" Pack="true" PackagePath="\">
             <Link>README.md</Link>
         </Content>
-    </ItemGroup>
-
-    <ItemGroup Condition="'$(TargetFramework)' == 'net10.0'">
-        <PackageReference Include="FluentValidation" Version="12.1.0"/>
-    </ItemGroup>
-
-    <ItemGroup Condition="'$(TargetFramework)' == 'net8.0'">
-        <PackageReference Include="FluentValidation" Version="12.1.0"/>
-    </ItemGroup>
-
-    <ItemGroup Condition="'$(TargetFramework)' == 'net9.0'">
-        <PackageReference Include="FluentValidation" Version="12.1.0"/>
     </ItemGroup>
 
 </Project>
