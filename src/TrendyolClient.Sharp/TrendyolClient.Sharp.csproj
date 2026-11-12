@@ -15,6 +15,7 @@
         <PackageTags>trendyol, api, client, csharp, dotnet, rest, http, ecommerce, integration</PackageTags>
         <PackageLicenseFile>LICENSE</PackageLicenseFile>
         <PackageReadmeFile>README.md</PackageReadmeFile>
+        <PackageIcon>icon.png</PackageIcon>
     </PropertyGroup>
 
     <ItemGroup>
@@ -31,6 +32,9 @@
     <ItemGroup>
         <Content Include="..\..\LICENSE" Pack="true" PackagePath="\">
             <Link>LICENSE</Link>
+        </Content>
+        <Content Include="..\..\assets\icon.png" Pack="true" PackagePath="\">
+            <Link>icon.png</Link>
         </Content>
         <Content Include="..\..\README.md" Pack="true" PackagePath="\">
             <Link>README.md</Link>
