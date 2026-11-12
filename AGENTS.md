@@ -57,7 +57,7 @@ dotnet test -c Release      # net8.0, net9.0 and net10.0
 
 ## Releasing
 
-Every push to `master` publishes a nightly pre-release. A stable release happens only when the user runs the **Release** workflow by hand. Publishing uses NuGet trusted publishing, so there is no API key to manage. Details are in the README "Releasing" section.
+Nothing publishes automatically: a merge to `master` publishes nothing. The **Release** workflow (`release.yml`) runs only when someone starts it by hand, and an agent starts it only when the user asks. Its `nightly` checkbox (ticked by default) publishes a pre-release `<version>-nightly.<timestamp>` from any branch; unticked it publishes the stable version from `master`. Its `dry run` checkbox builds, tests and packs without publishing, which is how to check a change to the workflow itself. Publishing uses NuGet trusted publishing, so there is no API key to manage. Details are in the README "Releasing" section.
 
 ## Things that already went wrong
 
