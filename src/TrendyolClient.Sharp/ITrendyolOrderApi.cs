@@ -68,6 +68,17 @@ public interface ITrendyolOrderApi
     Task<IApiResponse> ChangeCargoProviderAsync([AliasAs("packageId")] long packageId, [Body] TrendyolRequestChangeCargoProvider request);
 
     /// <summary>
+    ///     Gives a package extra supply time (extendAgreedDeliveryDate): extends the agreed delivery date by 1, 2 or 3
+    ///     days. Documented only in the v6.0 doc set (Turkish, "Ek Tedarik Suresi Tanimlama"), not in the Turkiye
+    ///     v1/v2 or International v3 docs, so it applies to the Turkiye marketplace integration. The 02.04.2026
+    ///     changelog removed the agreedDeliveryDateExtendible, extendedAgreedDeliveryDate and
+    ///     agreedDeliveryExtension(Start|End)Date fields from the package responses, so the response no longer tells
+    ///     whether a package can be extended.
+    /// </summary>
+    [Put("/integration/order/sellers/SELLER_ID_PARAMETER/shipment-packages/{packageId}/extended-agreed-delivery-date")]
+    Task<IApiResponse> ExtendAgreedDeliveryDateAsync([AliasAs("packageId")] long packageId, [Body] TrendyolRequestExtendAgreedDeliveryDate request);
+
+    /// <summary>
     ///     Updates the warehouse of a package (updateWarehouse). Trendyol Express sellers only; the package must be
     ///     Created, Picking or Invoiced.
     /// </summary>

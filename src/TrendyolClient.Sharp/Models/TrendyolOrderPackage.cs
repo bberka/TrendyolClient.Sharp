@@ -305,4 +305,8 @@ public class TrendyolOrderPackage
 
     [JsonPropertyName("isCod")]
     public bool IsCod { get; set; }
+
+    /// <summary>SGR deposit fee (Romania, non-micro orders).</summary>
+    [JsonPropertyName("totalSgrFee")]
+    public decimal? TotalSgrFee { get; set; }
 }
