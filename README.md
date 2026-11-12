@@ -13,7 +13,7 @@ A modern, strongly-typed, and community-driven C\# client library for the [Trend
 > This project is maintained for bug fixes and issue resolution; however, it is **not yet considered production-ready**.
 >
 > - **Breaking Changes:** The public API may change significantly between versions.
-> - **Validation:** Input validation is minimal; you must validate data before sending it.
+> - **Validation:** The library does not validate input (see [Scope](#scope)); you must validate data before sending it.
 > - **Use at your own risk.**
 
 ## Features
@@ -21,9 +21,22 @@ A modern, strongly-typed, and community-driven C\# client library for the [Trend
 - **Modular Design:** Separate clients for Marketplace, Finance, Webhook, and Export Center (AutoFT) APIs.
 - **Lazy Loading:** Uses `Lazy<T>` to instantiate specific clients only when accessed, reducing memory footprint.
 - **Type Safety:** Full C\# strong typing for requests, responses, and enumerations.
-- **Resilience:** Built-in mapping of Trendyol HTTP status codes to specific C\# exceptions (e.g., `TrendyolRateLimitException`).
+- **Error mapping:** Optional mapping of Trendyol HTTP status codes to specific C\# exceptions (e.g., `TrendyolRateLimitException`); see [Error Handling](#error-handling).
 - **DI Ready:** Seamless integration with ASP.NET Core `IServiceCollection`.
 - **Multi-Environment:** Native support for switching between Production and Staging APIs.
+
+## Scope
+
+This package does one thing: it gives you **type-safe access to the Trendyol API**, following Trendyol's documentation and .NET best practices (typed requests and responses, `IHttpClientFactory`, dependency injection, Refit). It is a thin, faithful client, not a framework around the API.
+
+**What it does not do, and never will:**
+
+- **No input validation.** It sends what you give it. Trendyol validates requests and reports problems in the response; check the response (or enable `ThrowOnError`) to see them.
+- **No rate-limit checks.** Trendyol allows 50 requests per 10 seconds per endpoint. Staying under that is your responsibility; the library does not throttle, queue or count requests.
+- **No retries.** Failed calls are not repeated. Many calls are not safe to repeat (creating products, splitting packages, creating claims), and the right policy depends on your workload.
+- **No business logic.** No caching of Trendyol data, no mapping to your domain model, no synchronization jobs.
+
+Keeping these out keeps the library small, predictable and easy to keep in step with Trendyol's API. If you need them, add them around the client. Retries and throttling, for example, belong in the `HttpClient` pipeline: the clients are built on the named `HttpClient` `"TrendyolClient"`, so you can attach your own handler or resilience policy with `services.AddHttpClient("TrendyolClient")` after `AddTrendyolApiClient`.
 
 ## Supported frameworks
 
