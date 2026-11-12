@@ -1,38 +1,47 @@
 name: Release
 
-# Manual stable release. Run it from the Actions tab on master.
+# Manual only: nothing publishes automatically. Run it from the Actions tab (Actions > Release > Run workflow).
+#
 # VERSION holds MAJOR.MINOR; the patch is the next free number for that line (see .github/scripts/next-version.sh).
-# It publishes MAJOR.MINOR.PATCH to NuGet and creates the matching v<version> tag and GitHub release.
+#   nightly ticked   -> MAJOR.MINOR.PATCH-nightly.<timestamp>, published to NuGet and GitHub as a pre-release (any branch)
+#   nightly unticked -> MAJOR.MINOR.PATCH, a stable release; creates the v<version> tag (master only)
+#   dry run ticked   -> build, test and pack only; nothing is published or tagged
 on:
   workflow_dispatch:
     inputs:
+      nightly:
+        description: "Nightly pre-release (untick for a stable release)"
+        type: boolean
+        default: true
       dry_run:
         description: "Build, test and pack only. Do not publish or tag."
         type: boolean
         default: false
 
 permissions:
-  contents: write
-  id-token: write # NuGet trusted publishing (OIDC)
+  contents: read
 
 concurrency:
   group: release
   cancel-in-progress: false
 
 jobs:
-  release:
-    name: Release
+  version:
+    name: Version
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+      tag: ${{ steps.version.outputs.tag }}
+      previous: ${{ steps.version.outputs.previous }}
     steps:
       - uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
-      - name: Require master
-        if: github.ref != 'refs/heads/master'
+      - name: Require master for a stable release
+        if: ${{ !inputs.nightly && github.ref != 'refs/heads/master' }}
         run: |
-          echo "::error::Releases can only be made from master (this run is on ${{ github.ref }})."
+          echo "::error::A stable release can only be made from master (this run is on ${{ github.ref }}). Tick 'nightly' to publish a pre-release from another branch."
           exit 1
 
       - name: Compute version
@@ -42,15 +51,29 @@ jobs:
           echo "$info"
           version=$(echo "$info" | sed -n 's/^version=//p')
           previous=$(echo "$info" | sed -n 's/^previous=//p')
+
+          if [ "${{ inputs.nightly }}" = "true" ]; then
+            version="${version}-nightly.$(date -u +%Y%m%d%H%M)"
+            # Notes for a nightly cover everything since the newest release of any kind
+            previous=$(git tag --list 'v[0-9]*' --sort=-creatordate | head -n 1)
+          fi
+
           tag="v$version"
           if git ls-remote --exit-code --tags origin "refs/tags/$tag" > /dev/null 2>&1; then
             echo "::error::Tag $tag already exists."
             exit 1
           fi
+
           echo "version=$version" >> "$GITHUB_OUTPUT"
           echo "tag=$tag" >> "$GITHUB_OUTPUT"
           echo "previous=$previous" >> "$GITHUB_OUTPUT"
           echo "Releasing $version (tag $tag, notes since ${previous:-the beginning})"
+
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
 
       - name: Setup .NET 8, 9 and 10
         uses: actions/setup-dotnet@v6
@@ -66,8 +89,40 @@ jobs:
       - name: Test
         run: dotnet test --configuration Release
 
+  publish:
+    name: Publish
+    needs: [version, test]
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: write # tag and GitHub release
+      id-token: write # NuGet trusted publishing (OIDC)
+    env:
+      VERSION: ${{ needs.version.outputs.version }}
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Setup .NET 8, 9 and 10
+        uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: |
+            8.0.x
+            9.0.x
+            10.0.x
+
+      - name: Restore
+        run: dotnet restore
+
       - name: Pack
-        run: dotnet pack ./src/TrendyolClient.Sharp/TrendyolClient.Sharp.csproj --configuration Release --output ./nuget_packages -p:Version=${{ steps.version.outputs.version }}
+        run: dotnet pack ./src/TrendyolClient.Sharp/TrendyolClient.Sharp.csproj --configuration Release --output ./artifacts -p:Version=$VERSION
+
+      - name: Zip a build per target framework
+        run: |
+          for tfm in net8.0 net9.0 net10.0; do
+            dotnet publish ./src/TrendyolClient.Sharp/TrendyolClient.Sharp.csproj --configuration Release --framework "$tfm" --output "./publish/$tfm" -p:Version=$VERSION
+            (cd publish && zip -qr "../artifacts/TrendyolClient.Sharp-$tfm-$VERSION.zip" "$tfm")
+          done
+          ls -l artifacts
 
       # Trusted publishing: GitHub proves who this workflow is, nuget.org returns a temporary API key (valid 1 hour).
       # No NuGet API key is stored in the repository.
@@ -81,21 +136,22 @@ jobs:
       - name: Publish to NuGet
         if: ${{ !inputs.dry_run }}
         # No --skip-duplicate: publishing a version that already exists must fail loudly.
-        run: dotnet nuget push "./nuget_packages/*.nupkg" --api-key ${{ steps.nuget_login.outputs.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json
+        run: dotnet nuget push "./artifacts/*.nupkg" --api-key ${{ steps.nuget_login.outputs.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json
 
       - name: Create tag and GitHub release
         if: ${{ !inputs.dry_run }}
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          args=(--target "${{ github.sha }}" --title "v${{ steps.version.outputs.version }}" --generate-notes --latest)
-          if [ -n "${{ steps.version.outputs.previous }}" ]; then args+=(--notes-start-tag "${{ steps.version.outputs.previous }}"); fi
-          gh release create "${{ steps.version.outputs.tag }}" "${args[@]}" ./nuget_packages/*.nupkg
+          args=(--target "${{ github.sha }}" --title "v$VERSION" --generate-notes)
+          if [ "${{ inputs.nightly }}" = "true" ]; then args+=(--prerelease); else args+=(--latest); fi
+          if [ -n "${{ needs.version.outputs.previous }}" ]; then args+=(--notes-start-tag "${{ needs.version.outputs.previous }}"); fi
+          gh release create "${{ needs.version.outputs.tag }}" "${args[@]}" ./artifacts/*
 
-      - name: Upload package (dry run)
+      - name: Upload packages (dry run)
         if: ${{ inputs.dry_run }}
         uses: actions/upload-artifact@v7
         with:
-          name: nuget-packages
-          path: nuget_packages
+          name: release-artifacts
+          path: artifacts
           retention-days: 3
